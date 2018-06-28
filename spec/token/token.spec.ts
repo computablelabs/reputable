@@ -1,3 +1,4 @@
+import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { DEPLOY_TOKEN, DEPLOYED_TOKEN } from '../../src/constants'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
@@ -7,15 +8,22 @@ import { State, Token, Selector, Void } from '../../src/interfaces'
 import subscriber from '../../src/redux/subscriber'
 
 describe('token state', () => {
-  // const mnemonic = 'protect lemon rather regret else gallery parent kite truth inject rebuild witness'
-  const adminAddress = '0x3dd6f8bbace2e39200c603fece4e8a3bd7d1387e'
-  // let server:any
+  let server:any,
+    provider:any,
+    state:State,
+    accounts:string[]
 
-  beforeAll(() => {
-    // we'll need at least an admin and web3
-    participate('Mr. Admin Pants', adminAddress)
-    // use the same port as you told the server to listen on
-    setWebsocketAddress('ws://localhost:8546')
+  beforeAll(async () => {
+    server = ganache.server({ ws:true })
+    server.listen(8544)
+    // we'll need web3 setup with a ws provider
+    setWebsocketAddress('ws://localhost:8544')
+    // we'll need web3's eth accounts
+    state = store.getState()
+    // @ts-ignore:2532
+    accounts = await state.web3.eth.getAccounts()
+
+    participate('Mr. Admin Pants', accounts[0])
   })
 
   afterAll(() => {
@@ -25,17 +33,21 @@ describe('token state', () => {
   })
 
   it('begins with unhydrated token', () => {
-    const state:State = store.getState()
+    state = store.getState()
     expect(state.token && state.token.address).toBeFalsy()
   })
 
-  xit('can deploy a token, placing the address in the state tree', async () => {
+  it('can deploy a token, placing the address in the state tree', async () => {
     // given the state, return just the token TODO create /selectors
     const tokenSelector = (state:State): Token|undefined => state.token,
       // redux will call this on stae changes, token as arg because of the use of the selector above
       deployListener = (token:Token) => { console.log(token) },
       unsubscribe:any = subscriber(deployListener, tokenSelector)
 
-    deployToken(adminAddress, 1000000)
+    // we could ref the returned address but we are more interested in the state tree as a user will be
+    // using subscriptions to react on store changes...
+    await deployToken(accounts[0], 1000000)
+    state = store.getState()
+    expect(state.token && state.token.address).toBeTruthy()
   })
 })
