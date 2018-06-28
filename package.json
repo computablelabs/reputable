@@ -1,0 +1,33 @@
+{
+  "name": "reputable",
+  "version": "0.1.0",
+  "description": "Redux state container for the Computable Protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-ts ./spec/**/*.spec.ts",
+    "test:init": "jasmine-ts init"
+  },
+  "keywords": [
+    "Computable",
+    "Ethereum",
+    "Javascript",
+    "Typescript",
+    "Redux"
+  ],
+  "author": "Computable.io",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jasmine": "^2.8.8",
+    "@types/node": "^10.5.0",
+    "@types/underscore": "^1.8.8",
+    "jasmine": "^3.1.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-ts": "^0.2.1",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "computable": "github:computablelabs/computable.js",
+    "redux": "^4.0.0",
+    "web3": "^1.0.0-beta.34"
+  }
+}
