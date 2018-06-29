@@ -4,5 +4,6 @@ node_js:
 install:
   - npm install
   - npm install frozeman/WebSocket-Node
+  - npm up computable
 script:
   - npm test
