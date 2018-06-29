@@ -8,6 +8,7 @@
 
 import { combineReducers } from 'redux'
 import { Nos } from 'computable/dist/types'
+import Erc20 from 'computable/dist/contracts/erc-20'
 import {
   DEPLOY_TOKEN,
   DEPLOYED_TOKEN,
@@ -30,6 +31,12 @@ const address:Reducer<string|undefined, Action> = (address = '', action) => {
   // we won't have an actual address until the VM sends back the TX from deploy
   if (action.type === DEPLOYED_TOKEN) return (<DeployedToken>action).address
   return address
+}
+
+// @ts-ignore:2322
+const contract:Reducer<Erc20|undefined, Action> = (erc20 = null, action) => {
+  if (action.type === DEPLOYED_TOKEN) return (<DeployedToken>action).contract
+  return erc20
 }
 
 const approvals:Reducer<Approval[]|undefined, Action> = (state = [], action) => {
@@ -70,6 +77,7 @@ const transfers:Reducer<Transfer[]|undefined, Action> = (state = [], action) => 
 
 export default combineReducers({
   address,
+  contract,
   supply,
   approvals,
   transfers,

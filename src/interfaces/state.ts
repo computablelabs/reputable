@@ -11,7 +11,6 @@ import {
 
 export default interface State {
   readonly web3?:Web3;
-  readonly parsedUrl?:ParsedUrl;
   readonly participants?:Participant[];
   readonly token?:Token;
   readonly parameterizer?:Parameterizer;

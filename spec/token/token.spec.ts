@@ -27,6 +27,7 @@ describe('token state', () => {
   })
 
   afterAll(() => {
+    server.close()
     // tear it all down as the store is a singleton
     resetParticipants()
     resetWeb3()
@@ -38,16 +39,21 @@ describe('token state', () => {
   })
 
   it('can deploy a token, placing the address in the state tree', async () => {
-    // given the state, return just the token TODO create /selectors
-    const tokenSelector = (state:State): Token|undefined => state.token,
+    // const tokenSelector = (state:State): Token|undefined => state.token,
       // redux will call this on stae changes, token as arg because of the use of the selector above
-      deployListener = (token:Token) => { console.log(token) },
-      unsubscribe:any = subscriber(deployListener, tokenSelector)
+      // deployListener = (token:Token) => { console.log(token) },
+      // unsubscribe:any = subscriber(deployListener, tokenSelector)
 
     // we could ref the returned address but we are more interested in the state tree as a user will be
     // using subscriptions to react on store changes...
     await deployToken(accounts[0], 1000000)
     state = store.getState()
     expect(state.token && state.token.address).toBeTruthy()
+    // hashed addresses are always 42 chars
+    expect(state.token && state.token.address && state.token.address.length).toBe(42)
+  })
+
+  it('has assigned the initial funds to the admin address', async () => {
+
   })
 })

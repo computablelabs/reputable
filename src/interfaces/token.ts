@@ -1,5 +1,6 @@
 import { Nos } from 'computable/dist/types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
+import Erc20 from 'computable/dist/contracts/erc-20'
 /**
  * Represent the data shape we maintain locally for the deployed token that this system uses
  */
@@ -19,8 +20,11 @@ export interface Transfer {
   amount:Nos; // amount to transfer
 }
 
-// all the deployed params, the returned address, and any future transactions
+// all the deployed params, the returned address, and any future transactions.
+// some of these values, like address, are hoisted from things you could get via the contract.
+// with further dev we can decide what to hoist, and what to always fetch via contract methods
 export interface Token extends DeployedToken, Erc20DeployParams {
+  contract?:Erc20;
   transfers?:Transfer[];
   approvals?:Approval[];
 }
