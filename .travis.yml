@@ -3,5 +3,6 @@ node_js:
   - "8.11.1"
 install:
   - npm install
+  - npm install frozeman/WebSocket-Node
 script:
   - npm test
