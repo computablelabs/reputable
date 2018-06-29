@@ -36,6 +36,7 @@ describe('token state', () => {
   it('begins with unhydrated token', () => {
     state = store.getState()
     expect(state.token && state.token.address).toBeFalsy()
+    expect(state.token && state.token.contract).toBeFalsy()
   })
 
   it('can deploy a token, placing the address in the state tree', async () => {
@@ -51,9 +52,12 @@ describe('token state', () => {
     expect(state.token && state.token.address).toBeTruthy()
     // hashed addresses are always 42 chars
     expect(state.token && state.token.address && state.token.address.length).toBe(42)
+    // we should now have an instantiated computable token contract
+    expect(state.token && state.token.contract).toBeTruthy()
+    expect(state.token && state.token.contract && state.token.contract.approve).toBeTruthy()
   })
 
   it('has assigned the initial funds to the admin address', async () => {
-
+    // TODO
   })
 })
