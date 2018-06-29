@@ -50,11 +50,11 @@ const deployToken = async (address?:string, supply?:Nos): Promise<string> => {
    */
   store.dispatch(deploy)
 
-  const token = new Erc20(address),
+  const contract = new Erc20(address),
     // we can just re-use our deploy object from above (type will be ignored)
-    tokenAddress:string = await token.deploy(web3, deploy)
+    tokenAddress:string = await contract.deploy(web3, deploy)
 
-  const deployed:DeployedToken = { type: DEPLOYED_TOKEN, address: tokenAddress }
+  const deployed:DeployedToken = { type: DEPLOYED_TOKEN, address: tokenAddress, contract }
   store.dispatch(deployed)
 
   return tokenAddress
