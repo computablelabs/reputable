@@ -52,6 +52,7 @@ const approvals:Reducer<Approval[]|undefined, Action> = (state = [], action) => 
     ]),
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
@@ -72,6 +73,7 @@ const transfers:Reducer<Transfer[]|undefined, Action> = (state = [], action) => 
     ]),
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

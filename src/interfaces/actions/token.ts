@@ -1,6 +1,6 @@
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import Erc20 from 'computable/dist/contracts/erc-20'
-import Action from './action'
+import { Action } from './action'
 import { Approval, Transfer } from '../token'
 import { Nos } from 'computable/dist/types'
 

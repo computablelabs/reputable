@@ -34,6 +34,7 @@ const applicants:Reducer<Applicant[]|undefined, Action> = (state = [], action) =
     ]),
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
@@ -48,6 +49,7 @@ const challenges:Reducer<Challenge[]|undefined, Action> = (state = [], action) =
     ]),
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
@@ -67,6 +69,7 @@ const listings:Reducer<Listing[]|undefined, Action> = (state = [], action) => {
     ]),
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

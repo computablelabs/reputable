@@ -9,6 +9,7 @@ const web3:Reducer<Web3|null, Action> = (state = null, action) => {
     [RESET_WEB3]: () => null,
   }
 
+  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

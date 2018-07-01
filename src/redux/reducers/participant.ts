@@ -1,8 +1,8 @@
 import { PARTICIPATE, RESET_PARTICIPANTS } from '../../constants'
 import {
   Action,
+  FSA,
   Reducer,
-  Participate,
   Participant,
 } from '../../interfaces'
 
@@ -13,8 +13,8 @@ const participants:Reducer<Participant[], Action> = (state = [], action) => {
     [PARTICIPATE]: () => ([
       ...state,
       {
-        name: (<Participate>action).name,
-        address: (<Participate>action).address,
+        name: (<FSA>action).payload.name,
+        address: (<FSA>action).payload.address,
         owner: state.length === 0 ? true : false,
       }
     ]),
