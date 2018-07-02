@@ -3,14 +3,14 @@
  */
 
 import store from '../store'
-import { addParticipant, clearParticipants } from '../action-creators/participant'
+import { participate as add, resetParticipants as reset } from '../action-creators/participant'
 
 const participate = (name:string, address:string): void => {
-  store.dispatch(addParticipant(name, address))
+  store.dispatch(add(name, address))
 }
 
 const resetParticipants = (): void => {
-  store.dispatch(clearParticipants())
+  store.dispatch(reset())
 }
 
 export { participate, resetParticipants }

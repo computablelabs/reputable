@@ -16,38 +16,33 @@ import {
   TRANSFER,
 } from '../../constants'
 import {
-  Action,
+  FSA,
   Reducer,
-  DeployToken,
-  DeployedToken,
-  Token,
-  Approve,
   Approval,
-  TransferAction,
-  Transfer,
+  Transfer
 } from '../../interfaces'
 
-const address:Reducer<string|undefined, Action> = (address = '', action) => {
+const address:Reducer<string|undefined, FSA> = (address = '', action) => {
   // we won't have an actual address until the VM sends back the TX from deploy
-  if (action.type === DEPLOYED_TOKEN) return (<DeployedToken>action).address
+  if (action.type === DEPLOYED_TOKEN) return action.payload.address
   return address
 }
 
 // @ts-ignore:2322
-const contract:Reducer<Erc20|undefined, Action> = (erc20 = null, action) => {
-  if (action.type === DEPLOYED_TOKEN) return (<DeployedToken>action).contract
+const contract:Reducer<Erc20|undefined, FSA> = (erc20 = null, action) => {
+  if (action.type === DEPLOYED_TOKEN) return action.payload.contract
   return erc20
 }
 
-const approvals:Reducer<Approval[]|undefined, Action> = (state = [], action) => {
+const approvals:Reducer<Approval[]|undefined, FSA> = (state = [], action) => {
   const map = {
     // we will add an applicant to the state tree
     [APPROVE]: () => ([
       ...state,
       {
-        address: (<Approve>action).address,
-        amount: (<Approve>action).amount,
-        from: (<Approve>action).from,
+        address: action.payload.address,
+        amount: action.payload.amount,
+        from: action.payload.from,
       }
     ]),
   }
@@ -56,19 +51,19 @@ const approvals:Reducer<Approval[]|undefined, Action> = (state = [], action) => 
   return map[action.type] ? map[action.type]() : state
 }
 
-const supply:Reducer<Nos|undefined, Action> = (supply = 0, action) => {
-  if (action.type === DEPLOY_TOKEN) return (<DeployToken>action).supply
+const supply:Reducer<Nos|undefined, FSA> = (supply = 0, action) => {
+  if (action.type === DEPLOY_TOKEN) return action.payload.supply
   return supply
 }
 
-const transfers:Reducer<Transfer[]|undefined, Action> = (state = [], action) => {
+const transfers:Reducer<Transfer[]|undefined, FSA> = (state = [], action) => {
   const map = {
     [TRANSFER]: () => ([
       ...state,
       {
-        to: (<TransferAction>action).to,
-        from: (<TransferAction>action).from,
-        amount: (<TransferAction>action).amount,
+        to: action.payload.to,
+        from: action.payload.from,
+        amount: action.payload.amount,
       }
     ]),
   }

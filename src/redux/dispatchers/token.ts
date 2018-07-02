@@ -2,20 +2,14 @@ import Web3 from 'web3'
 import store from '../store'
 import { Nos } from 'computable/dist/types'
 import Erc20 from 'computable/dist/contracts/erc-20'
+import { Errors } from '../../constants'
+import { State, Participant } from '../../interfaces'
 import {
-  State,
-  Action,
-  Participant,
-  DeployToken,
-  DeployedToken,
-} from '../../interfaces'
-import {
-  DEPLOY_TOKEN,
-  DEPLOYED_TOKEN,
-  RESET_TOKEN,
-  TokenDefaults,
-  Errors,
-} from '../../constants'
+  deployToken as deploy,
+  deployedToken,
+  tokenDeployError,
+  resetToken as reset,
+} from '../action-creators/token'
 /**
  * @param address. Optional address of the owner of the initial supply, defaults to token default account
  * @param supply. Optional amount of funds the token holds, defaults to const TokenDefaults
@@ -26,16 +20,9 @@ const deployToken = async (address?:string, supply?:Nos): Promise<string> => {
     web3:Web3|undefined = state.web3,
     admin:Participant|undefined = state.participants && state.participants[0]
 
+  // TODO should we just dispatch here?
   if (!web3) throw Errors.NO_WEB3_FOUND // TODO we could make helpers for checks like this, may be common...
   if (!admin) throw Errors.NO_ADMIN_FOUND
-
-  const deploy:DeployToken = {
-    type: DEPLOY_TOKEN,
-    address: address || admin.address,
-    supply: supply || TokenDefaults.SUPPLY,
-  }
-
-  // TODO setup defaults for the "ContractOpts" object
 
   /**
    * we'll optimistically store the data from the dispatch. this does create two sources of
@@ -48,21 +35,27 @@ const deployToken = async (address?:string, supply?:Nos): Promise<string> => {
    * it may be a good pattern in general to be optimistic when possible, considering on-chain
    * transaction times (and sometimes cost) can be high. TDB...
    */
-  store.dispatch(deploy)
+  const deployAction = deploy(address || admin.address)
+  store.dispatch(deployAction)
 
-  const contract = new Erc20(address),
-    // we can just re-use our deploy object from above (type will be ignored)
-    tokenAddress:string = await contract.deploy(web3, deploy)
+  const contract = new Erc20(address)
+  let tokenAddress:string = ''
 
-  const deployed:DeployedToken = { type: DEPLOYED_TOKEN, address: tokenAddress, contract }
-  store.dispatch(deployed)
+  try {
+    // we can just re-use our deploy action payload from above
+    tokenAddress = await contract.deploy(web3, deployAction.payload)
+  } catch (err) {
+    store.dispatch(tokenDeployError(err))
+  }
 
+  store.dispatch(deployedToken(tokenAddress, contract))
+
+  // it's likely this return won't be used, but may as well return it just in case
   return tokenAddress
 }
 
 const resetToken = (): void => {
-  const o:Action = { type: RESET_TOKEN }
-  store.dispatch(o)
+  store.dispatch(reset())
 }
 
 export { deployToken, resetToken }
