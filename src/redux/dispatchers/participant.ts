@@ -1,20 +1,16 @@
+/**
+ * Bound action creators for participant state
+ */
+
 import store from '../store'
-import { PARTICIPATE, RESET_PARTICIPANTS } from '../../constants'
-import { Action, Participate } from '../../interfaces'
+import { participate as add, resetParticipants as reset } from '../action-creators/participant'
 
 const participate = (name:string, address:string): void => {
-  const o:Participate = {
-    type: PARTICIPATE,
-    name,
-    address,
-  }
-
-  store.dispatch(o)
+  store.dispatch(add(name, address))
 }
 
 const resetParticipants = (): void => {
-  const o:Action = { type: RESET_PARTICIPANTS }
-  store.dispatch(o)
+  store.dispatch(reset())
 }
 
 export { participate, resetParticipants }
