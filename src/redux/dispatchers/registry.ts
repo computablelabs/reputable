@@ -1,23 +1,11 @@
-import store from '../store'
-import { APPLY } from '../../constants'
-import { Apply, List, ChallengeAction } from '../../interfaces'
 import { Nos } from 'computable/dist/types'
+import store from '../store'
+import { apply as getApplicant } from '../action-creators/registry'
+import { TokenDefaults } from '../../constants'
 
 const apply = (name:string, deposit?:Nos, data?:string): void => {
-  const o:Apply = {
-    type: APPLY,
-    name,
-    deposit,
-    data,
-  }
-
-  store.dispatch(o) // this should move an application into the applicants list
-
-  // now we listen for the protocol lib to send back the TX and inspect, dispatching an action
-  // to add a proper listing if it succeeds...
-  //
-  // TODO use the websocket events when ready
-
+  // TODO default for deposit? App needs/has parameterizer defaults?
+  store.dispatch(getApplicant(name, deposit || 0, data)) // this should move an application into the applicants list
 }
 
 export { apply }
