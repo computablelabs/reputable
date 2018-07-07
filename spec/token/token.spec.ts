@@ -47,7 +47,7 @@ describe('token state', () => {
 
     // we could ref the returned address but we are more interested in the state tree as a user will be
     // using subscriptions to react on store changes...
-    await deployToken(accounts[0], 1000000)
+    const tokenAddress = await deployToken(accounts[0], 1000000)
     state = store.getState()
     expect(state.token && state.token.address).toBeTruthy()
     // hashed addresses are always 42 chars
