@@ -27,11 +27,10 @@ export const TRANSFER_ERROR = 'transfer-error'
 
 export const APPROVE = 'approve'
 export const APPROVE_ERROR = 'approve-error'
+export const APPROVED = 'approved'
 
 export const WEBSOCKET_ADDRESS_SET = 'websocket-address-set'
-
-export const RESET_WEB3 = 'reset-web3'
-
+export const RESET_WEBSOCKET_ADDRESS = 'reset-websocket-address'
 export enum Contracts {
   TOKEN = 'token',
   PARAMETERIZER = 'parameterizer',
@@ -45,5 +44,6 @@ export enum TokenDefaults {
 
 export enum Errors {
   NO_ADMIN_FOUND = 'No admin participant can be located. Be sure to register at least one participant',
-  NO_WEB3_FOUND = 'No instantiated Web3 object can be found. Make sure to instantiate it with a provider',
+  NO_WEBSOCKETADDRESS_FOUND = 'No Websocket address can be found. Make sure to set your ws address as it is needed for a web3 provider',
+  NO_TOKEN_FOUND = 'No instantiated token contract is in the state tree. Be sure to deploy your token first',
 }

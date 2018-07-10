@@ -8,7 +8,6 @@ import Erc20 from 'computable/dist/contracts/erc-20'
 
 export interface DeployedToken {
   address:string;
-  contract: Erc20;
 }
 
 // TODO do we want any friendly names in here?
@@ -25,10 +24,9 @@ export interface Transfer {
 }
 
 // all the deployed params, the returned address, and any future transactions.
-// some of these values, like address, are hoisted from things you could get via the contract.
-// with further dev we can decide what to hoist, and what to always fetch via contract methods
+// we will re-use the `address` attribute in the Erc20DeployParams as the actual deployed
+// address of the token, so that it may be re-created on demand (vs stored in state)
 export interface Token extends Erc20DeployParams {
-  contract?:Erc20;
   transfers?:Transfer[];
   approvals?:Approval[];
 }
