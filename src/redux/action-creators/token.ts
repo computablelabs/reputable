@@ -60,7 +60,7 @@ const approve = (address:string, amount:Nos, from:string): any => {
       web3 = new Web3(new Web3.providers.WebsocketProvider(ws)),
       contract = new Erc20(from)
 
-    tokenAddress && contract.at(web3, { address: tokenAddress })
+    tokenAddress && await contract.at(web3, { address: tokenAddress })
 
     let tx = null
 

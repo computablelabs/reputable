@@ -17,7 +17,7 @@ import {
   Approval,
 } from '../../src/interfaces'
 
-fdescribe('token state', () => {
+describe('token state', () => {
   let server:any,
     provider:any,
     web3:Web3,
@@ -67,10 +67,10 @@ fdescribe('token state', () => {
     it('has assigned the initial funds to the admin address', async () => {
       state = store.getState()
 
-      const address = state.token && state.token.address,
+      const address = state.token && state.token.address || '',
         contract = address && new Erc20(accounts[0])
 
-      contract && contract.at(web3, { address })
+      contract && await contract.at(web3, { address })
 
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
