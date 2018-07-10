@@ -82,7 +82,7 @@ describe('token state', () => {
     it('lets admin approve other contract to spend', async () => {
       state = store.getState()
 
-      const approvals = state.token && state.token.approvals
+      let approvals = state.token && state.token.approvals
 
       expect(approvals && approvals.length).toBe(0)
 
@@ -95,6 +95,11 @@ describe('token state', () => {
       // @ts-ignore:2532
       const tx:TransactionReceipt = await approve(accounts[1], 500000, accounts[0])
       expect(tx).toBeTruthy()
+
+      state = store.getState()
+      approvals = state.token && state.token.approvals
+
+      expect(approvals && approvals.length).toBe(1)
     })
   })
 
