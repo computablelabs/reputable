@@ -1,5 +1,3 @@
-// TODO split the actions up into subdirectories like `token/deploy` and `token/approve` etc...
-
 import Web3 from 'web3'
 import { TransactionReceipt } from 'web3/types.d'
 import { Nos } from 'computable/dist/types'
