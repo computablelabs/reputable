@@ -1,16 +1,15 @@
-import Web3 from 'web3'
-import { WEBSOCKET_ADDRESS_SET, RESET_WEB3 } from '../../constants'
+import { WEBSOCKET_ADDRESS_SET, RESET_WEBSOCKET_ADDRESS } from '../../constants'
 import { FSA, Reducer } from '../../interfaces'
 
-const web3:Reducer<Web3|null, FSA> = (state = null, action) => {
+const websocketAddress:Reducer<string|undefined, FSA> = (state = '', action) => {
   const map = {
-    [WEBSOCKET_ADDRESS_SET]: () => action.payload.web3,
+    [WEBSOCKET_ADDRESS_SET]: () => action.payload.websocketAddress,
 
-    [RESET_WEB3]: () => null,
+    [RESET_WEBSOCKET_ADDRESS]: () => '',
   }
 
   // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
-export default web3
+export default websocketAddress

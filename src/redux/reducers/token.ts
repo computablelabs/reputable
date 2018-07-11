@@ -13,6 +13,7 @@ import {
   DEPLOY_TOKEN,
   DEPLOYED_TOKEN,
   APPROVE,
+  APPROVED,
   TRANSFER,
 } from '../../constants'
 import {
@@ -28,16 +29,11 @@ const address:Reducer<string|undefined, FSA> = (address = '', action) => {
   return address
 }
 
-// @ts-ignore:2322
-const contract:Reducer<Erc20|undefined, FSA> = (erc20 = null, action) => {
-  if (action.type === DEPLOYED_TOKEN) return action.payload.contract
-  return erc20
-}
-
+// TODO create a state piece for an in-flight approval to handle APPROVE
 const approvals:Reducer<Approval[]|undefined, FSA> = (state = [], action) => {
   const map = {
     // we will add an applicant to the state tree
-    [APPROVE]: () => ([
+    [APPROVED]: () => ([
       ...state,
       {
         address: action.payload.address,
@@ -74,7 +70,6 @@ const transfers:Reducer<Transfer[]|undefined, FSA> = (state = [], action) => {
 
 export default combineReducers({
   address,
-  contract,
   supply,
   approvals,
   transfers,

@@ -1,7 +1,5 @@
-import Web3 from 'web3'
 import { Challenge } from 'computable/dist/interfaces'
 import {
-  ParsedUrl,
   Participant,
   Token,
   Parameterizer,
@@ -10,7 +8,7 @@ import {
 } from '.'
 
 export default interface State {
-  readonly web3?:Web3;
+  readonly websocketAddress?:string;
   readonly participants?:Participant[];
   readonly token?:Token;
   readonly parameterizer?:Parameterizer;

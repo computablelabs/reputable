@@ -1,16 +1,17 @@
-import Web3 from 'web3'
 import { Action, FSA } from '../../interfaces'
-import { WEBSOCKET_ADDRESS_SET, RESET_WEB3 } from '../../constants'
+import { WEBSOCKET_ADDRESS_SET, RESET_WEBSOCKET_ADDRESS } from '../../constants'
 
 const setWebsocketAddress = (address:string): FSA => (
   {
     type: WEBSOCKET_ADDRESS_SET,
     payload: {
-      web3: new Web3(new Web3.providers.WebsocketProvider(address)),
+      // user can then instantiate web3 on demand via:
+      // new Web3(new Web3.providers.WebsocketProvider(address))
+      websocketAddress: address,
     },
   }
 )
 
-const resetWeb3 = (): Action => ({ type: RESET_WEB3 })
+const resetWebsocketAddress = (): Action => ({ type: RESET_WEBSOCKET_ADDRESS })
 
-export { setWebsocketAddress, resetWeb3 }
+export { setWebsocketAddress, resetWebsocketAddress }
