@@ -19,8 +19,8 @@ export interface Approval {
 
 export interface Transfer {
   to:string; // the address to transfer the funds to
-  from:string; // the owner of the funds being transferred
   amount:Nos; // amount to transfer
+  from:string; // the owner of the funds being transferred
 }
 
 // all the deployed params, the returned address, and any future transactions.

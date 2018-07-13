@@ -24,6 +24,7 @@ export const RESET_TOKEN = 'reset-token'
 
 export const TRANSFER = 'transfer'
 export const TRANSFER_ERROR = 'transfer-error'
+export const TRANSFERRED = 'transferred'
 
 export const APPROVE = 'approve'
 export const APPROVE_ERROR = 'approve-error'
@@ -31,6 +32,7 @@ export const APPROVED = 'approved'
 
 export const WEBSOCKET_ADDRESS_SET = 'websocket-address-set'
 export const RESET_WEBSOCKET_ADDRESS = 'reset-websocket-address'
+
 export enum Contracts {
   TOKEN = 'token',
   PARAMETERIZER = 'parameterizer',
