@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const token = (state) => state.token;
+exports.token = token;
+const address = (state) => state.token && state.token.address;
+exports.address = address;
+const approvals = (state) => state.token && state.token.approvals;
+exports.approvals = approvals;
+const transfers = (state) => state.token && state.token.transfers;
+exports.transfers = transfers;

@@ -1,5 +1,4 @@
 export { default as Reducer } from './reducer'
-export { default as ParsedUrl } from './parsed-url'
 export { default as Participant } from './participant'
 export { default as Parameterizer } from './parameterizer'
 export { default as Voting } from './voting'
