@@ -8,7 +8,6 @@
 
 import { combineReducers } from 'redux'
 import { Nos } from 'computable/dist/types'
-import Erc20 from 'computable/dist/contracts/erc-20'
 import {
   DEPLOY_TOKEN,
   DEPLOYED_TOKEN,

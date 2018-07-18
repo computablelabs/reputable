@@ -30,6 +30,11 @@ export const APPROVE = 'approve'
 export const APPROVE_ERROR = 'approve-error'
 export const APPROVED = 'approved'
 
+export const DEPLOY_VOTING = 'deploy-voting'
+export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
+export const DEPLOYED_VOTING = 'deployed-voting'
+
+
 export const WEBSOCKET_ADDRESS_SET = 'websocket-address-set'
 export const RESET_WEBSOCKET_ADDRESS = 'reset-websocket-address'
 
@@ -48,4 +53,6 @@ export enum Errors {
   NO_ADMIN_FOUND = 'No admin participant can be located. Be sure to register at least one participant',
   NO_WEBSOCKETADDRESS_FOUND = 'No Websocket address can be found. Make sure to set your ws address as it is needed for a web3 provider',
   NO_TOKEN_FOUND = 'No instantiated token contract is in the state tree. Be sure to deploy your token first',
+  NO_DLL_FOUND = 'No address for a deployed DLL contract can be found. Make sure to deploy the DLL contract first',
+  NO_ATTRIBUTESTORE_FOUND = 'No address for a deployed AttributeStore contract can be found. Be sure to deploy the AttributeStore contract first',
 }
