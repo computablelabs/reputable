@@ -9,3 +9,8 @@ export interface Void {
 export interface Selector {
   (state:State): any;
 }
+
+// an object which has an `address` attribute due to a deployment
+export interface Deployed {
+  address:string;
+}

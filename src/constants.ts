@@ -30,6 +30,14 @@ export const APPROVE = 'approve'
 export const APPROVE_ERROR = 'approve-error'
 export const APPROVED = 'approved'
 
+export const DEPLOY_DLL = 'deploy-dll'
+export const DEPLOY_DLL_ERROR = 'deploy-dll-error'
+export const DEPLOYED_DLL = 'deployed-dll'
+
+export const DEPLOY_ATTRIBUTE_STORE = 'deploy-attribute-store'
+export const DEPLOY_ATTRIBUTE_STORE_ERROR = 'deploy-attribute-store-error'
+export const DEPLOYED_ATTRIBUTE_STORE = 'deployed-attribute-store'
+
 export const DEPLOY_VOTING = 'deploy-voting'
 export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
 export const DEPLOYED_VOTING = 'deployed-voting'

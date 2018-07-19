@@ -5,7 +5,7 @@ import {
   Action,
   FSA,
   State,
-  DeployedVoting,
+  Deployed,
   Participant,
 } from '../../../interfaces'
 import {
@@ -17,13 +17,19 @@ import {
 
 /**
  * support actions for the thunk action creator
+ *
+ * Note that we treat the deployment of the DLL and AttributeStore contracts seperate
+ * from deploying the Voting contract
+ *
+ * That does not mean that we can't introduce a bundled action later that deploys
+ * the dependencies (dll, attrStore) first, then the voting...
  */
 
 // NOTE all 3 necessary addresses should be in the state tree by this point: token, dll, attributeStore
 const deployVotingAction = (): Action => ({ type: DEPLOY_VOTING })
 
 const deployedVoting = (address:string): FSA => {
-  const payload:DeployedVoting = { address }
+  const payload:Deployed = { address }
   return { type: DEPLOYED_VOTING, payload }
 }
 

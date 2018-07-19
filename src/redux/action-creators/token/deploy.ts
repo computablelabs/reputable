@@ -7,7 +7,7 @@ import {
   Action,
   FSA,
   State,
-  DeployedToken,
+  Deployed,
   Participant,
 } from '../../../interfaces'
 import {
@@ -36,7 +36,7 @@ const deployTokenAction = (address:string, supply?:Nos): FSA => {
  * Simply dispatch this with the address of said token
  */
 const deployedToken = (address:string): FSA => {
-  const payload:DeployedToken = { address }
+  const payload:Deployed = { address }
   return { type: DEPLOYED_TOKEN, payload }
 }
 
