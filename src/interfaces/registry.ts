@@ -24,7 +24,7 @@ export interface Listing extends RegistryListing {
 }
 
 export interface Registry {
-  // deployed address of the registry contract
+  // deployed address of the registry contract, can be falsy at first
   address?:string;
   applicants:Applicant[];
   challenges:Challenge[];

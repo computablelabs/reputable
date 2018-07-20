@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
 import { Nos } from 'computable/dist/types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import Erc20 from 'computable/dist/contracts/erc-20'
@@ -8,7 +7,7 @@ import {
   Action,
   FSA,
   State,
-  DeployedToken,
+  Deployed,
   Participant,
 } from '../../../interfaces'
 import {
@@ -32,8 +31,12 @@ const deployTokenAction = (address:string, supply?:Nos): FSA => {
   return { type: DEPLOY_TOKEN, payload }
 }
 
+/**
+ * Note this action can be used if the application is using an already deployed token.
+ * Simply dispatch this with the address of said token
+ */
 const deployedToken = (address:string): FSA => {
-  const payload:DeployedToken = { address }
+  const payload:Deployed = { address }
   return { type: DEPLOYED_TOKEN, payload }
 }
 
@@ -41,6 +44,10 @@ const deployTokenError = (err:Error): FSA => (
   { type: DEPLOY_TOKEN_ERROR, payload: err }
 )
 
+/**
+ * For applications which have not yet deployed a token, you can do it from here.
+ * Used in Specs and tutorial apps as well...
+ */
 const deployToken = (address?:string, supply?:Nos): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
