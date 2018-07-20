@@ -2,11 +2,11 @@ import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import deployDll from '../../src/redux/dispatchers/dll'
+import deployAttributeStore from '../../src/redux/dispatchers/attribute-store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 
-describe('deploying a dll contract', () => {
+describe('deploying an attribute store contract', () => {
 
   let server:any,
     provider:any,
@@ -16,14 +16,14 @@ describe('deploying a dll contract', () => {
 
   beforeAll( async () => {
     server = ganache.server({ ws:true })
-    server.listen(8552)
+    server.listen(8558)
     // so that the provider is available to be re-created on demand
-    setWebsocketAddress('ws://localhost:8552')
+    setWebsocketAddress('ws://localhost:8558')
     // in actual use you'll put the ws host in the state tree, but not needed here
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8552'))
+    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8558'))
     accounts = await web3.eth.getAccounts()
 
-    participate('Mrs. Admin Pants', accounts[0])
+    participate('Sir Admin Pants', accounts[0])
   })
 
   afterAll(() => {
@@ -33,15 +33,15 @@ describe('deploying a dll contract', () => {
     resetWebsocketAddress()
   })
 
-  it('does not have a dll address', () => {
+  it('does not have an attr store address', () => {
     const state:State = store.getState()
-    expect(state.dllAddress).toBeFalsy()
+    expect(state.attributeStoreAddress).toBeFalsy()
   })
 
-  it('has a dll address', async () => {
-    const dllAddress = await deployDll(accounts[0]),
-      state:State = store.getState()
-    expect(state.dllAddress).toBeTruthy()
-    expect(state.dllAddress && state.dllAddress.length).toBe(42)
+  it('has an attr store address', async () => {
+    const storeAddress = await deployAttributeStore(accounts[0]),
+     state:State = store.getState()
+    expect(state.attributeStoreAddress).toBeTruthy()
+    expect(state.attributeStoreAddress && state.attributeStoreAddress.length).toBe(42)
   })
 })
