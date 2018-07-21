@@ -38,6 +38,10 @@ export const DEPLOY_ATTRIBUTE_STORE = 'deploy-attribute-store'
 export const DEPLOY_ATTRIBUTE_STORE_ERROR = 'deploy-attribute-store-error'
 export const DEPLOYED_ATTRIBUTE_STORE = 'deployed-attribute-store'
 
+export const DEPLOY_PARAMETERIZER = 'deploy-parameterizer'
+export const DEPLOY_PARAMETERIZER_ERROR = 'deploy-parameterizer-error'
+export const DEPLOYED_PARAMETERIZER = 'deployed-parameterizer'
+
 export const DEPLOY_VOTING = 'deploy-voting'
 export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
 export const DEPLOYED_VOTING = 'deployed-voting'
