@@ -61,10 +61,9 @@ describe('token state', () => {
 
   describe('deployment', () => {
     it('can deploy a token, placing the address in the state tree', async () => {
-      // const tokenSelector = (state:State): Token|undefined => state.token,
         // redux will call this on stae changes, token as arg because of the use of the selector above
-        // deployListener = (token:Token) => { console.log(token) },
-        // unsubscribe:any = subscriber(deployListener, tokenSelector)
+        // const deployListener = (token:Token) => { console.log(token) },
+        // unsubscribe:any = subscriber(deployListener, token)
 
       // we could ref the returned address but we are more interested in the state tree as a user will be
       // using subscriptions to react on store changes...

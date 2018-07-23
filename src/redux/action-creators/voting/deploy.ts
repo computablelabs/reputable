@@ -73,3 +73,7 @@ const deployVoting = (address?:string): any => {
     return votingAddress
   }
 }
+
+export {
+  deployVoting,
+}
