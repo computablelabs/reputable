@@ -14,23 +14,29 @@ import {
   APPROVE,
   APPROVED,
   TRANSFER,
+  RESET_TOKEN,
 } from '../../constants'
 import {
   FSA,
   Reducer,
+  ReductionMap,
   Approval,
   Transfer
 } from '../../interfaces'
 
 const address:Reducer<string|undefined, FSA> = (address = '', action) => {
-  // we won't have an actual address until the VM sends back the TX from deploy
-  if (action.type === DEPLOYED_TOKEN) return action.payload.address
-  return address
+  const map:ReductionMap = {
+    [DEPLOYED_TOKEN]: () => action.payload.address,
+
+    [RESET_TOKEN]: () => '',
+  }
+
+  return map[action.type] ? map[action.type]() : address
 }
 
 // TODO create a state piece for an in-flight approval to handle APPROVE
 const approvals:Reducer<Approval[]|undefined, FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     // we will add an applicant to the state tree
     [APPROVED]: () => ([
       ...state,
@@ -40,19 +46,25 @@ const approvals:Reducer<Approval[]|undefined, FSA> = (state = [], action) => {
         from: action.payload.from,
       }
     ]),
+
+    [RESET_TOKEN]: () => ([]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
 const supply:Reducer<Nos|undefined, FSA> = (supply = 0, action) => {
-  if (action.type === DEPLOY_TOKEN) return action.payload.supply
-  return supply
+  const map:ReductionMap = {
+    [DEPLOY_TOKEN]: () => action.payload.supply,
+
+    [RESET_TOKEN]: () => 0,
+  }
+
+  return map[action.type] ? map[action.type]() : supply
 }
 
 const transfers:Reducer<Transfer[]|undefined, FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     [TRANSFER]: () => ([
       ...state,
       {
@@ -61,9 +73,11 @@ const transfers:Reducer<Transfer[]|undefined, FSA> = (state = [], action) => {
         amount: action.payload.amount,
       }
     ]),
+
+
+    [RESET_TOKEN]: () => ([]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

@@ -53,6 +53,7 @@ describe('token state', () => {
     // tear it all down as the store is a singleton
     resetParticipants()
     resetWebsocketAddress()
+    resetToken()
   })
 
   it('begins with unhydrated token', () => {

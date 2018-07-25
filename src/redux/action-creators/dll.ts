@@ -12,6 +12,7 @@ import {
   DEPLOY_DLL,
   DEPLOY_DLL_ERROR,
   DEPLOYED_DLL,
+  RESET_DLL,
   Errors,
 } from '../../constants'
 
@@ -60,4 +61,6 @@ const deployDll = (address?:string): any => {
   }
 }
 
-export default deployDll
+const resetDll = (): Action => ({ type: RESET_DLL })
+
+export { deployDll, resetDll }

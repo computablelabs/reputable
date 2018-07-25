@@ -12,6 +12,7 @@ import {
   DEPLOY_VOTING,
   DEPLOY_VOTING_ERROR,
   DEPLOYED_VOTING,
+  RESET_VOTING,
   Errors,
 } from '../../../constants'
 
@@ -74,6 +75,9 @@ const deployVoting = (address?:string): any => {
   }
 }
 
+const resetVoting = (): Action => ({ type: RESET_VOTING })
+
 export {
   deployVoting,
+  resetVoting,
 }
