@@ -16,6 +16,7 @@ import {
   DEPLOY_PARAMETERIZER,
   DEPLOY_PARAMETERIZER_ERROR,
   DEPLOYED_PARAMETERIZER,
+  RESET_PARAMETERIZER,
   ParameterizerDefaults,
   Errors,
 } from '../../../constants'
@@ -112,6 +113,9 @@ const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployP
   }
 }
 
+const resetParameterizer = (): Action => ({ type: RESET_PARAMETERIZER })
+
 export {
   deployParameterizer,
+  resetParameterizer,
 }

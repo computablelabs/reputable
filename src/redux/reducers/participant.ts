@@ -2,12 +2,13 @@ import { PARTICIPATE, RESET_PARTICIPANTS } from '../../constants'
 import {
   FSA,
   Reducer,
+  ReductionMap,
   Participant,
 } from '../../interfaces'
 
 
 const participants:Reducer<Participant[], FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     // we will add an applicant to the state tree
     [PARTICIPATE]: () => ([
       ...state,
@@ -21,7 +22,6 @@ const participants:Reducer<Participant[], FSA> = (state = [], action) => {
     [RESET_PARTICIPANTS]: () => ([]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

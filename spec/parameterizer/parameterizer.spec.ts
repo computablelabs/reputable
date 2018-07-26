@@ -7,7 +7,7 @@ import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/disp
 import subscriber from '../../src/redux/subscriber'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
-import { deployParameterizer } from '../../src/redux/dispatchers/parameterizer'
+import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
 import { Parameterizer } from '../../src/interfaces'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
@@ -54,6 +54,7 @@ describe('parameterizer state', () => {
     resetDll()
     resetAttributeStore()
     resetVoting()
+    resetParameterizer()
   })
 
   it('begins with unhydrated parameterizer', () => {
@@ -63,8 +64,8 @@ describe('parameterizer state', () => {
   describe('deployment', () => {
     it('deploys the parameterizer contract, placing address in the state tree', async () => {
       // that the actual ws->redux events are working...
-      const deployListener = (p11r:Parameterizer) => { console.log(p11r) },
-        unsub:any = subscriber(deployListener, parameterizer)
+      // const deployListener = (p11r:Parameterizer) => { console.log(p11r) },
+        // unsub:any = subscriber(deployListener, parameterizer)
 
       await deployParameterizer(accounts[0])
 
