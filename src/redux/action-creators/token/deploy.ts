@@ -3,7 +3,6 @@ import { Nos } from 'computable/dist/types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import Erc20 from 'computable/dist/contracts/erc-20'
 import {
-  Void,
   Action,
   FSA,
   State,

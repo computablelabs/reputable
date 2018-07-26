@@ -1,7 +1,11 @@
 import store from '../store'
-import deploy from '../action-creators/dll'
+import { deployDll as deploy, resetDll as reset } from '../action-creators/dll'
 
 const deployDll = async (address:string): Promise<string> =>
   store.dispatch(deploy(address))
 
-export default deployDll
+const resetDll = (): void => {
+  store.dispatch(reset())
+}
+
+export { deployDll, resetDll }

@@ -2,7 +2,7 @@ import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import deployDll from '../../src/redux/dispatchers/dll'
+import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 
@@ -31,6 +31,7 @@ describe('deploying a dll contract', () => {
     // tear it all down as the store is a singleton
     resetParticipants()
     resetWebsocketAddress()
+    resetDll()
   })
 
   it('does not have a dll address', () => {

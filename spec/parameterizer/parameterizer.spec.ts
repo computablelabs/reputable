@@ -7,12 +7,19 @@ import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/disp
 import subscriber from '../../src/redux/subscriber'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
+import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
+import { Parameterizer } from '../../src/interfaces'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { voting, address as votingAddress } from '../../src/redux/selectors/voting'
-import { State } from '../../src/interfaces'
+import { parameterizer, address as parameterizerAddress } from '../../src/redux/selectors/parameterizer'
+import {
+  State,
+  Token,
+  Voting,
+  Selector,
+} from '../../src/interfaces'
 
-describe('voting state', () => {
+describe('parameterizer state', () => {
   let server:any,
     provider:any,
     web3:Web3,
@@ -21,20 +28,21 @@ describe('voting state', () => {
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
-    server.listen(8556)
+    server.listen(8559)
     // so that the provider is available to be re-created on demand
-    setWebsocketAddress('ws://localhost:8556')
+    setWebsocketAddress('ws://localhost:8559')
     // in actual use you'll put the ws host in the state tree, but not needed here
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8556'))
+    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8559'))
     accounts = await web3.eth.getAccounts()
 
-    participate('Admin, Pants III', accounts[0])
+    participate('team admin', accounts[0])
 
-    // expects a deployed token
+    // p11r will want a token deployed
     await deployToken(accounts[0])
-    // voting deploy demands that dll and attrStore be deployed first
+    // voting deploy demands that dll and attrStore be deployed
     await deployDll(accounts[0])
     await deployAttributeStore(accounts[0])
+    await deployVoting(accounts[0])
   })
 
   afterAll(() => {
@@ -46,21 +54,22 @@ describe('voting state', () => {
     resetDll()
     resetAttributeStore()
     resetVoting()
+    resetParameterizer()
   })
 
-  it('begins with unhydrated voting', () => {
-    expect(votingAddress(store.getState())).toBeFalsy()
+  it('begins with unhydrated parameterizer', () => {
+    expect(parameterizerAddress(store.getState())).toBeFalsy()
   })
 
   describe('deployment', () => {
-    it('deploys the voting contract, placing address in the state tree', async () => {
+    it('deploys the parameterizer contract, placing address in the state tree', async () => {
       // that the actual ws->redux events are working...
-      // const deployListener = (voting:Voting) => { console.log(voting) },
-        // unsub:any = subscriber(deployListener, voting)
+      // const deployListener = (p11r:Parameterizer) => { console.log(p11r) },
+        // unsub:any = subscriber(deployListener, parameterizer)
 
-      await deployVoting(accounts[0])
+      await deployParameterizer(accounts[0])
 
-      const addr = votingAddress(store.getState())
+      const addr = parameterizerAddress(store.getState())
 
       expect(addr).toBeTruthy()
       // hashed addresses are always 42 chars

@@ -12,13 +12,14 @@ import { Nos } from 'computable/dist/types'
 import {
   FSA,
   Reducer,
+  ReductionMap,
   Applicant,
   Challenge,
   Listing,
 } from '../../interfaces'
 
 const applicants:Reducer<Applicant[]|undefined, FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     // we will add an applicant to the state tree
     [APPLY]: () => ([
       ...state,
@@ -30,13 +31,12 @@ const applicants:Reducer<Applicant[]|undefined, FSA> = (state = [], action) => {
     ]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
 // TODO this
 const challenges:Reducer<Challenge[]|undefined, FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     [CHALLENGE]: () => ([
       ...state,
       {
@@ -45,12 +45,11 @@ const challenges:Reducer<Challenge[]|undefined, FSA> = (state = [], action) => {
     ]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 
 const listings:Reducer<Listing[]|undefined, FSA> = (state = [], action) => {
-  const map = {
+  const map:ReductionMap = {
     // LIST action invoked when the ETHVM returns us the listing
     [LIST]: () => ([
       ...state,
@@ -65,7 +64,6 @@ const listings:Reducer<Listing[]|undefined, FSA> = (state = [], action) => {
     ]),
   }
 
-  // @ts-ignore:7017
   return map[action.type] ? map[action.type]() : state
 }
 

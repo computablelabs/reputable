@@ -12,6 +12,7 @@ import {
   DEPLOY_ATTRIBUTE_STORE,
   DEPLOY_ATTRIBUTE_STORE_ERROR,
   DEPLOYED_ATTRIBUTE_STORE,
+  RESET_ATTRIBUTE_STORE,
   Errors,
 } from '../../constants'
 
@@ -60,4 +61,6 @@ const deployAttributeStore = (address?:string): any => {
   }
 }
 
-export default deployAttributeStore
+const resetAttributeStore = (): Action => ({ type: RESET_ATTRIBUTE_STORE })
+
+export { deployAttributeStore, resetAttributeStore }

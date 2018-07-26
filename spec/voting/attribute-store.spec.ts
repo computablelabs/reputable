@@ -2,7 +2,7 @@ import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import deployAttributeStore from '../../src/redux/dispatchers/attribute-store'
+import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 
@@ -31,6 +31,7 @@ describe('deploying an attribute store contract', () => {
     // tear it all down as the store is a singleton
     resetParticipants()
     resetWebsocketAddress()
+    resetAttributeStore()
   })
 
   it('does not have an attr store address', () => {

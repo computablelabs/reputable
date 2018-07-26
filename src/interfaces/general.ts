@@ -14,3 +14,12 @@ export interface Selector {
 export interface Deployed {
   address:string;
 }
+
+// the functions on ReductionMaps take no args and return something
+interface mapFn {
+  (): any;
+}
+// the map objects used in reducers need a call signature
+export interface ReductionMap {
+  [key:string]: mapFn;
+}

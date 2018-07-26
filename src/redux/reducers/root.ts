@@ -5,6 +5,7 @@ import token from './token'
 import dllAddress from './dll'
 import attributeStoreAddress from './attribute-store'
 import voting from './voting'
+import parameterizer from './parameterizer'
 import registry from './registry'
 
 // TODO it appears that upcoming versions of redux typings will make the cast to 'any' not needed...
@@ -15,5 +16,6 @@ export default combineReducers({
   dllAddress,
   attributeStoreAddress,
   voting,
+  parameterizer,
   registry,
 } as any)
