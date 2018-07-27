@@ -11,10 +11,10 @@ import { Nos } from 'computable/dist/types'
 import {
   DEPLOY_TOKEN,
   DEPLOYED_TOKEN,
+  RESET_TOKEN,
   APPROVE,
   APPROVED,
   TRANSFER,
-  RESET_TOKEN,
 } from '../../constants'
 import {
   FSA,

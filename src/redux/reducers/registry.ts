@@ -7,8 +7,15 @@
  */
 
 import { combineReducers } from 'redux'
-import { APPLY, LIST, CHALLENGE } from '../../constants'
 import { Nos } from 'computable/dist/types'
+import {
+  DEPLOY_REGISTRY,
+  DEPLOYED_REGISTRY,
+  RESET_REGISTRY,
+  APPLY,
+  LIST,
+  CHALLENGE
+} from '../../constants'
 import {
   FSA,
   Reducer,
@@ -17,6 +24,16 @@ import {
   Challenge,
   Listing,
 } from '../../interfaces'
+
+const address:Reducer<string|undefined, FSA> = (address = '', action) => {
+  const map:ReductionMap = {
+    [DEPLOYED_REGISTRY]: () => action.payload.address,
+
+    [RESET_REGISTRY]: () => '',
+  }
+
+  return map[action.type] ? map[action.type]() : address
+}
 
 const applicants:Reducer<Applicant[]|undefined, FSA> = (state = [], action) => {
   const map:ReductionMap = {
@@ -29,6 +46,8 @@ const applicants:Reducer<Applicant[]|undefined, FSA> = (state = [], action) => {
         data: action.payload.data,
       }
     ]),
+
+    [RESET_REGISTRY]: () => ([]),
   }
 
   return map[action.type] ? map[action.type]() : state
@@ -43,6 +62,8 @@ const challenges:Reducer<Challenge[]|undefined, FSA> = (state = [], action) => {
 
       }
     ]),
+
+    [RESET_REGISTRY]: () => ([]),
   }
 
   return map[action.type] ? map[action.type]() : state
@@ -62,12 +83,15 @@ const listings:Reducer<Listing[]|undefined, FSA> = (state = [], action) => {
         // NOTE: there won't be a challengeID on the initial LIST action
       }
     ]),
+
+    [RESET_REGISTRY]: () => ([]),
   }
 
   return map[action.type] ? map[action.type]() : state
 }
 
 export default combineReducers({
+  address,
   applicants,
   challenges,
   listings,
