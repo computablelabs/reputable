@@ -50,6 +50,11 @@ export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
 export const DEPLOYED_VOTING = 'deployed-voting'
 export const RESET_VOTING = 'reset-voting'
 
+export const DEPLOY_REGISTRY= 'deploy-registry'
+export const DEPLOY_REGISTRY_ERROR = 'deploy-registry-error'
+export const DEPLOYED_REGISTRY = 'deployed-registry'
+export const RESET_REGISTRY= 'reset-registry'
+
 export const WEBSOCKET_ADDRESS_SET = 'websocket-address-set'
 export const RESET_WEBSOCKET_ADDRESS = 'reset-websocket-address'
 
