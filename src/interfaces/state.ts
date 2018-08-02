@@ -7,7 +7,7 @@ import {
   Registry,
 } from '.'
 
-export default interface State {
+interface State {
   readonly websocketAddress?:string;
   readonly participants?:Participant[];
   readonly token?:Token;
@@ -17,3 +17,6 @@ export default interface State {
   readonly dllAddress?:string;
   readonly attributeStoreAddress?:string;
 }
+
+export default State
+

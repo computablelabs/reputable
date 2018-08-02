@@ -1,3 +1,6 @@
-export default interface Reducer<T, U> {
+interface Reducer<T, U> {
   (t: T, u: U): T;
 }
+
+export default Reducer
+

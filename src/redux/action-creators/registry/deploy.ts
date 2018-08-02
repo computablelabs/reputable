@@ -4,6 +4,7 @@ import Registry from 'computable/dist/contracts/registry'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
 import { address as getParameterizerAddress } from '../../selectors/parameterizer'
+import { getParticipants } from '../../selectors'
 import {
   Action,
   FSA,
@@ -58,7 +59,8 @@ const deployRegistry = (name:string, address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
       websocketAddress = state.websocketAddress,
-      admin:Participant|undefined = state.participants && state.participants[0],
+      participants = getParticipants(state),
+      admin:Participant|undefined = participants && participants[0],
       tokenAddress = getTokenAddress(state),
       votingAddress = getVotingAddress(state),
       parameterizerAddress = getParameterizerAddress(state)

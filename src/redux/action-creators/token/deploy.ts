@@ -17,6 +17,7 @@ import {
   TokenDefaults,
   Errors,
 } from '../../../constants'
+import { getParticipants } from '../../selectors'
 
 /**
  * support actions for the thunk deployToken action itself
@@ -51,7 +52,8 @@ const deployToken = (address?:string, supply?:Nos): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
       websocketAddress = state.websocketAddress,
-      admin:Participant|undefined = state.participants && state.participants[0]
+      participants = getParticipants(state),
+      admin:Participant|undefined = participants && participants[0]
 
     let tokenAddress = ''
 

@@ -1,28 +1,38 @@
 import { PARTICIPATE, RESET_PARTICIPANTS } from '../../constants'
 import {
   FSA,
+  State,
+  StateItem,
   Reducer,
-  ReductionMap,
   Participant,
 } from '../../interfaces'
+import { getParticipants } from '../selectors'
+import createReducer from './createReducer'
 
-
-const participants:Reducer<Participant[], FSA> = (state = [], action) => {
-  const map:ReductionMap = {
-    // we will add an applicant to the state tree
-    [PARTICIPATE]: () => ([
-      ...state,
-      {
-        name: action.payload.name,
-        address: action.payload.address,
-        owner: state.length === 0 ? true : false,
-      }
-    ]),
-
-    [RESET_PARTICIPANTS]: () => ([]),
-  }
-
-  return map[action.type] ? map[action.type]() : state
+const initialState: StateItem = {
+  loading: false,
+  request: undefined,
+  data: [],
+  error: undefined,
 }
 
-export default participants
+const handlers = {
+  [PARTICIPATE]: (state: StateItem, { payload }: FSA) => {
+    payload.owner = !Object.keys(state.data).length
+
+    return {
+      ...state,
+      loading: false,
+      data: {
+        ...state.data,
+        [payload.address]: payload,
+      },
+    }
+  },
+  [RESET_PARTICIPANTS]: (state: State, { payload }: FSA) => ({
+    ...initialState,
+  }),
+}
+
+export default createReducer(handlers, initialState)
+

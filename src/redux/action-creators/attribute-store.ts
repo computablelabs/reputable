@@ -15,6 +15,7 @@ import {
   RESET_ATTRIBUTE_STORE,
   Errors,
 } from '../../constants'
+import { getParticipants } from '../selectors'
 
 /**
  * It is debateable how useful the full range of actions are for deploying the two
@@ -35,7 +36,8 @@ const deployStoreError = (err:Error): FSA => ({ type: DEPLOY_ATTRIBUTE_STORE_ERR
 const deployAttributeStore = (address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
-      admin:Participant|undefined = state.participants && state.participants[0],
+      participants = getParticipants(state),
+      admin:Participant|undefined = participants && participants[0],
       websocketAddress = state.websocketAddress
 
     let storeAddress:string = '', store:Contract

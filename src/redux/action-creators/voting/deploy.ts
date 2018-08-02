@@ -1,6 +1,7 @@
 import Web3 from 'web3'
 import Voting from 'computable/dist/contracts/plcr-voting'
 import { address as getTokenAddress } from '../../selectors/token'
+import { getParticipants } from '../../selectors'
 import {
   Action,
   FSA,
@@ -40,7 +41,8 @@ const deployVoting = (address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
       // TODO 'admin' selector maybe...
-      admin:Participant|undefined = state.participants && state.participants[0],
+      participants = getParticipants(state),
+      admin:Participant|undefined = participants && participants[0],
       websocketAddress = state.websocketAddress,
       tokenAddress = getTokenAddress(state),
       dllAddress = state.dllAddress,

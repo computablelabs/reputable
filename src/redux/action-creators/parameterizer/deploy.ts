@@ -4,6 +4,7 @@ import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import Parameterizer from 'computable/dist/contracts/parameterizer'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
+import { getParticipants } from '../../selectors'
 import {
   Void,
   Action,
@@ -78,7 +79,8 @@ const deployParameterizerError = (err:Error): FSA => (
 const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployParams>): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
-      admin:Participant|undefined = state.participants && state.participants[0],
+      participants = getParticipants(state),
+      admin:Participant|undefined = participants && participants[0],
       websocketAddress = state.websocketAddress,
       tokenAddress = getTokenAddress(state),
       votingAddress = getVotingAddress(state)
