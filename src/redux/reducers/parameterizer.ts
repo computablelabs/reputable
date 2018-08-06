@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { DEPLOY_PARAMETERIZER, DEPLOYED_PARAMETERIZER, RESET_PARAMETERIZER } from '../../constants'
+import { DEPLOYED_PARAMETERIZER, RESET_PARAMETERIZER } from '../../constants'
 import { FSA, Reducer } from '../../interfaces'
 
 const address:Reducer<string|undefined, FSA> = (address = '', action) => {

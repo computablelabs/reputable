@@ -9,9 +9,7 @@ import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/disp
 describe('deploying a dll contract', () => {
 
   let server:any,
-    provider:any,
     web3:Web3,
-    state:State,
     accounts:string[]
 
   beforeAll( async () => {
@@ -40,8 +38,9 @@ describe('deploying a dll contract', () => {
   })
 
   it('has a dll address', async () => {
-    const dllAddress = await deployDll(accounts[0]),
-      state:State = store.getState()
+    await deployDll(accounts[0])
+    const state:State = store.getState()
+
     expect(state.dllAddress).toBeTruthy()
     expect(state.dllAddress && state.dllAddress.length).toBe(42)
   })

@@ -1,20 +1,21 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../constants");
-const participants = (state = [], action) => {
-    const map = {
-        // we will add an applicant to the state tree
-        [constants_1.PARTICIPATE]: () => ([
-            ...state,
-            {
-                name: action.payload.name,
-                address: action.payload.address,
-                owner: state.length === 0 ? true : false,
-            }
-        ]),
-        [constants_1.RESET_PARTICIPANTS]: () => ([]),
-    };
-    // @ts-ignore:7017
-    return map[action.type] ? map[action.type]() : state;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.default = participants;
+Object.defineProperty(exports, "__esModule", { value: true });
+const participant_1 = require("../action-creators/participant");
+const createReducer_1 = __importDefault(require("./createReducer"));
+const initialState = {
+    loading: false,
+    request: {},
+    data: {},
+    error: undefined,
+};
+const handlers = {
+    [participant_1.PARTICIPANTS_OK]: (state, { payload }) => {
+        payload.owner = !Object.keys(state.data).length;
+        return Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { [payload.address]: payload }) });
+    },
+    [participant_1.PARTICIPANTS_RESET]: (state, { payload }) => (Object.assign({}, initialState)),
+};
+exports.default = createReducer_1.default(handlers, initialState);

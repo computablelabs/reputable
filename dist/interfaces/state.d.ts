@@ -1,7 +1,7 @@
-import { Participant, Token, Parameterizer, Voting, Registry } from '.';
-export default interface State {
+import { StateItem, Participant, Token, Parameterizer, Voting, Registry } from '.';
+interface State {
     readonly websocketAddress?: string;
-    readonly participants?: Participant[];
+    readonly participants?: StateItem<Participant>;
     readonly token?: Token;
     readonly parameterizer?: Parameterizer;
     readonly voting?: Voting;
@@ -9,3 +9,4 @@ export default interface State {
     readonly dllAddress?: string;
     readonly attributeStoreAddress?: string;
 }
+export default State;

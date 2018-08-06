@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { DEPLOY_VOTING, DEPLOYED_VOTING, RESET_VOTING } from '../../constants'
+import { DEPLOYED_VOTING, RESET_VOTING } from '../../constants'
 import { FSA, Reducer } from '../../interfaces'
 
 const address:Reducer<string|undefined, FSA> = (address = '', action) => {

@@ -1,5 +1,5 @@
-export default interface Participant {
+import { Deployed } from './general';
+export default interface Participant extends Deployed {
     name: string;
-    address: string;
     owner?: boolean;
 }

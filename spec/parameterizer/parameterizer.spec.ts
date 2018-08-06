@@ -1,29 +1,18 @@
 import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import subscriber from '../../src/redux/subscriber'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
-import { Parameterizer } from '../../src/interfaces'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { parameterizer, address as parameterizerAddress } from '../../src/redux/selectors/parameterizer'
-import {
-  State,
-  Token,
-  Voting,
-  Selector,
-} from '../../src/interfaces'
+import { address as parameterizerAddress } from '../../src/redux/selectors/parameterizer'
 
 describe('parameterizer state', () => {
   let server:any,
-    provider:any,
     web3:Web3,
-    state:State,
     accounts:string[]
 
   beforeAll(async () => {
@@ -77,3 +66,4 @@ describe('parameterizer state', () => {
     })
   })
 })
+

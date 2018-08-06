@@ -1,4 +1,4 @@
-import { Action, State, StateItem } from '../../interfaces'
+import { Action, StateItem } from '../../interfaces'
 
 interface Handlers {
   [PARTICIPATE: string]: Function,

@@ -1,4 +1,4 @@
-import { DEPLOY_DLL, DEPLOYED_DLL, RESET_DLL } from '../../constants'
+import { DEPLOYED_DLL, RESET_DLL } from '../../constants'
 import { FSA, Reducer } from '../../interfaces'
 
 const dllAddress:Reducer<string|undefined, FSA> = (address = '', action) => {

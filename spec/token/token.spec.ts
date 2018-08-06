@@ -2,10 +2,8 @@ import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
 import { TransactionReceipt } from 'web3/types.d'
 import store from '../../src/redux/store'
-import { DEPLOY_TOKEN, DEPLOYED_TOKEN } from '../../src/constants'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import subscriber from '../../src/redux/subscriber'
 import { maybeParseInt } from 'computable/dist/helpers'
 import Erc20 from 'computable/dist/contracts/erc-20'
 import {
@@ -14,16 +12,8 @@ import {
   approve,
   transfer,
 } from '../../src/redux/dispatchers/token'
+import { State } from '../../src/interfaces'
 import {
-  State,
-  Token,
-  Selector,
-  Void,
-  Approval,
-  Transfer
-} from '../../src/interfaces'
-import {
-  token,
   address,
   approvals,
   transfers,
@@ -31,7 +21,6 @@ import {
 
 describe('token state', () => {
   let server:any,
-    provider:any,
     web3:Web3,
     state:State,
     accounts:string[]
@@ -68,8 +57,8 @@ describe('token state', () => {
 
       // we could ref the returned address but we are more interested in the state tree as a user will be
       // using subscriptions to react on store changes...
-      const tokenAddress = await deployToken(accounts[0], 1000000),
-        addr = address(store.getState())
+      await deployToken(accounts[0], 1000000)
+      const addr = address(store.getState())
 
       expect(addr).toBeTruthy()
       // hashed addresses are always 42 chars

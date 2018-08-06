@@ -1,7 +1,6 @@
 import { Nos } from 'computable/dist/types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import { Deployed } from './general'
-import Erc20 from 'computable/dist/contracts/erc-20'
 
 /**
  * Represent the data shape we maintain locally for the deployed token that this system uses

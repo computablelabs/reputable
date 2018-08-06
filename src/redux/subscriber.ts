@@ -5,7 +5,7 @@
  * the current state is different from the last seen)
  */
 
-import { State, Void, Selector } from '../interfaces'
+import { Void, Selector } from '../interfaces'
 import store from './store'
 
 class BoundHandler {

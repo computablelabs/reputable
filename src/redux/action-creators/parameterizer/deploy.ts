@@ -1,12 +1,10 @@
 import Web3 from 'web3'
-import { Nos } from 'computable/dist/types'
 import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import Parameterizer from 'computable/dist/contracts/parameterizer'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
 import { getParticipants } from '../../selectors'
 import {
-  Void,
   Action,
   FSA,
   State,

@@ -9,6 +9,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const redux_1 = require("redux");
 const constants_1 = require("../../constants");
+const address = (address = '', action) => {
+    const map = {
+        [constants_1.DEPLOYED_REGISTRY]: () => action.payload.address,
+        [constants_1.RESET_REGISTRY]: () => '',
+    };
+    return map[action.type] ? map[action.type]() : address;
+};
 const applicants = (state = [], action) => {
     const map = {
         // we will add an applicant to the state tree
@@ -20,8 +27,8 @@ const applicants = (state = [], action) => {
                 data: action.payload.data,
             }
         ]),
+        [constants_1.RESET_REGISTRY]: () => ([]),
     };
-    // @ts-ignore:7017
     return map[action.type] ? map[action.type]() : state;
 };
 // TODO this
@@ -31,8 +38,8 @@ const challenges = (state = [], action) => {
             ...state,
             {}
         ]),
+        [constants_1.RESET_REGISTRY]: () => ([]),
     };
-    // @ts-ignore:7017
     return map[action.type] ? map[action.type]() : state;
 };
 const listings = (state = [], action) => {
@@ -48,11 +55,12 @@ const listings = (state = [], action) => {
                 unstakedDeposit: action.payload.unstakedDeposit,
             }
         ]),
+        [constants_1.RESET_REGISTRY]: () => ([]),
     };
-    // @ts-ignore:7017
     return map[action.type] ? map[action.type]() : state;
 };
 exports.default = redux_1.combineReducers({
+    address,
     applicants,
     challenges,
     listings,

@@ -1,22 +1,17 @@
 import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import subscriber from '../../src/redux/subscriber'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { voting, address as votingAddress } from '../../src/redux/selectors/voting'
-import { State } from '../../src/interfaces'
+import { address as votingAddress } from '../../src/redux/selectors/voting'
 
 describe('voting state', () => {
   let server:any,
-    provider:any,
     web3:Web3,
-    state:State,
     accounts:string[]
 
   beforeAll(async () => {

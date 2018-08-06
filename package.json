@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jasmine-ts ./spec/**/*.spec.ts",
-    "build": "./node_modules/typescript/bin/tsc",
+    "build": "npm run build:clean && ./node_modules/typescript/bin/tsc",
+    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/interfaces && rm -rf ./dist/redux",
     "build:dry": "./node_modules/typescript/bin/tsc -noEmit",
     "test:init": "jasmine-ts init"
   },
@@ -26,7 +27,7 @@
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
     "jasmine-ts": "^0.2.1",
-    "typescript": "^2.9.2"
+    "typescript": "^3.0.1"
   },
   "dependencies": {
     "computable": "github:computablelabs/computable.js",

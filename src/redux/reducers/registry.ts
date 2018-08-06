@@ -7,9 +7,7 @@
  */
 
 import { combineReducers } from 'redux'
-import { Nos } from 'computable/dist/types'
 import {
-  DEPLOY_REGISTRY,
   DEPLOYED_REGISTRY,
   RESET_REGISTRY,
   APPLY,

@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const web3_1 = __importDefault(require("web3"));
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const constants_1 = require("../../../constants");
+const selectors_1 = require("../../selectors");
 /**
  * support actions for the thunk deployToken action itself
  */
@@ -24,14 +25,22 @@ const deployTokenAction = (address, supply) => {
     };
     return { type: constants_1.DEPLOY_TOKEN, payload };
 };
+/**
+ * Note this action can be used if the application is using an already deployed token.
+ * Simply dispatch this with the address of said token
+ */
 const deployedToken = (address) => {
     const payload = { address };
     return { type: constants_1.DEPLOYED_TOKEN, payload };
 };
 const deployTokenError = (err) => ({ type: constants_1.DEPLOY_TOKEN_ERROR, payload: err });
+/**
+ * For applications which have not yet deployed a token, you can do it from here.
+ * Used in Specs and tutorial apps as well...
+ */
 const deployToken = (address, supply) => {
     return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), websocketAddress = state.websocketAddress, admin = state.participants && state.participants[0];
+        const state = getState(), websocketAddress = state.websocketAddress, participants = selectors_1.getParticipants(state), admin = participants && participants[0];
         let tokenAddress = '';
         if (!websocketAddress)
             dispatch(deployTokenError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));

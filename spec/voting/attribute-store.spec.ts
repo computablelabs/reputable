@@ -9,9 +9,7 @@ import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/disp
 describe('deploying an attribute store contract', () => {
 
   let server:any,
-    provider:any,
     web3:Web3,
-    state:State,
     accounts:string[]
 
   beforeAll( async () => {
@@ -40,8 +38,9 @@ describe('deploying an attribute store contract', () => {
   })
 
   it('has an attr store address', async () => {
-    const storeAddress = await deployAttributeStore(accounts[0]),
-     state:State = store.getState()
+    await deployAttributeStore(accounts[0])
+    const state:State = store.getState()
+
     expect(state.attributeStoreAddress).toBeTruthy()
     expect(state.attributeStoreAddress && state.attributeStoreAddress.length).toBe(42)
   })

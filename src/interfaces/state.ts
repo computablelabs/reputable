@@ -1,4 +1,3 @@
-import { Challenge } from 'computable/dist/interfaces'
 import {
   StateItem,
   Participant,

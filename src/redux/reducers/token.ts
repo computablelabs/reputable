@@ -12,7 +12,6 @@ import {
   DEPLOY_TOKEN,
   DEPLOYED_TOKEN,
   RESET_TOKEN,
-  APPROVE,
   APPROVED,
   TRANSFER,
 } from '../../constants'

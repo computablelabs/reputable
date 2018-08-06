@@ -1,5 +1,3 @@
-import { State } from '../../../interfaces';
-
 const getList = ({
   state,
   model,

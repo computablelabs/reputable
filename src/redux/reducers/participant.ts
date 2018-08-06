@@ -2,7 +2,6 @@ import {
   FSA,
   State,
   StateItem,
-  Reducer,
   Participant,
 } from '../../interfaces'
 import {
