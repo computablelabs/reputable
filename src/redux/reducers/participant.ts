@@ -1,4 +1,3 @@
-import { PARTICIPATE, RESET_PARTICIPANTS } from '../../constants'
 import {
   FSA,
   State,
@@ -6,18 +5,21 @@ import {
   Reducer,
   Participant,
 } from '../../interfaces'
-import { getParticipants } from '../selectors'
+import {
+  PARTICIPANTS_OK,
+  PARTICIPANTS_RESET,
+} from '../action-creators/participant'
 import createReducer from './createReducer'
 
-const initialState: StateItem = {
+const initialState: StateItem<Participant> = {
   loading: false,
-  request: undefined,
-  data: [],
+  request: {},
+  data: {},
   error: undefined,
 }
 
 const handlers = {
-  [PARTICIPATE]: (state: StateItem, { payload }: FSA) => {
+  [PARTICIPANTS_OK]: (state: StateItem<Participant>, { payload }: FSA) => {
     payload.owner = !Object.keys(state.data).length
 
     return {
@@ -29,7 +31,7 @@ const handlers = {
       },
     }
   },
-  [RESET_PARTICIPANTS]: (state: State, { payload }: FSA) => ({
+  [PARTICIPANTS_RESET]: (state: State, { payload }: FSA) => ({
     ...initialState,
   }),
 }

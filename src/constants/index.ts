@@ -1,7 +1,3 @@
-export const PARTICIPATE = 'participate'
-export const PARTICIPATE_ERROR = 'participate-error'
-export const RESET_PARTICIPANTS = 'reset-participants'
-
 export const APPLY = 'apply'
 export const APPLY_ERROR = 'apply-error'
 

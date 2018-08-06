@@ -1,8 +1,6 @@
 import store from '../../src/redux/store'
-import { PARTICIPATE } from '../../src/constants'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { State } from '../../src/interfaces'
-
 import { getParticipants } from '../../src/redux/selectors'
 
 describe('Participants state', () => {
@@ -53,5 +51,5 @@ describe('Participants state', () => {
     expect(notAdmin && notAdmin.name).toBe('team awesomer')
     expect(notAdmin && notAdmin.owner).toBe(false)
   })
-
 })
+
