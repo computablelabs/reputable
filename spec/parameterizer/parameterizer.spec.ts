@@ -58,7 +58,8 @@ describe('parameterizer state', () => {
 
       await deployParameterizer(accounts[0])
 
-      const addr = parameterizerAddress(store.getState())
+      const state = store.getState()
+      const addr = parameterizerAddress(state)
 
       expect(addr).toBeTruthy()
       // hashed addresses are always 42 chars

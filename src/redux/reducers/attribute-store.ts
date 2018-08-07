@@ -1,10 +1,42 @@
-import { DEPLOYED_ATTRIBUTE_STORE, RESET_ATTRIBUTE_STORE } from '../../constants'
-import { FSA, Reducer } from '../../interfaces'
+import { FSA, StateItem } from '../../interfaces'
+import {
+  ATTRIBUTE_STORE_REQUEST,
+  ATTRIBUTE_STORE_OK,
+  ATTRIBUTE_STORE_ERROR,
+  ATTRIBUTE_STORE_RESET,
+} from '../action-creators/attribute-store'
+import createReducer from './createReducer'
 
-const attributeStoreAddress:Reducer<string|undefined, FSA> = (address = '', action) => {
-  if (action.type === DEPLOYED_ATTRIBUTE_STORE) return action.payload.address
-  if (action.type === RESET_ATTRIBUTE_STORE) return ''
-  return address
+const initialState: StateItem<string> = {
+  loading: false,
+  request: {},
+  data: {},
+  error: undefined,
 }
 
-export default attributeStoreAddress
+const handlers = {
+  [ATTRIBUTE_STORE_REQUEST]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [ATTRIBUTE_STORE_OK]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      [payload.address]: payload.address,
+    },
+  }),
+  [ATTRIBUTE_STORE_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload,
+  }),
+  [ATTRIBUTE_STORE_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...initialState,
+  }),
+}
+
+export default createReducer(handlers, initialState)
+
+

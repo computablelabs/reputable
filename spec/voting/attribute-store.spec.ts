@@ -5,6 +5,7 @@ import { State } from '../../src/interfaces'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { getAttributeStoreAddress } from '../../src/redux/selectors'
 
 describe('deploying an attribute store contract', () => {
 
@@ -33,15 +34,18 @@ describe('deploying an attribute store contract', () => {
   })
 
   it('does not have an attr store address', () => {
-    const state:State = store.getState()
-    expect(state.attributeStoreAddress).toBeFalsy()
+    const state: State = store.getState()
+    const attributeStoreAddress = getAttributeStoreAddress(state)
+
+    expect(attributeStoreAddress).toBeFalsy()
   })
 
   it('has an attr store address', async () => {
     await deployAttributeStore(accounts[0])
-    const state:State = store.getState()
+    const state: State = store.getState()
+    const attributeStoreAddress = getAttributeStoreAddress(state)
 
-    expect(state.attributeStoreAddress).toBeTruthy()
-    expect(state.attributeStoreAddress && state.attributeStoreAddress.length).toBe(42)
+    expect(attributeStoreAddress).toBeTruthy()
+    expect(attributeStoreAddress && attributeStoreAddress.length).toBe(42)
   })
 })

@@ -26,11 +26,6 @@ export const APPROVE = 'approve'
 export const APPROVE_ERROR = 'approve-error'
 export const APPROVED = 'approved'
 
-export const DEPLOY_ATTRIBUTE_STORE = 'deploy-attribute-store'
-export const DEPLOY_ATTRIBUTE_STORE_ERROR = 'deploy-attribute-store-error'
-export const DEPLOYED_ATTRIBUTE_STORE = 'deployed-attribute-store'
-export const RESET_ATTRIBUTE_STORE = 'reset-attribute-store'
-
 export const DEPLOY_PARAMETERIZER = 'deploy-parameterizer'
 export const DEPLOY_PARAMETERIZER_ERROR = 'deploy-parameterizer-error'
 export const DEPLOYED_PARAMETERIZER = 'deployed-parameterizer'

@@ -8,14 +8,37 @@ import {
   Deployed,
   Participant,
 } from '../../interfaces'
-import {
-  DEPLOY_ATTRIBUTE_STORE,
-  DEPLOY_ATTRIBUTE_STORE_ERROR,
-  DEPLOYED_ATTRIBUTE_STORE,
-  RESET_ATTRIBUTE_STORE,
-  Errors,
-} from '../../constants'
+import { Errors } from '../../constants'
 import { getParticipants } from '../selectors'
+
+// Action Types
+export const ATTRIBUTE_STORE_REQUEST = 'ATTRIBUTE_STORE_REQUEST'
+export const ATTRIBUTE_STORE_OK = 'ATTRIBUTE_STORE_OK'
+export const ATTRIBUTE_STORE_ERROR = 'ATTRIBUTE_STORE_ERROR'
+export const ATTRIBUTE_STORE_RESET = 'ATTRIBUTE_STORE_RESET'
+
+// Actions
+const attributeStoreRequest = (value: Deployed): FSA => ({
+  type: ATTRIBUTE_STORE_REQUEST,
+  payload: value,
+})
+
+const attributeStoreOk = (value: Deployed): FSA => ({
+  type: ATTRIBUTE_STORE_OK,
+  payload: value,
+})
+
+const attributeStoreError = (value: Error): FSA => ({
+  type: ATTRIBUTE_STORE_ERROR,
+  payload: value,
+})
+
+const attributeStoreReset = (): FSA => ({
+  type: ATTRIBUTE_STORE_RESET,
+  payload: {},
+})
+
+// Action Creators
 
 /**
  * It is debateable how useful the full range of actions are for deploying the two
@@ -24,45 +47,46 @@ import { getParticipants } from '../selectors'
  * Note that there is no Higher Order Contract for them, but a helper for each
  */
 
-const deployStoreAction = (): Action => ({ type: DEPLOY_ATTRIBUTE_STORE })
+const deployAttributeStore = (address: string = ''): any =>
+  async (dispatch: Function, getState: Function): Promise<string> => {
+    const state: State = getState()
+    const participants = getParticipants(state)
+    const admin: Participant | undefined = participants && participants[0]
+    const { websocketAddress } = state
 
-const deployedStore = (address:string): FSA => {
-  const payload:Deployed = { address }
-  return { type: DEPLOYED_ATTRIBUTE_STORE, payload }
-}
+    dispatch(attributeStoreRequest({ address }))
 
-const deployStoreError = (err:Error): FSA => ({ type: DEPLOY_ATTRIBUTE_STORE_ERROR, payload: err })
-
-const deployAttributeStore = (address?:string): any => {
-  return async (dispatch:any, getState:any): Promise<string> => {
-    const state:State = getState(),
-      participants = getParticipants(state),
-      admin:Participant|undefined = participants && participants[0],
-      websocketAddress = state.websocketAddress
-
-    let storeAddress:string = '', store:Contract
-
-    if (!websocketAddress) dispatch(deployStoreError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!admin) dispatch(deployStoreError(new Error(Errors.NO_ADMIN_FOUND)))
-    else {
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(websocketAddress))
-      dispatch(deployStoreAction())
-
-      try {
-        // note that the computable deploy helpers return the actual contract
-        store = await deploy(web3, address || admin.address)
-        // any raw web3.eth.Contract will have its address @ contract.options.address
-        storeAddress = store.options.address
-        dispatch(deployedStore(storeAddress))
-      } catch(err) {
-        dispatch(deployStoreError(err))
-      }
+    if (!websocketAddress) {
+      const error = new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      dispatch(attributeStoreError(error))
+      return ''
     }
 
-    return storeAddress
-  }
-}
+    if (!admin) {
+      const error = new Error(Errors.NO_ADMIN_FOUND)
+      dispatch(attributeStoreError(error))
+      return ''
+    }
 
-const resetAttributeStore = (): Action => ({ type: RESET_ATTRIBUTE_STORE })
+    const web3Provider = new Web3.providers.WebsocketProvider(websocketAddress)
+    const web3 = new Web3(web3Provider)
+
+    try {
+      // note that the computable deploy helpers return the actual contract
+      const store: Contract = await deploy(web3, address || admin.address)
+
+      // any raw web3.eth.Contract will have its address @ contract.options.address
+      const storeAddress: string = store.options.address
+
+      dispatch(attributeStoreOk({ address: storeAddress }))
+      return storeAddress
+    } catch(err) {
+      dispatch(attributeStoreError(err))
+      return ''
+    }
+  }
+
+const resetAttributeStore = (): Action => attributeStoreReset()
 
 export { deployAttributeStore, resetAttributeStore }
+

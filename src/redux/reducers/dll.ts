@@ -20,7 +20,7 @@ const initialState: StateItem<string> = {
 const handlers = {
   [DLL_REQUEST]: (state: StateItem<string>, { payload }: FSA) => ({
     ...state,
-    isLoading: true,
+    loading: true,
     request: payload,
   }),
   [DLL_OK]: (state: StateItem<string>, { payload }: FSA) => ({

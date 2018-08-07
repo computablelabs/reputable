@@ -1,8 +1,8 @@
 import { State, StateItem } from '../../interfaces'
 
-const model = 'dllAddress'
+const model = 'attributeStoreAddress'
 
-const getDllAddress = (state: State = {}): string => {
+const getAttributeStoreAddress = (state: State = {}): string => {
   const stateItem: StateItem<string> | undefined = state[model]
   if (!stateItem) {
     return ''
@@ -19,5 +19,5 @@ const getDllAddress = (state: State = {}): string => {
     data[keys[0]] : ''
 }
 
-export { getDllAddress }
+export { getAttributeStoreAddress }
 

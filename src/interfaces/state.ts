@@ -15,7 +15,7 @@ interface State {
   readonly voting?: Voting
   readonly registry?: Registry
   readonly dllAddress?: StateItem<string>
-  readonly attributeStoreAddress?: string
+  readonly attributeStoreAddress?: StateItem<string>
 }
 
 export default State

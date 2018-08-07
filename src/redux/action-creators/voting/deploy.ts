@@ -1,7 +1,11 @@
 import Web3 from 'web3'
 import Voting from 'computable/dist/contracts/plcr-voting'
 import { address as getTokenAddress } from '../../selectors/token'
-import { getParticipants, getDllAddress } from '../../selectors'
+import {
+  getParticipants,
+  getDllAddress,
+  getAttributeStoreAddress,
+} from '../../selectors'
 import {
   Action,
   FSA,
@@ -46,7 +50,7 @@ const deployVoting = (address?:string): any => {
       websocketAddress = state.websocketAddress,
       tokenAddress = getTokenAddress(state),
       dllAddress = getDllAddress(state),
-      attributeStoreAddress = state.attributeStoreAddress
+      attributeStoreAddress = getAttributeStoreAddress(state)
 
     let votingAddress = ''
 
