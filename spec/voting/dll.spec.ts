@@ -5,14 +5,14 @@ import { State } from '../../src/interfaces'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { getDllAddress } from '../../src/redux/selectors'
 
 describe('deploying a dll contract', () => {
-
   let server:any,
     web3:Web3,
     accounts:string[]
 
-  beforeAll( async () => {
+  beforeAll(async () => {
     server = ganache.server({ ws:true })
     server.listen(8552)
     // so that the provider is available to be re-created on demand
@@ -33,15 +33,19 @@ describe('deploying a dll contract', () => {
   })
 
   it('does not have a dll address', () => {
-    const state:State = store.getState()
-    expect(state.dllAddress).toBeFalsy()
+    const state: State = store.getState()
+    const address: string = getDllAddress(state)
+    expect(address).toBeFalsy()
   })
 
   it('has a dll address', async () => {
     await deployDll(accounts[0])
-    const state:State = store.getState()
 
-    expect(state.dllAddress).toBeTruthy()
-    expect(state.dllAddress && state.dllAddress.length).toBe(42)
+    const state: State = store.getState()
+    const address = getDllAddress(state)
+
+    expect(address).toBeTruthy()
+    expect(address && address.length).toBe(42)
   })
 })
+
