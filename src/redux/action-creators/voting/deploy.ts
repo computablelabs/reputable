@@ -2,7 +2,7 @@ import Web3 from 'web3'
 import Voting from 'computable/dist/contracts/plcr-voting'
 import { address as getTokenAddress } from '../../selectors/token'
 import {
-  getParticipants,
+  getOwner,
   getDllAddress,
   getAttributeStoreAddress,
 } from '../../selectors'
@@ -44,9 +44,7 @@ const deployVotingError = (err:Error): FSA => ({ type: DEPLOY_VOTING_ERROR, payl
 const deployVoting = (address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
-      // TODO 'admin' selector maybe...
-      participants = getParticipants(state),
-      admin:Participant|undefined = participants && participants[0],
+      owner: Participant | undefined = getOwner(state),
       websocketAddress = state.websocketAddress,
       tokenAddress = getTokenAddress(state),
       dllAddress = getDllAddress(state),
@@ -55,7 +53,7 @@ const deployVoting = (address?:string): any => {
     let votingAddress = ''
 
     if (!websocketAddress) dispatch(deployVotingError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!admin) dispatch(deployVotingError(new Error(Errors.NO_ADMIN_FOUND)))
+    else if (!owner) dispatch(deployVotingError(new Error(Errors.NO_ADMIN_FOUND)))
     else if (!tokenAddress) dispatch(deployVotingError(new Error(Errors.NO_TOKEN_FOUND)))
     else if (!dllAddress) dispatch(deployVotingError(new Error(Errors.NO_DLL_FOUND)))
     else if (!attributeStoreAddress) dispatch(deployVotingError(new Error(Errors.NO_ATTRIBUTESTORE_FOUND)))
@@ -65,7 +63,7 @@ const deployVoting = (address?:string): any => {
         // we can dispatch deploy early here, as deploy is not to be confused with deployed)
       dispatch(deployVotingAction())
       // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Voting(address || admin.address)
+      const contract = new Voting(address || owner.address)
 
       try {
         votingAddress = await contract.deploy(web3,

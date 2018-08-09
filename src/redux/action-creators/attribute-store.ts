@@ -9,7 +9,7 @@ import {
   Participant,
 } from '../../interfaces'
 import { Errors } from '../../constants'
-import { getParticipants } from '../selectors'
+import { getOwner } from '../selectors'
 
 // Action Types
 export const ATTRIBUTE_STORE_REQUEST = 'ATTRIBUTE_STORE_REQUEST'
@@ -50,8 +50,7 @@ const attributeStoreReset = (): FSA => ({
 const deployAttributeStore = (address: string = ''): any =>
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
-    const participants = getParticipants(state)
-    const admin: Participant | undefined = participants && participants[0]
+    const owner: Participant | undefined = getOwner(state)
     const { websocketAddress } = state
 
     dispatch(attributeStoreRequest({ address }))
@@ -62,7 +61,7 @@ const deployAttributeStore = (address: string = ''): any =>
       return ''
     }
 
-    if (!admin) {
+    if (!owner) {
       const error = new Error(Errors.NO_ADMIN_FOUND)
       dispatch(attributeStoreError(error))
       return ''
@@ -73,7 +72,7 @@ const deployAttributeStore = (address: string = ''): any =>
 
     try {
       // note that the computable deploy helpers return the actual contract
-      const store: Contract = await deploy(web3, address || admin.address)
+      const store: Contract = await deploy(web3, address || owner.address)
 
       // any raw web3.eth.Contract will have its address @ contract.options.address
       const storeAddress: string = store.options.address

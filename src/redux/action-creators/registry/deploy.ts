@@ -4,7 +4,7 @@ import Registry from 'computable/dist/contracts/registry'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
 import { address as getParameterizerAddress } from '../../selectors/parameterizer'
-import { getParticipants } from '../../selectors'
+import { getOwner } from '../../selectors'
 import {
   Action,
   FSA,
@@ -59,8 +59,7 @@ const deployRegistry = (name:string, address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
       websocketAddress = state.websocketAddress,
-      participants = getParticipants(state),
-      admin:Participant|undefined = participants && participants[0],
+      owner: Participant | undefined = getOwner(state),
       tokenAddress = getTokenAddress(state),
       votingAddress = getVotingAddress(state),
       parameterizerAddress = getParameterizerAddress(state)
@@ -68,7 +67,7 @@ const deployRegistry = (name:string, address?:string): any => {
     let registryAddress = ''
 
     if (!websocketAddress) dispatch(deployRegistryError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!admin) dispatch(deployRegistryError(new Error(Errors.NO_ADMIN_FOUND)))
+    else if (!owner) dispatch(deployRegistryError(new Error(Errors.NO_ADMIN_FOUND)))
     else if (!tokenAddress) dispatch(deployRegistryError(new Error(Errors.NO_TOKEN_FOUND)))
     else if (!votingAddress) dispatch(deployRegistryError(new Error(Errors.NO_VOTING_FOUND)))
     else if (!parameterizerAddress) dispatch(deployRegistryError(new Error(Errors.NO_PARAMETERIZER_FOUND)))
@@ -80,7 +79,7 @@ const deployRegistry = (name:string, address?:string): any => {
 
       dispatch(action)
       // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Registry(address || admin.address)
+      const contract = new Registry(address || owner.address)
 
       try {
         // @ts-ignore:2345

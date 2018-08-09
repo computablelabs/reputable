@@ -3,7 +3,7 @@ import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import Parameterizer from 'computable/dist/contracts/parameterizer'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
-import { getParticipants } from '../../selectors'
+import { getOwner } from '../../selectors'
 import {
   Action,
   FSA,
@@ -77,8 +77,7 @@ const deployParameterizerError = (err:Error): FSA => (
 const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployParams>): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState(),
-      participants = getParticipants(state),
-      admin:Participant|undefined = participants && participants[0],
+      owner: Participant | undefined = getOwner(state),
       websocketAddress = state.websocketAddress,
       tokenAddress = getTokenAddress(state),
       votingAddress = getVotingAddress(state)
@@ -86,7 +85,7 @@ const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployP
     let parameterizerAddress = ''
 
     if (!websocketAddress) dispatch(deployParameterizerError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!admin) dispatch(deployParameterizerError(new Error(Errors.NO_ADMIN_FOUND)))
+    else if (!owner) dispatch(deployParameterizerError(new Error(Errors.NO_ADMIN_FOUND)))
     else if (!tokenAddress) dispatch(deployParameterizerError(new Error(Errors.NO_TOKEN_FOUND)))
     else if (!votingAddress) dispatch(deployParameterizerError(new Error(Errors.NO_VOTING_FOUND)))
     else {
@@ -97,7 +96,7 @@ const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployP
 
       dispatch(action)
       // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Parameterizer(address || admin.address)
+      const contract = new Parameterizer(address || owner.address)
 
       try {
         // TSC is confused here, the payload is guaranteed to be a ParameterizerDeployParams
