@@ -1,3 +1,3 @@
-import { FSA, Reducer } from '../../interfaces';
-declare const attributeStoreAddress: Reducer<string | undefined, FSA>;
-export default attributeStoreAddress;
+import { StateItem } from '../../interfaces';
+declare const _default: (state: StateItem<any> | undefined, action: import("src/interfaces/actions/action").Action) => any;
+export default _default;

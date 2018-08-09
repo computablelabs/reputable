@@ -9,3 +9,8 @@ const getParticipants = (state, { ids } = {}) => helpers_1.default.getList({ sta
 exports.getParticipants = getParticipants;
 const getParticipant = (state, key) => helpers_1.default.getItem({ state, model, key });
 exports.getParticipant = getParticipant;
+const getOwner = (state) => {
+    const predicate = (item) => item.owner;
+    return helpers_1.default.getList({ state, model, predicate })[0];
+};
+exports.getOwner = getOwner;

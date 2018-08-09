@@ -63,11 +63,11 @@ const deployParameterizerError = (err) => ({ type: constants_1.DEPLOY_PARAMETERI
  */
 const deployParameterizer = (address, opts) => {
     return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), participants = selectors_1.getParticipants(state), admin = participants && participants[0], websocketAddress = state.websocketAddress, tokenAddress = token_1.address(state), votingAddress = voting_1.address(state);
+        const state = getState(), owner = selectors_1.getOwner(state), websocketAddress = state.websocketAddress, tokenAddress = token_1.address(state), votingAddress = voting_1.address(state);
         let parameterizerAddress = '';
         if (!websocketAddress)
             dispatch(deployParameterizerError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));
-        else if (!admin)
+        else if (!owner)
             dispatch(deployParameterizerError(new Error(constants_1.Errors.NO_ADMIN_FOUND)));
         else if (!tokenAddress)
             dispatch(deployParameterizerError(new Error(constants_1.Errors.NO_TOKEN_FOUND)));
@@ -80,7 +80,7 @@ const deployParameterizer = (address, opts) => {
             action = deployParameterizerAction(tokenAddress, votingAddress, opts);
             dispatch(action);
             // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-            const contract = new parameterizer_1.default(address || admin.address);
+            const contract = new parameterizer_1.default(address || owner.address);
             try {
                 // TSC is confused here, the payload is guaranteed to be a ParameterizerDeployParams
                 // @ts-ignore:2345

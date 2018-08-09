@@ -1,4 +1,5 @@
-import { State } from '../../interfaces';
-declare const getParticipants: (state: State, { ids }?: any) => any[];
-declare const getParticipant: (state: State, key: string) => any;
-export { getParticipants, getParticipant, };
+import { State, Participant } from '../../interfaces';
+declare const getParticipants: (state: State, { ids }?: any) => Participant[];
+declare const getParticipant: (state: State, key: string) => Participant;
+declare const getOwner: (state: State) => Participant;
+export { getParticipants, getParticipant, getOwner, };

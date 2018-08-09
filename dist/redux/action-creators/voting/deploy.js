@@ -34,13 +34,11 @@ const deployedVoting = (address) => {
 const deployVotingError = (err) => ({ type: constants_1.DEPLOY_VOTING_ERROR, payload: err });
 const deployVoting = (address) => {
     return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), 
-        // TODO 'admin' selector maybe...
-        participants = selectors_1.getParticipants(state), admin = participants && participants[0], websocketAddress = state.websocketAddress, tokenAddress = token_1.address(state), dllAddress = state.dllAddress, attributeStoreAddress = state.attributeStoreAddress;
+        const state = getState(), owner = selectors_1.getOwner(state), websocketAddress = state.websocketAddress, tokenAddress = token_1.address(state), dllAddress = selectors_1.getDllAddress(state), attributeStoreAddress = selectors_1.getAttributeStoreAddress(state);
         let votingAddress = '';
         if (!websocketAddress)
             dispatch(deployVotingError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));
-        else if (!admin)
+        else if (!owner)
             dispatch(deployVotingError(new Error(constants_1.Errors.NO_ADMIN_FOUND)));
         else if (!tokenAddress)
             dispatch(deployVotingError(new Error(constants_1.Errors.NO_TOKEN_FOUND)));
@@ -54,7 +52,7 @@ const deployVoting = (address) => {
             // we can dispatch deploy early here, as deploy is not to be confused with deployed)
             dispatch(deployVotingAction());
             // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-            const contract = new plcr_voting_1.default(address || admin.address);
+            const contract = new plcr_voting_1.default(address || owner.address);
             try {
                 votingAddress = yield contract.deploy(web3, { tokenAddress, dllAddress, attributeStoreAddress });
                 dispatch(deployedVoting(votingAddress));

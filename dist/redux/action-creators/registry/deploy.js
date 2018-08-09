@@ -44,11 +44,11 @@ const deployRegistryError = (err) => ({ type: constants_1.DEPLOY_REGISTRY_ERROR,
  */
 const deployRegistry = (name, address) => {
     return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), websocketAddress = state.websocketAddress, participants = selectors_1.getParticipants(state), admin = participants && participants[0], tokenAddress = token_1.address(state), votingAddress = voting_1.address(state), parameterizerAddress = parameterizer_1.address(state);
+        const state = getState(), websocketAddress = state.websocketAddress, owner = selectors_1.getOwner(state), tokenAddress = token_1.address(state), votingAddress = voting_1.address(state), parameterizerAddress = parameterizer_1.address(state);
         let registryAddress = '';
         if (!websocketAddress)
             dispatch(deployRegistryError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));
-        else if (!admin)
+        else if (!owner)
             dispatch(deployRegistryError(new Error(constants_1.Errors.NO_ADMIN_FOUND)));
         else if (!tokenAddress)
             dispatch(deployRegistryError(new Error(constants_1.Errors.NO_TOKEN_FOUND)));
@@ -63,7 +63,7 @@ const deployRegistry = (name, address) => {
             action = deployRegistryAction(tokenAddress, votingAddress, parameterizerAddress, name);
             dispatch(action);
             // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-            const contract = new registry_1.default(address || admin.address);
+            const contract = new registry_1.default(address || owner.address);
             try {
                 // @ts-ignore:2345
                 registryAddress = yield contract.deploy(web3, action.payload);

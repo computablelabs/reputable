@@ -40,20 +40,22 @@ const deployTokenError = (err) => ({ type: constants_1.DEPLOY_TOKEN_ERROR, paylo
  */
 const deployToken = (address, supply) => {
     return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), websocketAddress = state.websocketAddress, participants = selectors_1.getParticipants(state), admin = participants && participants[0];
+        const state = getState();
+        const websocketAddress = state.websocketAddress;
+        const owner = selectors_1.getOwner(state);
         let tokenAddress = '';
         if (!websocketAddress)
             dispatch(deployTokenError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));
-        else if (!admin)
+        else if (!owner)
             dispatch(deployTokenError(new Error(constants_1.Errors.NO_ADMIN_FOUND)));
         else {
             // create web3 on demand with our provider
             const web3 = new web3_1.default(new web3_1.default.providers.WebsocketProvider(websocketAddress)), 
             // we can dispatch deploy early here, as deploy is not to be confused with deployed
-            action = deployTokenAction(address || admin.address);
+            action = deployTokenAction(address || owner.address);
             dispatch(action);
             // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-            const contract = new erc_20_1.default(address || admin.address);
+            const contract = new erc_20_1.default(address || owner.address);
             try {
                 // we can just re-use our deploy action payload from above
                 tokenAddress = yield contract.deploy(web3, action.payload);

@@ -1,11 +1,22 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../constants");
-const dllAddress = (address = '', action) => {
-    if (action.type === constants_1.DEPLOYED_DLL)
-        return action.payload.address;
-    if (action.type === constants_1.RESET_DLL)
-        return '';
-    return address;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.default = dllAddress;
+Object.defineProperty(exports, "__esModule", { value: true });
+const dll_1 = require("../action-creators/dll");
+const createReducer_1 = __importDefault(require("./createReducer"));
+const initialState = {
+    loading: false,
+    request: {},
+    data: {},
+    error: undefined,
+};
+const handlers = {
+    [dll_1.DLL_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
+    [dll_1.DLL_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: {
+            [payload.address]: payload.address,
+        } })),
+    [dll_1.DLL_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload })),
+    [dll_1.DLL_RESET]: (state, { payload }) => (Object.assign({}, initialState)),
+};
+exports.default = createReducer_1.default(handlers, initialState);
