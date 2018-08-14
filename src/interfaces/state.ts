@@ -1,6 +1,7 @@
 import {
   StateItem,
   Participant,
+  Approval,
   Token,
   Parameterizer,
   Voting,
@@ -11,6 +12,7 @@ interface State {
   readonly websocketAddress?: string
   readonly participants?: StateItem<Participant>
   readonly token?: Token
+  readonly tokenApprovals?: StateItem<Approval>
   readonly parameterizer?: Parameterizer
   readonly voting?: Voting
   readonly registry?: Registry

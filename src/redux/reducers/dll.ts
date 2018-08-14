@@ -33,7 +33,7 @@ const handlers = {
   [DLL_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
     ...state,
     loading: false,
-    error: payload,
+    error: payload.toString(),
   }),
   [DLL_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
     ...initialState,

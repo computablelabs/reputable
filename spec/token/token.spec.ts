@@ -1,6 +1,5 @@
 import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
@@ -13,17 +12,13 @@ import {
   transfer,
 } from '../../src/redux/dispatchers/token'
 import { State } from '../../src/interfaces'
-import {
-  address,
-  approvals,
-  transfers,
-} from '../../src/redux/selectors/token'
+import { address } from '../../src/redux/selectors/token'
+import { getApprovals, getTransfers } from '../../src/redux/selectors'
 
 describe('token state', () => {
-  let server:any,
-    web3:Web3,
-    state:State,
-    accounts:string[]
+  let server: any
+  let web3:Web3
+  let accounts: string[]
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
@@ -77,65 +72,90 @@ describe('token state', () => {
     })
   })
 
-  describe('approvals', () => {
-    it('lets admin approve other contract to spend', async () => {
-      let apps = approvals(store.getState())
+  describe('with a deployed token', () => {
+    beforeAll(async () => {
+      await deployToken(accounts[0], 1000000)
+    })
 
-      expect(apps && apps.length).toBe(0)
+    afterAll(() => {
+      resetToken()
+    })
 
-      // observe the state tree in action with these
-        // approvalListener = (approvals:Approval[]) => { console.log(approvals) },
-        // unsubscribe:any = subscriber(approvalListener, approvals)
+    describe('approvals', () => {
+      it('lets admin approve other contract to spend', async () => {
+        const owner = accounts[0]
+        const spender = accounts[1]
+        const amount = 500 * 1000
 
-      // we'll just use the 2nd account address in lieu of another deployed contract.
-      // @ts-ignore:2532
-      const tx:TransactionReceipt = await approve(accounts[1], 500000, accounts[0])
-      expect(tx).toBeTruthy()
-      // console.log(tx)
+        let state: State = store.getState()
+        let approvals = getApprovals(state)
 
-      apps = approvals(store.getState())
+        expect(approvals && approvals.length).toBe(0)
 
-      expect(approvals && approvals.length).toBe(1)
+        // observe the state tree in action with these
+          // approvalListener = (approvals:Approval[]) => { console.log(approvals) },
+          // unsubscribe:any = subscriber(approvalListener, approvals)
+
+        // we'll just use the 2nd account address in lieu of another deployed contract.
+        // @ts-ignore:2532
+        const txValues = await approve(spender, amount, owner)
+
+        expect(txValues).toBeTruthy()
+
+        state = store.getState()
+        approvals = getApprovals(state)
+
+        expect(approvals && approvals.length).toBe(1)
+        expect(txValues.owner).toBe(owner)
+        expect(txValues.spender).toBe(spender)
+        expect(txValues.value).toBe(amount.toString())
+      })
+    })
+
+    describe('transfers', () => {
+      it('fund another account from the tokens funds', async () => {
+        const owner = accounts[0]
+        const user = accounts[2]
+        const amount = 500 * 1000
+
+        let state: State = store.getState()
+        let trans = getTransfers(state)
+
+        expect(trans && trans.length).toBe(0)
+
+        // observe the state tree in action with these
+          // transferListener = (transfers:Transfer[]) => { console.log(transfers) },
+          // unsubscribe:any = subscriber(transferListener, transfers)
+
+        // we'll just use the 3rd account address in lieu of another deployed contract.
+        // @ts-ignore:2532
+        const txValues = await transfer(user, amount, owner) // to, amount, from
+        expect(txValues).toBeTruthy()
+
+        state = store.getState()
+        trans = getTransfers(state)
+
+        expect(trans && trans.length).toBe(1)
+      })
+
+      // TODO (geoff) This test is not idempotent...
+      //   It relies on the state configured in the spec above.
+      it('actually transferred the funds to the other account', async () => {
+        let state: State = store.getState()
+
+        const addr = address(state) || ''
+        const contract = addr && new Erc20(accounts[0])
+
+        contract && await contract.at(web3, { address:addr })
+
+        const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
+        expect(maybeParseInt(funds2)).toBe(500000)
+
+        // account 0 has been subtracted from...
+        const funds0 = contract && await contract.balanceOf(accounts[0]) || 0
+        expect(maybeParseInt(funds0)).toBe(500000)
+      })
     })
   })
-
-  describe('transfers', () => {
-    it('fund another account from the tokens funds', async () => {
-      state = store.getState()
-
-      let trans = transfers(state)
-
-      expect(trans && trans.length).toBe(0)
-
-      // observe the state tree in action with these
-        // transferListener = (transfers:Transfer[]) => { console.log(transfers) },
-        // unsubscribe:any = subscriber(transferListener, transfers)
-
-      // we'll just use the 3rd account address in lieu of another deployed contract.
-      // @ts-ignore:2532
-      const tx:TransactionReceipt = await transfer(accounts[2], 500000, accounts[0]) // to, amount, from
-      expect(tx).toBeTruthy()
-
-      trans = transfers(store.getState())
-
-      expect(trans && trans.length).toBe(1)
-    })
-
-    it('actually transferred the funds to the other account', async () => {
-      state = store.getState()
-
-      const addr = address(state) || '',
-        contract = addr && new Erc20(accounts[0])
-
-      contract && await contract.at(web3, { address:addr })
-
-      const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
-      expect(maybeParseInt(funds2)).toBe(500000)
-
-      // account 0 has been subtracted from...
-      const funds0 = contract && await contract.balanceOf(accounts[0]) || 0
-      expect(maybeParseInt(funds0)).toBe(500000)
-    })
-  })
-
 })
+

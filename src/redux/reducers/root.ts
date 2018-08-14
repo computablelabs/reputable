@@ -2,6 +2,8 @@ import { combineReducers } from 'redux'
 import websocketAddress from './web3'
 import participants from './participant'
 import token from './token'
+import tokenApprovals from './token-approve'
+import tokenTransfers from './token-transfer'
 import dllAddress from './dll'
 import attributeStoreAddress from './attribute-store'
 import voting from './voting'
@@ -13,6 +15,8 @@ export default combineReducers({
   websocketAddress,
   participants,
   token,
+  tokenApprovals,
+  tokenTransfers,
   dllAddress,
   attributeStoreAddress,
   voting,

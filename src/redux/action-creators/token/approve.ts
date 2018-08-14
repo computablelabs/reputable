@@ -1,69 +1,100 @@
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
-import { Nos } from 'computable/dist/types'
+import { EventLog } from 'web3/types.d'
 import Erc20 from 'computable/dist/contracts/erc-20'
+import { onData } from 'computable/dist/helpers'
 import { address as addressSelector } from '../../selectors/token'
 import {
   FSA,
+  Action,
   State,
   Approval,
 } from '../../../interfaces'
-import {
-  APPROVE,
-  APPROVE_ERROR,
-  APPROVED,
-  Errors,
-} from '../../../constants'
+import { Errors } from '../../../constants'
+import { getOwner } from '../../selectors'
 
-/**
- * support actions for the thunk approve action
- *
- * Approve and Approved send the same args, with approve functioning as an
- * in-flight notification. We dont, via the reducer, add the approval to the state tree
- * however until Approved
- */
-const approval = (type:string, address:string, amount:Nos, from: string): FSA => {
-  const payload:Approval = { address, amount, from }
-  return { type, payload }
-}
+// Action Types
+export const TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST'
+export const TOKEN_APPROVE_OK = 'TOKEN_APPROVE_OK'
+export const TOKEN_APPROVE_ERROR = 'TOKEN_APPROVE_ERROR'
+export const TOKEN_APPROVE_RESET = 'TOKEN_APPROVE_RESET'
 
-const approvalError = (err:Error): FSA => (
-  { type: APPROVE_ERROR, payload: err }
-)
+// Actions
+const tokenApproveRequest = (value: Approval): FSA => ({
+  type: TOKEN_APPROVE_REQUEST,
+  payload: value,
+})
+
+const tokenApproveOk = (value: { [key: string]: string }): FSA => ({
+  type: TOKEN_APPROVE_OK,
+  payload: value,
+})
+
+const tokenApproveError = (value: Error): FSA => ({
+  type: TOKEN_APPROVE_ERROR,
+  payload: value,
+})
+
+const tokenApproveReset = (): FSA => ({
+  type: TOKEN_APPROVE_RESET,
+  payload: {},
+})
+
+// Action Creators
 
 // TODO type the returned thunk vs `any`
-const approve = (address:string, amount:Nos, from:string): any => {
-  // TODO type the dispatch and getState args
-  return async (dispatch:any, getState:any): Promise<TransactionReceipt|null> => {
-    const state:State = getState(),
-      // a token must have been deployed by this point
-      tokenAddress = addressSelector(state),
-      // we can assume that if a token has been deployed a ws has been provided
-      ws = state.websocketAddress || '',
-      web3 = new Web3(new Web3.providers.WebsocketProvider(ws)),
-      contract = new Erc20(from)
+const approve = (address: string, amount: number | string, from?: string): any =>
+  async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
+    const state: State = getState()
+    const owner = getOwner(state)
+
+    // a token must have been deployed by this point
+    const tokenAddress = addressSelector(state)
+    const ws = state.websocketAddress || ''
+    const web3Provider = new Web3.providers.WebsocketProvider(ws)
+    const web3 = new Web3(web3Provider)
+    const contract = new Erc20(owner.address)
+
     // instantiate a higher order contract with the deployed contract address
     tokenAddress && await contract.at(web3, { address: tokenAddress })
 
-    let tx = null
+    if (!contract) {
+      const error = new Error(Errors.NO_TOKEN_FOUND)
+      dispatch(tokenApproveError(error))
 
-    if (!contract) dispatch(approvalError(new Error(Errors.NO_TOKEN_FOUND)))
-    else {
-      // dispatch approve early as an in-flight notification
-      dispatch(approval(APPROVE, address, amount, from))
-      try {
-        // we can allow the contract to fallback to the account it was instantiated with as `from`
-        tx = await contract.approve(address, amount)
-        dispatch(approval(APPROVED, address, amount, from))
-      } catch(err) {
-        dispatch(approvalError(err))
-      }
+      return undefined
     }
 
-    return tx
-  }
-}
+    const args: Approval = { address, amount, from: from || owner.address }
 
-export {
-  approve,
-}
+    // dispatch that a request has been initialized
+    dispatch(tokenApproveRequest(args))
+
+    try {
+      const emitter = contract.getEventEmitter('Approval')
+
+      // we can allow the contract to fallback to the account it was instantiated with as `from`
+      contract.approve(address, amount, { from })
+
+      const eventLog: EventLog = await onData(emitter)
+      const eventValues = eventLog.returnValues
+
+      const out = {
+        owner: eventValues.owner,
+        spender: eventValues.spender,
+        value: eventValues.value,
+      }
+
+      dispatch(tokenApproveOk(out))
+
+      return out
+    } catch(err) {
+      dispatch(tokenApproveError(err))
+
+      return undefined
+    }
+  }
+
+const resetTokenApprove = (): Action => tokenApproveReset()
+
+export { approve, resetTokenApprove }
+

@@ -22,10 +22,6 @@ export const TRANSFER = 'transfer'
 export const TRANSFER_ERROR = 'transfer-error'
 export const TRANSFERRED = 'transferred'
 
-export const APPROVE = 'approve'
-export const APPROVE_ERROR = 'approve-error'
-export const APPROVED = 'approved'
-
 export const DEPLOY_PARAMETERIZER = 'deploy-parameterizer'
 export const DEPLOY_PARAMETERIZER_ERROR = 'deploy-parameterizer-error'
 export const DEPLOYED_PARAMETERIZER = 'deployed-parameterizer'

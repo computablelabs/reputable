@@ -9,7 +9,8 @@ import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatc
 import { deployRegistry, resetRegistry } from '../../src/redux/dispatchers/registry'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { address as registryAddress } from '../../src/redux/selectors/registry'
+import { State } from '../../src/interfaces'
+import { getRegistryAddress } from '../../src/redux/selectors'
 
 describe('registry state', () => {
   let server:any,
@@ -50,7 +51,10 @@ describe('registry state', () => {
   })
 
   it('begins with unhydrated registry', () => {
-    expect(registryAddress(store.getState())).toBeFalsy()
+    const state: State = store.getState()
+    const registryAddress: string = getRegistryAddress(state)
+
+    expect(registryAddress).toBeFalsy()
   })
 
   describe('deployment', () => {
@@ -61,11 +65,12 @@ describe('registry state', () => {
 
       await deployRegistry('the registry', accounts[0])
 
-      const addr = registryAddress(store.getState())
+      const state: State = store.getState()
+      const registryAddress: string = getRegistryAddress(state)
 
-      expect(addr).toBeTruthy()
+      expect(registryAddress).toBeTruthy()
       // hashed addresses are always 42 chars
-      expect(addr && addr.length).toBe(42)
+      expect(registryAddress && registryAddress.length).toBe(42)
     })
   })
 })

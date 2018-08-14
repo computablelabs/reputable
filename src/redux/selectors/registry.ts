@@ -1,7 +1,23 @@
 import { State, Registry } from '../../interfaces'
 
-const registry = (state:State): Registry|undefined => state.registry
+const model = 'registry'
 
-const address = (state:State): string|undefined => state.registry && state.registry.address
+const getRegistry = (state: State = {}): Registry | undefined => {
+  const stateItem: Registry | undefined = state[model]
+  if (!stateItem) {
+    return undefined
+  }
 
-export { registry, address }
+  return stateItem ?
+    stateItem : undefined
+}
+
+const getRegistryAddress = (state: State = {}): string => {
+  const registry: Registry | undefined = getRegistry(state)
+
+  return registry && registry.address ?
+    registry.address : ''
+}
+
+export { getRegistry, getRegistryAddress }
+

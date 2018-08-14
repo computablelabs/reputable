@@ -30,7 +30,7 @@ const handlers = {
   [ATTRIBUTE_STORE_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
     ...state,
     loading: false,
-    error: payload,
+    error: payload.toString(),
   }),
   [ATTRIBUTE_STORE_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
     ...initialState,

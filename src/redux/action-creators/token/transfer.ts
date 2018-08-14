@@ -1,65 +1,103 @@
 import Web3 from 'web3'
-import { TransactionReceipt } from 'web3/types.d'
-import { Nos } from 'computable/dist/types'
+import { EventLog } from 'web3/types.d'
 import Erc20 from 'computable/dist/contracts/erc-20'
+import { onData } from 'computable/dist/helpers'
 import { address as addressSelector } from '../../selectors/token'
+import { getOwner } from '../../selectors'
 import {
   FSA,
+  Action,
   State,
   Transfer,
 } from '../../../interfaces'
-import {
-  TRANSFER,
-  TRANSFER_ERROR,
-  TRANSFERRED,
-  Errors,
-} from '../../../constants'
+import { Errors } from '../../../constants'
 
-/**
- * support methods for the transfer Action Creator
- */
-const transferral = (type:string, to:string, amount:Nos, from:string): FSA => {
-  const payload:Transfer = { to, amount, from }
-  return { type, payload }
-}
+// Action Types
+export const TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST'
+export const TOKEN_TRANSFER_OK = 'TOKEN_TRANSFER_OK'
+export const TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR'
+export const TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET'
 
-const transferError = (err:Error): FSA => (
-  { type: TRANSFER_ERROR, payload: err }
-)
+// Actions
+const tokenTransferRequest = (value: Transfer): FSA => ({
+  type: TOKEN_TRANSFER_REQUEST,
+  payload: value,
+})
+
+const tokenTransferOk = (value: Transfer): FSA => ({
+  type: TOKEN_TRANSFER_OK,
+  payload: value,
+})
+
+const tokenTransferError = (value: Error): FSA => ({
+  type: TOKEN_TRANSFER_ERROR,
+  payload: value,
+})
+
+const tokenTransferReset = (): FSA => ({
+  type: TOKEN_TRANSFER_RESET,
+  payload: {},
+})
+
+// Action Creators
 
 // TODO type the returned thunk
-const transfer = (to:string, amount:Nos, from:string): any => {
+const transfer = (to: string, amount: number | string, from?: string): any =>
   // TODO type the thunk args
-  return async (dispatch:any, getState:any): Promise<TransactionReceipt|null> => {
-    const state:State = getState(),
-      // a token must have been deployed by this point
-      tokenAddress = addressSelector(state),
-      ws = state.websocketAddress || '',
-      web3 = new Web3(new Web3.providers.WebsocketProvider(ws)),
-      contract = new Erc20(from)
+  async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
+    const state: State = getState()
+    const owner = getOwner(state)
+
+    // a token must have been deployed by this point
+    const tokenAddress = addressSelector(state)
+    const ws = state.websocketAddress || ''
+    const web3Provider = new Web3.providers.WebsocketProvider(ws)
+    const web3 = new Web3(web3Provider)
+    const contract = new Erc20(owner.address)
+
     // instantiate a contract from the deployed token
-    tokenAddress && await contract.at(web3, { address: tokenAddress })
+    tokenAddress && await contract.at(web3, { address: tokenAddress }, { from: owner.address })
 
-    let tx = null
+    if (!contract) {
+      const error = new Error(Errors.NO_TOKEN_FOUND)
+      dispatch(tokenTransferError(error))
 
-    if (!contract) dispatch(transferError(new Error(Errors.NO_TOKEN_FOUND)))
-    else {
-      // dispatch transfer early as an in-flight notification
-      dispatch(transferral(TRANSFER, to, amount, from))
-      // try the actual on-chain transfer
-      try {
-        // we can allow the contract to fallback on the default account it was made from
-        tx = await contract.transfer(to, amount)
-        dispatch(transferral(TRANSFERRED, to, amount, from))
-      } catch(err) {
-        dispatch(transferError(err))
-      }
+      return undefined
     }
 
-    return tx
-  }
-}
+    const args: Transfer = { to, amount, from: from || owner.address }
 
-export {
-  transfer,
-}
+    // dispatch that a request has been initialized
+    dispatch(tokenTransferRequest(args))
+
+    // try the actual on-chain transfer
+    try {
+      const emitter = contract.getEventEmitter('Transfer')
+
+      // we can allow the contract to fallback on the default account it was made from
+      contract.transfer(to, amount)
+
+      const eventLog: EventLog = await onData(emitter)
+      const eventValues = eventLog.returnValues
+
+      const out = {
+        from: eventValues.from,
+        to: eventValues.to,
+        amount: eventValues.value,
+        id: eventLog.transactionHash,
+      }
+
+      dispatch(tokenTransferOk(out))
+
+      return out
+    } catch(err) {
+      dispatch(tokenTransferError(err))
+
+      return undefined
+    }
+  }
+
+const resetTokenTransfer = (): Action => tokenTransferReset()
+
+export { transfer, resetTokenTransfer }
+
