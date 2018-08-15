@@ -29,7 +29,7 @@ const handlers = {
     loading: false,
     data: {
       ...state.data,
-      ...payload,
+      [payload.listing]: payload,
     },
   }),
   [REGISTRY_APPLY_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
