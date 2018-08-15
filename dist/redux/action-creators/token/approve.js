@@ -13,47 +13,72 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3_1 = __importDefault(require("web3"));
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
+const helpers_1 = require("computable/dist/helpers");
 const token_1 = require("../../selectors/token");
 const constants_1 = require("../../../constants");
-/**
- * support actions for the thunk approve action
- *
- * Approve and Approved send the same args, with approve functioning as an
- * in-flight notification. We dont, via the reducer, add the approval to the state tree
- * however until Approved
- */
-const approval = (type, address, amount, from) => {
-    const payload = { address, amount, from };
-    return { type, payload };
-};
-const approvalError = (err) => ({ type: constants_1.APPROVE_ERROR, payload: err });
+const selectors_1 = require("../../selectors");
+// Action Types
+exports.TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST';
+exports.TOKEN_APPROVE_OK = 'TOKEN_APPROVE_OK';
+exports.TOKEN_APPROVE_ERROR = 'TOKEN_APPROVE_ERROR';
+exports.TOKEN_APPROVE_RESET = 'TOKEN_APPROVE_RESET';
+// Actions
+const tokenApproveRequest = (value) => ({
+    type: exports.TOKEN_APPROVE_REQUEST,
+    payload: value,
+});
+const tokenApproveOk = (value) => ({
+    type: exports.TOKEN_APPROVE_OK,
+    payload: value,
+});
+const tokenApproveError = (value) => ({
+    type: exports.TOKEN_APPROVE_ERROR,
+    payload: value,
+});
+const tokenApproveReset = () => ({
+    type: exports.TOKEN_APPROVE_RESET,
+    payload: {},
+});
+// Action Creators
 // TODO type the returned thunk vs `any`
-const approve = (address, amount, from) => {
-    // TODO type the dispatch and getState args
-    return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState(), 
-        // a token must have been deployed by this point
-        tokenAddress = token_1.address(state), 
-        // we can assume that if a token has been deployed a ws has been provided
-        ws = state.websocketAddress || '', web3 = new web3_1.default(new web3_1.default.providers.WebsocketProvider(ws)), contract = new erc_20_1.default(from);
-        // instantiate a higher order contract with the deployed contract address
-        tokenAddress && (yield contract.at(web3, { address: tokenAddress }));
-        let tx = null;
-        if (!contract)
-            dispatch(approvalError(new Error(constants_1.Errors.NO_TOKEN_FOUND)));
-        else {
-            // dispatch approve early as an in-flight notification
-            dispatch(approval(constants_1.APPROVE, address, amount, from));
-            try {
-                // we can allow the contract to fallback to the account it was instantiated with as `from`
-                tx = yield contract.approve(address, amount);
-                dispatch(approval(constants_1.APPROVED, address, amount, from));
-            }
-            catch (err) {
-                dispatch(approvalError(err));
-            }
-        }
-        return tx;
-    });
-};
+const approve = (address, amount, from) => (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
+    const state = getState();
+    const owner = selectors_1.getOwner(state);
+    // a token must have been deployed by this point
+    const tokenAddress = token_1.address(state);
+    const ws = state.websocketAddress || '';
+    const web3Provider = new web3_1.default.providers.WebsocketProvider(ws);
+    const web3 = new web3_1.default(web3Provider);
+    const contract = new erc_20_1.default(owner.address);
+    // instantiate a higher order contract with the deployed contract address
+    tokenAddress && (yield contract.at(web3, { address: tokenAddress }));
+    if (!contract) {
+        const error = new Error(constants_1.Errors.NO_TOKEN_FOUND);
+        dispatch(tokenApproveError(error));
+        return undefined;
+    }
+    const args = { address, amount, from: from || owner.address };
+    // dispatch that a request has been initialized
+    dispatch(tokenApproveRequest(args));
+    try {
+        const emitter = contract.getEventEmitter('Approval');
+        // we can allow the contract to fallback to the account it was instantiated with as `from`
+        contract.approve(address, amount, { from });
+        const eventLog = yield helpers_1.onData(emitter);
+        const eventValues = eventLog.returnValues;
+        const out = {
+            owner: eventValues.owner,
+            spender: eventValues.spender,
+            value: eventValues.value,
+        };
+        dispatch(tokenApproveOk(out));
+        return out;
+    }
+    catch (err) {
+        dispatch(tokenApproveError(err));
+        return undefined;
+    }
+});
 exports.approve = approve;
+const resetTokenApprove = () => tokenApproveReset();
+exports.resetTokenApprove = resetTokenApprove;

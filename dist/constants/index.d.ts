@@ -1,5 +1,3 @@
-export declare const APPLY = "apply";
-export declare const APPLY_ERROR = "apply-error";
 export declare const GET_APPLICATIONS = "get-applications";
 export declare const GET_APPLICATIONS_ERROR = "get-applications-error";
 export declare const CHALLENGE = "challenge";
@@ -16,9 +14,6 @@ export declare const RESET_TOKEN = "reset-token";
 export declare const TRANSFER = "transfer";
 export declare const TRANSFER_ERROR = "transfer-error";
 export declare const TRANSFERRED = "transferred";
-export declare const APPROVE = "approve";
-export declare const APPROVE_ERROR = "approve-error";
-export declare const APPROVED = "approved";
 export declare const DEPLOY_PARAMETERIZER = "deploy-parameterizer";
 export declare const DEPLOY_PARAMETERIZER_ERROR = "deploy-parameterizer-error";
 export declare const DEPLOYED_PARAMETERIZER = "deployed-parameterizer";

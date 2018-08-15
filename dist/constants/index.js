@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.APPLY = 'apply';
-exports.APPLY_ERROR = 'apply-error';
 exports.GET_APPLICATIONS = 'get-applications';
 exports.GET_APPLICATIONS_ERROR = 'get-applications-error';
 exports.CHALLENGE = 'challenge';
@@ -18,9 +16,6 @@ exports.RESET_TOKEN = 'reset-token';
 exports.TRANSFER = 'transfer';
 exports.TRANSFER_ERROR = 'transfer-error';
 exports.TRANSFERRED = 'transferred';
-exports.APPROVE = 'approve';
-exports.APPROVE_ERROR = 'approve-error';
-exports.APPROVED = 'approved';
 exports.DEPLOY_PARAMETERIZER = 'deploy-parameterizer';
 exports.DEPLOY_PARAMETERIZER_ERROR = 'deploy-parameterizer-error';
 exports.DEPLOYED_PARAMETERIZER = 'deployed-parameterizer';

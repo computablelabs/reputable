@@ -16,21 +16,6 @@ const address = (address = '', action) => {
     };
     return map[action.type] ? map[action.type]() : address;
 };
-const applicants = (state = [], action) => {
-    const map = {
-        // we will add an applicant to the state tree
-        [constants_1.APPLY]: () => ([
-            ...state,
-            {
-                name: action.payload.name,
-                deposit: action.payload.deposit,
-                data: action.payload.data,
-            }
-        ]),
-        [constants_1.RESET_REGISTRY]: () => ([]),
-    };
-    return map[action.type] ? map[action.type]() : state;
-};
 // TODO this
 const challenges = (state = [], action) => {
     const map = {
@@ -61,7 +46,6 @@ const listings = (state = [], action) => {
 };
 exports.default = redux_1.combineReducers({
     address,
-    applicants,
     challenges,
     listings,
 });

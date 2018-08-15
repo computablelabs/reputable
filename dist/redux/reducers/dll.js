@@ -16,7 +16,7 @@ const handlers = {
     [dll_1.DLL_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: {
             [payload.address]: payload.address,
         } })),
-    [dll_1.DLL_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload })),
+    [dll_1.DLL_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
     [dll_1.DLL_RESET]: (state, { payload }) => (Object.assign({}, initialState)),
 };
 exports.default = createReducer_1.default(handlers, initialState);

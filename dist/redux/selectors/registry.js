@@ -1,6 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const registry = (state) => state.registry;
-exports.registry = registry;
-const address = (state) => state.registry && state.registry.address;
-exports.address = address;
+const model = 'registry';
+const getRegistry = (state = {}) => {
+    const stateItem = state[model];
+    if (!stateItem) {
+        return undefined;
+    }
+    return stateItem ?
+        stateItem : undefined;
+};
+exports.getRegistry = getRegistry;
+const getRegistryAddress = (state = {}) => {
+    const registry = getRegistry(state);
+    return registry && registry.address ?
+        registry.address : '';
+};
+exports.getRegistryAddress = getRegistryAddress;
