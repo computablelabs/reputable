@@ -10,15 +10,13 @@ import { combineReducers } from 'redux'
 import {
   DEPLOYED_REGISTRY,
   RESET_REGISTRY,
-  APPLY,
   LIST,
-  CHALLENGE
+  CHALLENGE,
 } from '../../constants'
 import {
   FSA,
   Reducer,
   ReductionMap,
-  Applicant,
   Challenge,
   Listing,
 } from '../../interfaces'
@@ -31,24 +29,6 @@ const address:Reducer<string|undefined, FSA> = (address = '', action) => {
   }
 
   return map[action.type] ? map[action.type]() : address
-}
-
-const applicants:Reducer<Applicant[]|undefined, FSA> = (state = [], action) => {
-  const map:ReductionMap = {
-    // we will add an applicant to the state tree
-    [APPLY]: () => ([
-      ...state,
-      {
-        name: action.payload.name,
-        deposit: action.payload.deposit,
-        data: action.payload.data,
-      }
-    ]),
-
-    [RESET_REGISTRY]: () => ([]),
-  }
-
-  return map[action.type] ? map[action.type]() : state
 }
 
 // TODO this
@@ -90,7 +70,7 @@ const listings:Reducer<Listing[]|undefined, FSA> = (state = [], action) => {
 
 export default combineReducers({
   address,
-  applicants,
   challenges,
   listings,
 })
+

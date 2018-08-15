@@ -1,6 +1,3 @@
-export const APPLY = 'apply'
-export const APPLY_ERROR = 'apply-error'
-
 export const GET_APPLICATIONS = 'get-applications'
 export const GET_APPLICATIONS_ERROR = 'get-applications-error'
 

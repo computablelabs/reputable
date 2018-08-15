@@ -9,6 +9,10 @@ import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatc
 import { deployRegistry, resetRegistry } from '../../src/redux/dispatchers/registry'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { dispatcher } from '../../src/redux/dispatchers'
+import { approve } from '../../src/redux/action-creators/token/approve'
+import { transfer } from '../../src/redux/action-creators/token/transfer'
+import { apply } from '../../src/redux/action-creators/registry/apply'
 import { State } from '../../src/interfaces'
 import { getRegistryAddress } from '../../src/redux/selectors'
 
@@ -71,6 +75,41 @@ describe('registry state', () => {
       expect(registryAddress).toBeTruthy()
       // hashed addresses are always 42 chars
       expect(registryAddress && registryAddress.length).toBe(42)
+    })
+  })
+
+  describe('with a deployed registry', () => {
+    beforeAll(async () => {
+      const owner = accounts[0]
+      const user = accounts[1]
+
+      const registryAddress = await deployRegistry('the registry', owner)
+
+      // transfer funds to the spender
+      await dispatcher(transfer(user, 100 * 1000))
+
+      // approve the registry to spend on behalf of the spender
+      await dispatcher(approve(registryAddress, 100 * 1000, user))
+    })
+
+    afterAll(() => {
+      resetRegistry()
+    })
+
+    describe('apply', () => {
+      it('applies a listing to a registry', async () => {
+        const state: State = store.getState()
+        const registryAddress: string = getRegistryAddress(state)
+        const userAddress = accounts[1]
+        const listingData = 'foo listing'
+
+        const txValues = await dispatcher(apply(registryAddress, listingData, userAddress, 100))
+
+        expect(txValues.applicant).toBe(userAddress)
+        expect(txValues.deposit).toBe('100')
+        expect(txValues.appEndDate).toBeGreaterThan(0)
+        expect(txValues.listing).toBe(listingData)
+      })
     })
   })
 })

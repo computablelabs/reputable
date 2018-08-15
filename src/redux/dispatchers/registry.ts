@@ -1,15 +1,21 @@
 import { Nos } from 'computable/dist/types'
+import { TransactionReceipt } from 'web3/types.d'
+import { State } from '../../interfaces'
 import store from '../store'
 import {
   apply as getApplicant,
   deployRegistry as deploy,
   resetRegistry as reset,
 } from '../action-creators/registry'
+import { getRegistryAddress } from '../selectors'
 
-// TODO revisit now that we have some real implementations in. Likely it should be an async promise for a TransactionReceipt like token#approve
-const apply = (name:string, deposit?:Nos, data?:string): void => {
+const apply = (listing: string, userAddress:string, deposit?:Nos, data?:string): Promise<TransactionReceipt> => {
+  const state: State = store.getState()
+  const registryAddress = getRegistryAddress(state)
+
   // TODO default for deposit? App needs/has parameterizer defaults?
-  store.dispatch(getApplicant(name, deposit || 0, data)) // this should move an application into the applicants list
+  // this should move an application into the applicants list
+  return store.dispatch(getApplicant(registryAddress, listing, userAddress, deposit || 0, data))
 }
 
 const deployRegistry = async (name:string, address?:string): Promise<string> =>

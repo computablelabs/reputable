@@ -9,6 +9,7 @@ import attributeStoreAddress from './attribute-store'
 import voting from './voting'
 import parameterizer from './parameterizer'
 import registry from './registry'
+import registryApply from './registry-apply'
 
 // TODO it appears that upcoming versions of redux typings will make the cast to 'any' not needed...
 export default combineReducers({
@@ -22,4 +23,5 @@ export default combineReducers({
   voting,
   parameterizer,
   registry,
+  registryApply,
 } as any)
