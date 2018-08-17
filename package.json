@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jasmine-ts ./spec/**/*.spec.ts",
-    "build": "npm run build:clean && ./node_modules/typescript/bin/tsc",
-    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/interfaces && rm -rf ./dist/redux",
-    "build:dry": "./node_modules/typescript/bin/tsc -noEmit",
+    "build": "npm run build:clean && tsc -p ./tsbuild.json",
+    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/interfaces && rm -rf ./dist/redux",
+    "build:dry": "tsc -noEmit -p ./tsbuild.json",
     "test:init": "jasmine-ts init"
   },
   "keywords": [
