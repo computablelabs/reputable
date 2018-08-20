@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import { EventLog } from 'web3/types.d'
 import Registry from 'computable/dist/contracts/registry'
 import { onData } from 'computable/dist/helpers'
@@ -9,6 +8,7 @@ import {
   Participant,
 } from '../../../interfaces'
 import { getOwner, getRegistryAddress } from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 // Action Types
 export const REGISTRY_APPLY_REQUEST = 'REGISTRY_APPLY_REQUEST'
@@ -50,9 +50,15 @@ const apply = (
     const owner: Participant = getOwner(state)
     const registryAddress: string = getRegistryAddress(state)
 
-    const websocketAddress: string = state.websocketAddress || ''
-    const web3Provider = new Web3.providers.WebsocketProvider(websocketAddress)
-    const web3 = new Web3(web3Provider)
+    let web3
+
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(registryApplyError(err))
+      return undefined
+    }
+
     const registry = new Registry(owner.address)
 
     registryAddress && await registry.at(web3, { address: registryAddress })

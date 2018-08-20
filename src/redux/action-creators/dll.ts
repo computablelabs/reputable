@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import { Contract } from 'web3/types.d'
 import { deployDll as deploy } from 'computable/dist/helpers'
 import {
@@ -10,6 +9,7 @@ import {
 } from '../../interfaces'
 import { Errors } from '../../constants'
 import { getOwner } from '../selectors'
+import { getWeb3 } from '../../helpers'
 
 // Action Types
 export const DLL_REQUEST = 'DLL_REQUEST'
@@ -51,12 +51,15 @@ const deployDll = (address: string = ''): any =>
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
     const owner: Participant | undefined = getOwner(state)
-    const { websocketAddress } = state
 
     dispatch(dllRequest({ address }))
 
-    if (!websocketAddress) {
-      dispatch(dllError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
+    let web3
+
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(dllError(err))
       return ''
     }
 
@@ -64,9 +67,6 @@ const deployDll = (address: string = ''): any =>
       dispatch(dllError(new Error(Errors.NO_ADMIN_FOUND)))
       return ''
     }
-
-    const web3Provider = new Web3.providers.WebsocketProvider(websocketAddress)
-    const web3 = new Web3(web3Provider)
 
     try {
       // note that the computable deploy helpers return the actual contract

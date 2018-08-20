@@ -1,16 +1,13 @@
-import Web3 from 'web3'
 import { EventLog } from 'web3/types.d'
-import Erc20 from 'computable/dist/contracts/erc-20'
 import { onData } from 'computable/dist/helpers'
-import { address as addressSelector } from '../../selectors/token'
 import {
   FSA,
   Action,
   State,
   Approval,
 } from '../../../interfaces'
-import { Errors } from '../../../constants'
 import { getOwner } from '../../selectors'
+import { getTokenContract } from '../../../helpers'
 
 // Action Types
 export const TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST'
@@ -47,19 +44,12 @@ const approve = (address: string, amount: number | string, from?: string): any =
     const state: State = getState()
     const owner = getOwner(state)
 
-    // a token must have been deployed by this point
-    const tokenAddress = addressSelector(state)
-    const ws = state.websocketAddress || ''
-    const web3Provider = new Web3.providers.WebsocketProvider(ws)
-    const web3 = new Web3(web3Provider)
-    const contract = new Erc20(owner.address)
+    let contract
 
-    // instantiate a higher order contract with the deployed contract address
-    tokenAddress && await contract.at(web3, { address: tokenAddress })
-
-    if (!contract) {
-      const error = new Error(Errors.NO_TOKEN_FOUND)
-      dispatch(tokenApproveError(error))
+    try {
+      contract = await getTokenContract()
+    } catch (err) {
+      dispatch(tokenApproveError(err))
 
       return undefined
     }

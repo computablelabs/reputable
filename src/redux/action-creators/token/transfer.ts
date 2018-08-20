@@ -1,9 +1,6 @@
-import Web3 from 'web3'
 import { EventLog } from 'web3/types.d'
 import Erc20 from 'computable/dist/contracts/erc-20'
 import { onData } from 'computable/dist/helpers'
-import { address as addressSelector } from '../../selectors/token'
-import { getOwner } from '../../selectors'
 import {
   FSA,
   Action,
@@ -11,6 +8,9 @@ import {
   Transfer,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
+import { address as addressSelector } from '../../selectors/token'
+import { getOwner } from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 // Action Types
 export const TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST'
@@ -48,11 +48,17 @@ const transfer = (to: string, amount: number | string, from?: string): any =>
     const state: State = getState()
     const owner = getOwner(state)
 
+    let web3
+
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(tokenTransferError(err))
+      return undefined
+    }
+
     // a token must have been deployed by this point
     const tokenAddress = addressSelector(state)
-    const ws = state.websocketAddress || ''
-    const web3Provider = new Web3.providers.WebsocketProvider(ws)
-    const web3 = new Web3(web3Provider)
     const contract = new Erc20(owner.address)
 
     // instantiate a contract from the deployed token

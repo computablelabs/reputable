@@ -1,10 +1,11 @@
 import * as ganache from 'ganache-cli'
-import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import {
+  setWebsocketAddress,
+  resetWebsocketAddress,
+} from '../../src/redux/dispatchers/web3'
 import { maybeParseInt } from 'computable/dist/helpers'
-import Erc20 from 'computable/dist/contracts/erc-20'
 import {
   deployToken,
   resetToken,
@@ -14,10 +15,10 @@ import {
 import { State } from '../../src/interfaces'
 import { address } from '../../src/redux/selectors/token'
 import { getApprovals, getTransfers } from '../../src/redux/selectors'
+import { getWeb3, getTokenContract } from '../../src/helpers'
 
 describe('token state', () => {
   let server: any
-  let web3:Web3
   let accounts: string[]
 
   beforeAll(async () => {
@@ -25,8 +26,8 @@ describe('token state', () => {
     server.listen(8544)
     // so that the provider is available to be re-created on demand
     setWebsocketAddress('ws://localhost:8544')
-    // in actual use you'll put the ws host in the state tree, but not needed here
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8544'))
+
+    const web3 = await getWeb3({ force: true })
     accounts = await web3.eth.getAccounts()
 
     participate('Mr. Admin Pants', accounts[0])
@@ -61,11 +62,7 @@ describe('token state', () => {
     })
 
     it('has assigned the initial funds to the admin address', async () => {
-      const addr = address(store.getState()) || '',
-        contract = addr && new Erc20(accounts[0])
-
-      contract && await contract.at(web3, { address:addr }) // will be same as tokenAddress
-
+      const contract = await getTokenContract()
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
       expect(maybeParseInt(funds)).toBe(1000000)
@@ -141,12 +138,7 @@ describe('token state', () => {
       // TODO (geoff) This test is not idempotent...
       //   It relies on the state configured in the spec above.
       it('actually transferred the funds to the other account', async () => {
-        let state: State = store.getState()
-
-        const addr = address(state) || ''
-        const contract = addr && new Erc20(accounts[0])
-
-        contract && await contract.at(web3, { address:addr })
+        const contract = await getTokenContract()
 
         const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
         expect(maybeParseInt(funds2)).toBe(500000)

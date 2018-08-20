@@ -9,16 +9,16 @@ import {
 } from '.'
 
 interface State {
-  readonly websocketAddress?: string
-  readonly participants?: StateItem<Participant>
-  readonly token?: Token
-  readonly tokenApprovals?: StateItem<Approval>
+  readonly attributeStoreAddress?: StateItem<string>
+  readonly dllAddress?: StateItem<string>
   readonly parameterizer?: Parameterizer
-  readonly voting?: Voting
+  readonly participants?: StateItem<Participant>
   readonly registry?: Registry
   readonly registryApplications?: StateItem<any>
-  readonly dllAddress?: StateItem<string>
-  readonly attributeStoreAddress?: StateItem<string>
+  readonly token?: Token
+  readonly tokenApprovals?: StateItem<Approval>
+  readonly voting?: Voting
+  readonly websocketAddress?: StateItem<string>
 }
 
 export default State

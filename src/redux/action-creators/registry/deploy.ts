@@ -1,10 +1,5 @@
-import Web3 from 'web3'
 import { RegistryDeployParams } from 'computable/dist/interfaces'
 import Registry from 'computable/dist/contracts/registry'
-import { address as getTokenAddress } from '../../selectors/token'
-import { address as getVotingAddress } from '../../selectors/voting'
-import { address as getParameterizerAddress } from '../../selectors/parameterizer'
-import { getOwner } from '../../selectors'
 import {
   Action,
   FSA,
@@ -19,6 +14,11 @@ import {
   RESET_REGISTRY,
   Errors,
 } from '../../../constants'
+import { address as getTokenAddress } from '../../selectors/token'
+import { address as getVotingAddress } from '../../selectors/voting'
+import { address as getParameterizerAddress } from '../../selectors/parameterizer'
+import { getOwner } from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 /**
  * support actions for the thunk deployToken action itself
@@ -57,47 +57,63 @@ const deployRegistryError = (err:Error): FSA => (
  */
 const deployRegistry = (name:string, address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
-    const state:State = getState(),
-      websocketAddress = state.websocketAddress,
-      owner: Participant | undefined = getOwner(state),
-      tokenAddress = getTokenAddress(state),
-      votingAddress = getVotingAddress(state),
-      parameterizerAddress = getParameterizerAddress(state)
+    const state:State = getState()
+    const owner: Participant | undefined = getOwner(state)
+    const tokenAddress = getTokenAddress(state)
+    const votingAddress = getVotingAddress(state)
+    const parameterizerAddress = getParameterizerAddress(state)
 
-    let registryAddress = ''
+    let web3
 
-    if (!websocketAddress) dispatch(deployRegistryError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!owner) dispatch(deployRegistryError(new Error(Errors.NO_ADMIN_FOUND)))
-    else if (!tokenAddress) dispatch(deployRegistryError(new Error(Errors.NO_TOKEN_FOUND)))
-    else if (!votingAddress) dispatch(deployRegistryError(new Error(Errors.NO_VOTING_FOUND)))
-    else if (!parameterizerAddress) dispatch(deployRegistryError(new Error(Errors.NO_PARAMETERIZER_FOUND)))
-    else {
-      // create web3 on demand with our provider
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(websocketAddress)),
-        // we can dispatch deploy early here, as deploy is not to be confused with deployed
-        action = deployRegistryAction(tokenAddress, votingAddress, parameterizerAddress, name)
-
-      dispatch(action)
-      // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Registry(address || owner.address)
-
-      try {
-        // @ts-ignore:2345
-        registryAddress = await contract.deploy(web3, action.payload)
-        dispatch(deployedRegistry(registryAddress))
-      } catch(err) {
-        dispatch(deployRegistryError(err))
-      }
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(deployRegistryError(err))
+      return ''
     }
 
-    return registryAddress
+    if (!owner) {
+      dispatch(deployRegistryError(new Error(Errors.NO_ADMIN_FOUND)))
+      return ''
+    }
+
+    if (!tokenAddress) {
+      dispatch(deployRegistryError(new Error(Errors.NO_TOKEN_FOUND)))
+      return ''
+    }
+
+    if (!votingAddress) {
+      dispatch(deployRegistryError(new Error(Errors.NO_VOTING_FOUND)))
+      return ''
+    }
+
+    if (!parameterizerAddress) {
+      dispatch(deployRegistryError(new Error(Errors.NO_PARAMETERIZER_FOUND)))
+      return ''
+    }
+
+    // we can dispatch deploy early here, as deploy is not to be confused with deployed
+    const action = deployRegistryAction(tokenAddress, votingAddress, parameterizerAddress, name)
+    dispatch(action)
+    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
+    const contract = new Registry(address || owner.address)
+
+    try {
+      // @ts-ignore:2345
+      const registryAddress = await contract.deploy(web3, action.payload)
+      dispatch(deployedRegistry(registryAddress))
+
+      return registryAddress
+    } catch(err) {
+      dispatch(deployRegistryError(err))
+
+      return ''
+    }
   }
 }
 
 // including with deployment actions as it fits best here
 const resetRegistry = (): Action => ({ type: RESET_REGISTRY })
 
-export {
-  deployRegistry,
-  resetRegistry,
-}
+export { deployRegistry, resetRegistry }
+

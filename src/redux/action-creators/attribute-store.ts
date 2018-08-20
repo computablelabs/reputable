@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import { Contract } from 'web3/types.d'
 import { deployAttributeStore as deploy } from 'computable/dist/helpers'
 import {
@@ -10,6 +9,7 @@ import {
 } from '../../interfaces'
 import { Errors } from '../../constants'
 import { getOwner } from '../selectors'
+import { getWeb3 } from '../../helpers'
 
 // Action Types
 export const ATTRIBUTE_STORE_REQUEST = 'ATTRIBUTE_STORE_REQUEST'
@@ -51,13 +51,15 @@ const deployAttributeStore = (address: string = ''): any =>
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
     const owner: Participant | undefined = getOwner(state)
-    const { websocketAddress } = state
 
     dispatch(attributeStoreRequest({ address }))
 
-    if (!websocketAddress) {
-      const error = new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
-      dispatch(attributeStoreError(error))
+    let web3
+
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(attributeStoreError(err))
       return ''
     }
 
@@ -66,9 +68,6 @@ const deployAttributeStore = (address: string = ''): any =>
       dispatch(attributeStoreError(error))
       return ''
     }
-
-    const web3Provider = new Web3.providers.WebsocketProvider(websocketAddress)
-    const web3 = new Web3(web3Provider)
 
     try {
       // note that the computable deploy helpers return the actual contract

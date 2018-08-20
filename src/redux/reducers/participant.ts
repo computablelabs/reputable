@@ -1,6 +1,5 @@
 import {
   FSA,
-  State,
   StateItem,
   Participant,
 } from '../../interfaces'
@@ -30,7 +29,7 @@ const handlers = {
       },
     }
   },
-  [PARTICIPANTS_RESET]: (state: State, { payload }: FSA) => ({
+  [PARTICIPANTS_RESET]: (state: StateItem<Participant>, { payload }: FSA) => ({
     ...initialState,
   }),
 }

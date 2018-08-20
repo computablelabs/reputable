@@ -34,9 +34,6 @@ export const DEPLOY_REGISTRY_ERROR = 'deploy-registry-error'
 export const DEPLOYED_REGISTRY = 'deployed-registry'
 export const RESET_REGISTRY= 'reset-registry'
 
-export const WEBSOCKET_ADDRESS_SET = 'websocket-address-set'
-export const RESET_WEBSOCKET_ADDRESS = 'reset-websocket-address'
-
 export enum Contracts {
   TOKEN = 'token',
   PARAMETERIZER = 'parameterizer',

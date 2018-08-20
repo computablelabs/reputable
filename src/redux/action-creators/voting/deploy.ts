@@ -1,11 +1,4 @@
-import Web3 from 'web3'
 import Voting from 'computable/dist/contracts/plcr-voting'
-import { address as getTokenAddress } from '../../selectors/token'
-import {
-  getOwner,
-  getDllAddress,
-  getAttributeStoreAddress,
-} from '../../selectors'
 import {
   Action,
   FSA,
@@ -20,6 +13,13 @@ import {
   RESET_VOTING,
   Errors,
 } from '../../../constants'
+import { address as getTokenAddress } from '../../selectors/token'
+import {
+  getOwner,
+  getDllAddress,
+  getAttributeStoreAddress,
+} from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 /**
  * support actions for the thunk action creator
@@ -43,39 +43,60 @@ const deployVotingError = (err:Error): FSA => ({ type: DEPLOY_VOTING_ERROR, payl
 
 const deployVoting = (address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
-    const state:State = getState(),
-      owner: Participant | undefined = getOwner(state),
-      websocketAddress = state.websocketAddress,
-      tokenAddress = getTokenAddress(state),
-      dllAddress = getDllAddress(state),
-      attributeStoreAddress = getAttributeStoreAddress(state)
+    const state:State = getState()
+    const owner: Participant | undefined = getOwner(state)
+    const tokenAddress = getTokenAddress(state)
+    const dllAddress = getDllAddress(state)
+    const attributeStoreAddress = getAttributeStoreAddress(state)
 
-    let votingAddress = ''
+    let web3
 
-    if (!websocketAddress) dispatch(deployVotingError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!owner) dispatch(deployVotingError(new Error(Errors.NO_ADMIN_FOUND)))
-    else if (!tokenAddress) dispatch(deployVotingError(new Error(Errors.NO_TOKEN_FOUND)))
-    else if (!dllAddress) dispatch(deployVotingError(new Error(Errors.NO_DLL_FOUND)))
-    else if (!attributeStoreAddress) dispatch(deployVotingError(new Error(Errors.NO_ATTRIBUTESTORE_FOUND)))
-    else {
-      // create web3 on demand with our provider
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(websocketAddress))
-        // we can dispatch deploy early here, as deploy is not to be confused with deployed)
-      dispatch(deployVotingAction())
-      // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Voting(address || owner.address)
-
-      try {
-        votingAddress = await contract.deploy(web3,
-          { tokenAddress, dllAddress, attributeStoreAddress })
-
-        dispatch(deployedVoting(votingAddress))
-      } catch(err) {
-        dispatch(deployVotingError(err))
-      }
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(deployVotingError(err))
+      return ''
     }
 
-    return votingAddress
+    if (!owner) {
+      dispatch(deployVotingError(new Error(Errors.NO_ADMIN_FOUND)))
+      return ''
+    }
+
+    if (!tokenAddress) {
+      dispatch(deployVotingError(new Error(Errors.NO_TOKEN_FOUND)))
+      return ''
+    }
+
+    if (!dllAddress) {
+      dispatch(deployVotingError(new Error(Errors.NO_DLL_FOUND)))
+      return ''
+    }
+
+    if (!attributeStoreAddress) {
+      dispatch(deployVotingError(new Error(Errors.NO_ATTRIBUTESTORE_FOUND)))
+      return ''
+    }
+
+    // we can dispatch deploy early here, as deploy is not to be confused with deployed)
+    dispatch(deployVotingAction())
+    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
+    const contract = new Voting(address || owner.address)
+
+    try {
+      const votingAddress = await contract.deploy(web3, {
+        tokenAddress,
+        dllAddress,
+        attributeStoreAddress,
+      })
+
+      dispatch(deployedVoting(votingAddress))
+
+      return votingAddress
+    } catch(err) {
+      dispatch(deployVotingError(err))
+      return ''
+    }
   }
 }
 

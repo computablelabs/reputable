@@ -1,8 +1,7 @@
 import * as ganache from 'ganache-cli'
-import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
@@ -15,53 +14,54 @@ import { transfer } from '../../src/redux/action-creators/token/transfer'
 import { apply } from '../../src/redux/action-creators/registry/apply'
 import { State } from '../../src/interfaces'
 import { getRegistryAddress } from '../../src/redux/selectors'
+import { getWeb3 } from '../../src/helpers'
 
 describe('registry state', () => {
-  let server:any,
-    web3:Web3,
-    accounts:string[]
-
-  beforeAll(async () => {
-    server = ganache.server({ ws:true })
-    server.listen(8447)
-    // so that the provider is available to be re-created on demand
-    setWebsocketAddress('ws://localhost:8447')
-    // in actual use you'll put the ws host in the state tree, but not needed here
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8447'))
-    accounts = await web3.eth.getAccounts()
-
-    participate('Admin, son of Pants', accounts[0])
-
-    // p11r will want a token deployed
-    await deployToken(accounts[0])
-    // voting deploy demands that dll and attrStore be deployed
-    await deployDll(accounts[0])
-    await deployAttributeStore(accounts[0])
-    await deployVoting(accounts[0])
-    await deployParameterizer(accounts[0])
-  })
-
-  afterAll(() => {
-    server.close()
-    // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetToken()
-    resetDll()
-    resetAttributeStore()
-    resetVoting()
-    resetParameterizer()
-    resetRegistry()
-  })
-
-  it('begins with unhydrated registry', () => {
-    const state: State = store.getState()
-    const registryAddress: string = getRegistryAddress(state)
-
-    expect(registryAddress).toBeFalsy()
-  })
-
   describe('deployment', () => {
+    let server:any,
+      accounts:string[]
+
+    beforeAll(async () => {
+      server = ganache.server({ ws:true })
+      server.listen(8447)
+
+      const web3 = await getWeb3({
+        force: true,
+        address: 'ws://localhost:8447',
+      })
+      accounts = await web3.eth.getAccounts()
+
+      participate('Admin, son of Pants', accounts[0])
+
+      // p11r will want a token deployed
+      await deployToken(accounts[0])
+      // voting deploy demands that dll and attrStore be deployed
+      await deployDll(accounts[0])
+      await deployAttributeStore(accounts[0])
+      await deployVoting(accounts[0])
+      await deployParameterizer(accounts[0])
+    })
+
+    afterAll(() => {
+      server.close()
+      // tear it all down as the store is a singleton
+      resetParticipants()
+      resetWebsocketAddress()
+      resetToken()
+      resetDll()
+      resetAttributeStore()
+      resetVoting()
+      resetParameterizer()
+      resetRegistry()
+    })
+
+    it('begins with unhydrated registry', () => {
+      const state: State = store.getState()
+      const registryAddress: string = getRegistryAddress(state)
+
+      expect(registryAddress).toBeFalsy()
+    })
+
     it('deploys the registry contract, placing address in the state tree', async () => {
       // that the actual ws->redux events are working...
       // const deployListener = (reg:Registry) => { console.log(reg) },
@@ -79,9 +79,31 @@ describe('registry state', () => {
   })
 
   describe('with a deployed registry', () => {
+    let server:any,
+      accounts:string[]
+
     beforeAll(async () => {
+      server = ganache.server({ ws:true })
+      server.listen(8448)
+
+      const web3 = await getWeb3({
+        force: true,
+        address: 'ws://localhost:8448',
+      })
+      accounts = await web3.eth.getAccounts()
+
       const owner = accounts[0]
       const user = accounts[1]
+
+      participate('Admin, son of Pants', owner)
+
+      // p11r will want a token deployed
+      await deployToken(owner)
+      // voting deploy demands that dll and attrStore be deployed
+      await deployDll(owner)
+      await deployAttributeStore(owner)
+      await deployVoting(owner)
+      await deployParameterizer(owner)
 
       const registryAddress = await deployRegistry('the registry', owner)
 
@@ -93,6 +115,15 @@ describe('registry state', () => {
     })
 
     afterAll(() => {
+      server.close()
+      // tear it all down as the store is a singleton
+      resetParticipants()
+      resetWebsocketAddress()
+      resetToken()
+      resetDll()
+      resetAttributeStore()
+      resetVoting()
+      resetParameterizer()
       resetRegistry()
     })
 

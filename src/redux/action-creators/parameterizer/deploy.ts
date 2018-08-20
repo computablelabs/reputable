@@ -1,9 +1,5 @@
-import Web3 from 'web3'
 import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import Parameterizer from 'computable/dist/contracts/parameterizer'
-import { address as getTokenAddress } from '../../selectors/token'
-import { address as getVotingAddress } from '../../selectors/voting'
-import { getOwner } from '../../selectors'
 import {
   Action,
   FSA,
@@ -19,6 +15,10 @@ import {
   ParameterizerDefaults,
   Errors,
 } from '../../../constants'
+import { address as getTokenAddress } from '../../selectors/token'
+import { address as getVotingAddress } from '../../selectors/voting'
+import { getOwner } from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 /**
  * support actions for the thunk deployToken action itself
@@ -76,39 +76,52 @@ const deployParameterizerError = (err:Error): FSA => (
  */
 const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployParams>): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
-    const state:State = getState(),
-      owner: Participant | undefined = getOwner(state),
-      websocketAddress = state.websocketAddress,
-      tokenAddress = getTokenAddress(state),
-      votingAddress = getVotingAddress(state)
+    const state:State = getState()
+    const owner: Participant | undefined = getOwner(state)
+    const tokenAddress = getTokenAddress(state)
+    const votingAddress = getVotingAddress(state)
 
-    let parameterizerAddress = ''
+    let web3
 
-    if (!websocketAddress) dispatch(deployParameterizerError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!owner) dispatch(deployParameterizerError(new Error(Errors.NO_ADMIN_FOUND)))
-    else if (!tokenAddress) dispatch(deployParameterizerError(new Error(Errors.NO_TOKEN_FOUND)))
-    else if (!votingAddress) dispatch(deployParameterizerError(new Error(Errors.NO_VOTING_FOUND)))
-    else {
-      // create web3 on demand with our provider
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(websocketAddress)),
-        // we can dispatch deploy early here, as deploy is not to be confused with deployed
-        action = deployParameterizerAction(tokenAddress, votingAddress, opts)
-
-      dispatch(action)
-      // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Parameterizer(address || owner.address)
-
-      try {
-        // TSC is confused here, the payload is guaranteed to be a ParameterizerDeployParams
-        // @ts-ignore:2345
-        parameterizerAddress = await contract.deploy(web3, action.payload)
-        dispatch(deployedParameterizer(parameterizerAddress))
-      } catch(err) {
-        dispatch(deployParameterizerError(err))
-      }
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(deployParameterizerError(err))
+      return ''
     }
 
-    return parameterizerAddress
+    if (!owner) {
+      dispatch(deployParameterizerError(new Error(Errors.NO_ADMIN_FOUND)))
+      return ''
+    }
+
+    if (!tokenAddress) {
+      dispatch(deployParameterizerError(new Error(Errors.NO_TOKEN_FOUND)))
+      return ''
+    }
+
+    if (!votingAddress) {
+      dispatch(deployParameterizerError(new Error(Errors.NO_VOTING_FOUND)))
+      return ''
+    }
+
+    // we can dispatch deploy early here, as deploy is not to be confused with deployed
+    const action = deployParameterizerAction(tokenAddress, votingAddress, opts)
+    dispatch(action)
+    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
+    const contract = new Parameterizer(address || owner.address)
+
+    try {
+      // TSC is confused here, the payload is guaranteed to be a ParameterizerDeployParams
+      // @ts-ignore:2345
+      const parameterizerAddress = await contract.deploy(web3, action.payload)
+      dispatch(deployedParameterizer(parameterizerAddress))
+
+      return parameterizerAddress
+    } catch(err) {
+      dispatch(deployParameterizerError(err))
+      return ''
+    }
   }
 }
 

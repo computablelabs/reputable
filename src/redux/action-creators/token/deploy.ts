@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import { Nos } from 'computable/dist/types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import Erc20 from 'computable/dist/contracts/erc-20'
@@ -18,6 +17,7 @@ import {
   Errors,
 } from '../../../constants'
 import { getOwner } from '../../selectors'
+import { getWeb3 } from '../../../helpers'
 
 /**
  * support actions for the thunk deployToken action itself
@@ -51,40 +51,42 @@ const deployTokenError = (err:Error): FSA => (
 const deployToken = (address?:string, supply?:Nos): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
-    const websocketAddress = state.websocketAddress
     const owner: Participant | undefined = getOwner(state)
 
-    let tokenAddress = ''
+    let web3
 
-    if (!websocketAddress) dispatch(deployTokenError(new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)))
-    else if (!owner) dispatch(deployTokenError(new Error(Errors.NO_ADMIN_FOUND)))
-    else {
-      // create web3 on demand with our provider
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(websocketAddress)),
-        // we can dispatch deploy early here, as deploy is not to be confused with deployed
-        action = deployTokenAction(address || owner.address)
-
-      dispatch(action)
-      // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-      const contract = new Erc20(address || owner.address)
-
-      try {
-        // we can just re-use our deploy action payload from above
-        tokenAddress = await contract.deploy(web3, action.payload)
-        dispatch(deployedToken(tokenAddress))
-      } catch(err) {
-        dispatch(deployTokenError(err))
-      }
+    try {
+      web3 = await getWeb3()
+    } catch (err) {
+      dispatch(deployTokenError(err))
+      return ''
     }
 
-    return tokenAddress
+    if (!owner) {
+      dispatch(deployTokenError(new Error(Errors.NO_ADMIN_FOUND)))
+    }
+
+    // we can dispatch deploy early here, as deploy is not to be confused with deployed
+    const action = deployTokenAction(address || owner.address)
+    dispatch(action)
+    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
+    const contract = new Erc20(address || owner.address)
+
+    try {
+      // we can just re-use our deploy action payload from above
+      const tokenAddress = await contract.deploy(web3, action.payload)
+      dispatch(deployedToken(tokenAddress))
+
+      return tokenAddress
+    } catch(err) {
+      dispatch(deployTokenError(err))
+
+      return ''
+    }
   }
 }
 
 // including with deployment actions as it fits best here
 const resetToken = (): Action => ({ type: RESET_TOKEN })
 
-export {
-  deployToken,
-  resetToken,
-}
+export { deployToken, resetToken }

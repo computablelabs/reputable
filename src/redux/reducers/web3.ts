@@ -1,14 +1,29 @@
-import { WEBSOCKET_ADDRESS_SET, RESET_WEBSOCKET_ADDRESS } from '../../constants'
-import { FSA, Reducer, ReductionMap } from '../../interfaces'
+import { FSA, StateItem } from '../../interfaces'
+import {
+  WEBSOCKET_ADDRESS_SET,
+  RESET_WEBSOCKET_ADDRESS,
+} from '../action-creators/web3'
+import createReducer from './createReducer'
 
-const websocketAddress:Reducer<string|undefined, FSA> = (state = '', action) => {
-  const map:ReductionMap = {
-    [WEBSOCKET_ADDRESS_SET]: () => action.payload.websocketAddress,
-
-    [RESET_WEBSOCKET_ADDRESS]: () => '',
-  }
-
-  return map[action.type] ? map[action.type]() : state
+const initialState: StateItem<string> = {
+  loading: false,
+  request: {},
+  data: {},
+  error: undefined,
 }
 
-export default websocketAddress
+const handlers = {
+  [WEBSOCKET_ADDRESS_SET]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      [payload.address]: payload.address,
+    },
+  }),
+  [RESET_WEBSOCKET_ADDRESS]: (state: StateItem<string>, { payload }: FSA) => ({
+    ...initialState,
+  })
+}
+
+export default createReducer(handlers, initialState)
+
