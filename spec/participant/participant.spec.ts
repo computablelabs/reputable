@@ -9,17 +9,17 @@ describe('Participants state', () => {
   })
 
   it('has the correct default state', () => {
-    const state:State = store.getState()
+    const state: State = store.getState()
     const participants = getParticipants(state)
 
     expect(Array.isArray(participants)).toBe(true)
     expect(participants && participants.length).toBe(0)
   })
 
-  it('will add a participant', () => {
-    participate('team awesome', '0x4242424242424242424242424242424242424242')
+  it('will add a participant', async () => {
+    await participate('team awesome', '0x4242424242424242424242424242424242424242')
 
-    const state:State = store.getState()
+    const state: State = store.getState()
     const participants = getParticipants(state)
     const admin = participants && participants[0]
 

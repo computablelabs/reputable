@@ -9,7 +9,7 @@ import {
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { address as addressSelector } from '../../selectors/token'
-import { getOwner } from '../../selectors'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 // Action Types
@@ -46,12 +46,13 @@ const transfer = (to: string, amount: number | string, from?: string): any =>
   // TODO type the thunk args
   async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
     const state: State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner = getOwner(state)
 
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(tokenTransferError(err))
       return undefined
@@ -62,7 +63,12 @@ const transfer = (to: string, amount: number | string, from?: string): any =>
     const contract = new Erc20(owner.address)
 
     // instantiate a contract from the deployed token
-    tokenAddress && await contract.at(web3, { address: tokenAddress }, { from: owner.address })
+    try {
+      tokenAddress && await contract.at(web3, { address: tokenAddress }, { from: owner.address })
+    } catch (err) {
+      dispatch(tokenTransferError(err))
+      return undefined
+    }
 
     if (!contract) {
       const error = new Error(Errors.NO_TOKEN_FOUND)

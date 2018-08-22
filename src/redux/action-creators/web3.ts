@@ -1,11 +1,11 @@
-import { FSA } from '../../interfaces'
+import { FSA, Map } from '../../interfaces'
 
 // Action Types
 export const WEBSOCKET_ADDRESS_SET = 'WEBSOCKET_ADDRESS_SET'
 export const RESET_WEBSOCKET_ADDRESS = 'RESET_WEBSOCKET_ADDRESS'
 
 // Actions
-const websocketAddressOk = (value: { [key: string]: string }): FSA => ({
+const websocketAddressOk = (value: Map): FSA => ({
   type: WEBSOCKET_ADDRESS_SET,
   payload: value,
 })

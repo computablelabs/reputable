@@ -1,9 +1,9 @@
-import { State, StateItem } from '../../interfaces'
+import { State, StateItem, Map } from '../../interfaces'
 
 const model = 'attributeStoreAddress'
 
 const getAttributeStoreAddress = (state: State = {}): string => {
-  const stateItem: StateItem<string> | undefined = state[model]
+  const stateItem: StateItem<Map> | undefined = state[model]
   if (!stateItem) {
     return ''
   }

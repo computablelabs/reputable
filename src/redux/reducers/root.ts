@@ -9,7 +9,7 @@ import token from './token'
 import tokenApprovals from './token-approve'
 import tokenTransfers from './token-transfer'
 import voting from './voting'
-import websocketAddress from './web3'
+import web3 from './web3'
 
 // TODO it appears that upcoming versions of redux typings will make the cast to 'any' not needed...
 export default combineReducers({
@@ -23,5 +23,5 @@ export default combineReducers({
   tokenApprovals,
   tokenTransfers,
   voting,
-  websocketAddress,
+  web3,
 } as any)

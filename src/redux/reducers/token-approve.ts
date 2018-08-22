@@ -1,6 +1,7 @@
 import {
   FSA,
   StateItem,
+  GenericMap,
   Approval,
 } from '../../interfaces'
 import {
@@ -11,7 +12,7 @@ import {
 } from '../action-creators/token/approve'
 import createReducer from './createReducer'
 
-const initialState: StateItem<Approval> = {
+const initialState: StateItem<GenericMap<Approval>> = {
   loading: false,
   request: {},
   data: {},
@@ -19,12 +20,12 @@ const initialState: StateItem<Approval> = {
 }
 
 const handlers = {
-  [TOKEN_APPROVE_REQUEST]: (state: StateItem<Approval>, { payload }: FSA) => ({
+  [TOKEN_APPROVE_REQUEST]: (state: StateItem<GenericMap<Approval>>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [TOKEN_APPROVE_OK]: (state: StateItem<Approval>, { payload }: FSA) => ({
+  [TOKEN_APPROVE_OK]: (state: StateItem<GenericMap<Approval>>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
@@ -32,12 +33,12 @@ const handlers = {
       [payload.address]: payload,
     },
   }),
-  [TOKEN_APPROVE_ERROR]: (state: StateItem<Approval>, { payload }: FSA) => ({
+  [TOKEN_APPROVE_ERROR]: (state: StateItem<GenericMap<Approval>>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [TOKEN_APPROVE_RESET]: (state: StateItem<Approval>, { payload }: FSA) => ({
+  [TOKEN_APPROVE_RESET]: () => ({
     ...initialState,
   }),
 }

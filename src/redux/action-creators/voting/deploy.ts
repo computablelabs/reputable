@@ -16,6 +16,7 @@ import {
 import { address as getTokenAddress } from '../../selectors/token'
 import {
   getOwner,
+  getWebsocketAddress,
   getDllAddress,
   getAttributeStoreAddress,
 } from '../../selectors'
@@ -45,6 +46,7 @@ const deployVoting = (address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
     const owner: Participant | undefined = getOwner(state)
+    const websocketAddress: string = getWebsocketAddress(state)
     const tokenAddress = getTokenAddress(state)
     const dllAddress = getDllAddress(state)
     const attributeStoreAddress = getAttributeStoreAddress(state)
@@ -52,7 +54,7 @@ const deployVoting = (address?:string): any => {
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(deployVotingError(err))
       return ''

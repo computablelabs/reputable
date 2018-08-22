@@ -1,5 +1,4 @@
 import * as ganache from 'ganache-cli'
-import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
@@ -9,22 +8,24 @@ import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatc
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { address as parameterizerAddress } from '../../src/redux/selectors/parameterizer'
+import { getWeb3 } from '../../src/helpers'
 
 describe('parameterizer state', () => {
-  let server:any,
-    web3:Web3,
-    accounts:string[]
+  const port: number = 8559
+  const websocketAddress: string = `ws://localhost:${port}`
+
+  let server:any
+  let accounts:string[]
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
-    server.listen(8559)
-    // so that the provider is available to be re-created on demand
-    setWebsocketAddress('ws://localhost:8559')
-    // in actual use you'll put the ws host in the state tree, but not needed here
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8559'))
+    server.listen(port)
+
+    setWebsocketAddress(websocketAddress)
+    const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
-    participate('team admin', accounts[0])
+    await participate('team admin', accounts[0])
 
     // p11r will want a token deployed
     await deployToken(accounts[0])

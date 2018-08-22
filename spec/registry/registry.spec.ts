@@ -1,7 +1,7 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
@@ -18,17 +18,18 @@ import { getWeb3 } from '../../src/helpers'
 
 describe('registry state', () => {
   describe('deployment', () => {
-    let server:any,
-      accounts:string[]
+    const port: number = 8447
+    const websocketAddress: string = `ws://localhost:${port}`
+
+    let server:any
+    let accounts:string[]
 
     beforeAll(async () => {
       server = ganache.server({ ws:true })
-      server.listen(8447)
+      server.listen(port)
 
-      const web3 = await getWeb3({
-        force: true,
-        address: 'ws://localhost:8447',
-      })
+      setWebsocketAddress(websocketAddress)
+      const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
 
       participate('Admin, son of Pants', accounts[0])
@@ -79,17 +80,18 @@ describe('registry state', () => {
   })
 
   describe('with a deployed registry', () => {
-    let server:any,
-      accounts:string[]
+    const port: number = 8448
+    const websocketAddress: string = `ws://localhost:${port}`
+
+    let server:any
+    let accounts:string[]
 
     beforeAll(async () => {
       server = ganache.server({ ws:true })
-      server.listen(8448)
+      server.listen(port)
 
-      const web3 = await getWeb3({
-        force: true,
-        address: 'ws://localhost:8448',
-      })
+      setWebsocketAddress(websocketAddress)
+      const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
 
       const owner = accounts[0]

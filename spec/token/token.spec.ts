@@ -1,10 +1,7 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import {
-  setWebsocketAddress,
-  resetWebsocketAddress,
-} from '../../src/redux/dispatchers/web3'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { maybeParseInt } from 'computable/dist/helpers'
 import {
   deployToken,
@@ -18,16 +15,18 @@ import { getApprovals, getTransfers } from '../../src/redux/selectors'
 import { getWeb3, getTokenContract } from '../../src/helpers'
 
 describe('token state', () => {
+  const port: number = 8544
+  const websocketAddress: string = `ws://localhost:${port}`
+
   let server: any
   let accounts: string[]
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
-    server.listen(8544)
-    // so that the provider is available to be re-created on demand
-    setWebsocketAddress('ws://localhost:8544')
+    server.listen(port)
 
-    const web3 = await getWeb3({ force: true })
+    setWebsocketAddress(websocketAddress)
+    const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
     participate('Mr. Admin Pants', accounts[0])
@@ -61,8 +60,11 @@ describe('token state', () => {
       expect(addr && addr.length).toBe(42)
     })
 
+    // TODO this test is not idempotent
+    //   It relies on the token contract deployment in the previous test
     it('has assigned the initial funds to the admin address', async () => {
-      const contract = await getTokenContract()
+      const state: State = store.getState()
+      const contract = await getTokenContract(state)
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
       expect(maybeParseInt(funds)).toBe(1000000)
@@ -138,7 +140,8 @@ describe('token state', () => {
       // TODO (geoff) This test is not idempotent...
       //   It relies on the state configured in the spec above.
       it('actually transferred the funds to the other account', async () => {
-        const contract = await getTokenContract()
+        const state: State = store.getState()
+        const contract = await getTokenContract(state)
 
         const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
         expect(maybeParseInt(funds2)).toBe(500000)

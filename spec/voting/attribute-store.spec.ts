@@ -3,22 +3,23 @@ import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { getAttributeStoreAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/helpers'
 
 describe('deploying an attribute store contract', () => {
-  let server:any,
-    accounts:string[]
+  const port: number = 8558
+  const websocketAddress: string = `ws://localhost:${port}`
+
+  let server:any
+  let accounts:string[]
 
   beforeAll( async () => {
     server = ganache.server({ ws:true })
-    server.listen(8558)
-    // in actual use you'll put the ws host in the state tree, but not needed here
-    const web3 = await getWeb3({
-      force: true,
-      address: 'ws://localhost:8558',
-    })
+    server.listen(port)
+
+    setWebsocketAddress(websocketAddress)
+    const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
     participate('Sir Admin Pants', accounts[0])
@@ -48,3 +49,4 @@ describe('deploying an attribute store contract', () => {
     expect(attributeStoreAddress && attributeStoreAddress.length).toBe(42)
   })
 })
+

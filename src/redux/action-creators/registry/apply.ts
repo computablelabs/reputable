@@ -7,7 +7,7 @@ import {
   State,
   Participant,
 } from '../../../interfaces'
-import { getOwner, getRegistryAddress } from '../../selectors'
+import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 // Action Types
@@ -47,13 +47,14 @@ const apply = (
 ): any =>
   async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
     const state: State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner: Participant = getOwner(state)
     const registryAddress: string = getRegistryAddress(state)
 
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(registryApplyError(err))
       return undefined
@@ -61,7 +62,12 @@ const apply = (
 
     const registry = new Registry(owner.address)
 
-    registryAddress && await registry.at(web3, { address: registryAddress })
+    try {
+      registryAddress && await registry.at(web3, { address: registryAddress })
+    } catch (err) {
+      dispatch(registryApplyError(err))
+      return undefined
+    }
 
     const encodedListing: string = web3.utils.toHex(listing)
 

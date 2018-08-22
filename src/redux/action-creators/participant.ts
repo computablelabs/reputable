@@ -16,11 +16,19 @@ const participantsReset = (): FSA => ({
 })
 
 // Action Creators
-const participate = (name:string, address:string): FSA =>
-  participantsOk({ name, address })
+const participate = (name:string, address:string): any => (
+  async (dispatch: Function, getState: Function): Promise<void> => {
+    dispatch(participantsOk({ name, address }))
+    return Promise.resolve()
+  }
+)
 
-const resetParticipants = (): FSA =>
-  participantsReset()
+const resetParticipants = (): any => (
+  async (dispatch: Function, getState: Function): Promise<void> => {
+    dispatch(participantsReset())
+    return Promise.resolve()
+  }
+)
 
 export { participate, resetParticipants }
 

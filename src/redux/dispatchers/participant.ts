@@ -5,12 +5,13 @@
 import store from '../store'
 import { participate as add, resetParticipants as reset } from '../action-creators/participant'
 
-const participate = (name:string, address:string): void => {
-  store.dispatch(add(name, address))
-}
+const participate = async (name:string, address:string): Promise<void> => (
+  await store.dispatch(add(name, address))
+)
 
-const resetParticipants = (): void => {
-  store.dispatch(reset())
-}
+const resetParticipants = async (): Promise<void> => (
+  await store.dispatch(reset())
+)
 
 export { participate, resetParticipants }
+

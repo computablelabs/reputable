@@ -1,7 +1,4 @@
-import {
-  FSA,
-  StateItem,
-} from '../../interfaces'
+import { FSA, StateItem, Map } from '../../interfaces'
 import {
   DLL_REQUEST,
   DLL_OK,
@@ -10,7 +7,7 @@ import {
 } from '../action-creators/dll'
 import createReducer from './createReducer'
 
-const initialState: StateItem<string> = {
+const initialState: StateItem<Map> = {
   loading: false,
   request: {},
   data: {},
@@ -18,24 +15,24 @@ const initialState: StateItem<string> = {
 }
 
 const handlers = {
-  [DLL_REQUEST]: (state: StateItem<string>, { payload }: FSA) => ({
+  [DLL_REQUEST]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [DLL_OK]: (state: StateItem<string>, { payload }: FSA) => ({
+  [DLL_OK]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
       [payload.address]: payload.address,
     },
   }),
-  [DLL_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
+  [DLL_ERROR]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [DLL_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
+  [DLL_RESET]: () => ({
     ...initialState,
   }),
 }

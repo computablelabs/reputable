@@ -17,7 +17,7 @@ import {
 } from '../../../constants'
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
-import { getOwner } from '../../selectors'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 /**
@@ -77,6 +77,7 @@ const deployParameterizerError = (err:Error): FSA => (
 const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployParams>): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner: Participant | undefined = getOwner(state)
     const tokenAddress = getTokenAddress(state)
     const votingAddress = getVotingAddress(state)
@@ -84,7 +85,7 @@ const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployP
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(deployParameterizerError(err))
       return ''

@@ -1,7 +1,4 @@
-import {
-  FSA,
-  StateItem,
-} from '../../interfaces'
+import { FSA, StateItem, Map } from '../../interfaces'
 import {
   REGISTRY_APPLY_REQUEST,
   REGISTRY_APPLY_OK,
@@ -10,7 +7,7 @@ import {
 } from '../action-creators/registry/apply'
 import createReducer from './createReducer'
 
-const initialState: StateItem<string> = {
+const initialState: StateItem<Map> = {
   loading: false,
   request: {},
   data: {},
@@ -18,13 +15,13 @@ const initialState: StateItem<string> = {
 }
 
 const handlers = {
-  [REGISTRY_APPLY_REQUEST]: (state: StateItem<string>, { payload }: FSA) => ({
+  [REGISTRY_APPLY_REQUEST]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
   // we will add an applicant to the state tree
-  [REGISTRY_APPLY_OK]: (state: StateItem<string>, { payload }: FSA) => ({
+  [REGISTRY_APPLY_OK]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
@@ -32,12 +29,12 @@ const handlers = {
       [payload.listing]: payload,
     },
   }),
-  [REGISTRY_APPLY_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
+  [REGISTRY_APPLY_ERROR]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [REGISTRY_APPLY_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
+  [REGISTRY_APPLY_RESET]: () => ({
     ...initialState,
   }),
 }

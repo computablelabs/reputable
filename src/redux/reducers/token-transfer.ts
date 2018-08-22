@@ -1,6 +1,7 @@
 import {
   FSA,
   StateItem,
+  GenericMap,
   Transfer,
 } from '../../interfaces'
 import {
@@ -11,7 +12,7 @@ import {
 } from '../action-creators/token/transfer'
 import createReducer from './createReducer'
 
-const initialState: StateItem<Transfer> = {
+const initialState: StateItem<GenericMap<Transfer>> = {
   loading: false,
   request: {},
   data: {},
@@ -19,12 +20,12 @@ const initialState: StateItem<Transfer> = {
 }
 
 const handlers = {
-  [TOKEN_TRANSFER_REQUEST]: (state: StateItem<Transfer>, { payload }: FSA) => ({
+  [TOKEN_TRANSFER_REQUEST]: (state: StateItem<GenericMap<Transfer>>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [TOKEN_TRANSFER_OK]: (state: StateItem<Transfer>, { payload }: FSA) => ({
+  [TOKEN_TRANSFER_OK]: (state: StateItem<GenericMap<Transfer>>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
@@ -32,12 +33,12 @@ const handlers = {
       [payload.id]: payload,
     },
   }),
-  [TOKEN_TRANSFER_ERROR]: (state: StateItem<Transfer>, { payload }: FSA) => ({
+  [TOKEN_TRANSFER_ERROR]: (state: StateItem<GenericMap<Transfer>>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [TOKEN_TRANSFER_RESET]: (state: StateItem<Transfer>, { payload }: FSA) => ({
+  [TOKEN_TRANSFER_RESET]: () => ({
     ...initialState,
   }),
 }

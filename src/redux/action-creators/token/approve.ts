@@ -47,10 +47,9 @@ const approve = (address: string, amount: number | string, from?: string): any =
     let contract
 
     try {
-      contract = await getTokenContract()
+      contract = await getTokenContract(state)
     } catch (err) {
       dispatch(tokenApproveError(err))
-
       return undefined
     }
 

@@ -8,7 +8,7 @@ import {
   Participant,
 } from '../../interfaces'
 import { Errors } from '../../constants'
-import { getOwner } from '../selectors'
+import { getWebsocketAddress, getOwner } from '../selectors'
 import { getWeb3 } from '../../helpers'
 
 // Action Types
@@ -50,6 +50,7 @@ const dllReset = (): FSA => ({
 const deployDll = (address: string = ''): any =>
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner: Participant | undefined = getOwner(state)
 
     dispatch(dllRequest({ address }))
@@ -57,7 +58,7 @@ const deployDll = (address: string = ''): any =>
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(dllError(err))
       return ''

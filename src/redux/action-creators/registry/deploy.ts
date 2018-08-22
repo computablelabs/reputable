@@ -17,7 +17,7 @@ import {
 import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
 import { address as getParameterizerAddress } from '../../selectors/parameterizer'
-import { getOwner } from '../../selectors'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 /**
@@ -58,6 +58,7 @@ const deployRegistryError = (err:Error): FSA => (
 const deployRegistry = (name:string, address?:string): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner: Participant | undefined = getOwner(state)
     const tokenAddress = getTokenAddress(state)
     const votingAddress = getVotingAddress(state)
@@ -66,7 +67,7 @@ const deployRegistry = (name:string, address?:string): any => {
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(deployRegistryError(err))
       return ''

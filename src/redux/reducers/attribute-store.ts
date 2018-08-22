@@ -1,4 +1,4 @@
-import { FSA, StateItem } from '../../interfaces'
+import { FSA, StateItem, Map } from '../../interfaces'
 import {
   ATTRIBUTE_STORE_REQUEST,
   ATTRIBUTE_STORE_OK,
@@ -7,7 +7,7 @@ import {
 } from '../action-creators/attribute-store'
 import createReducer from './createReducer'
 
-const initialState: StateItem<string> = {
+const initialState: StateItem<Map> = {
   loading: false,
   request: {},
   data: {},
@@ -15,24 +15,24 @@ const initialState: StateItem<string> = {
 }
 
 const handlers = {
-  [ATTRIBUTE_STORE_REQUEST]: (state: StateItem<string>, { payload }: FSA) => ({
+  [ATTRIBUTE_STORE_REQUEST]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [ATTRIBUTE_STORE_OK]: (state: StateItem<string>, { payload }: FSA) => ({
+  [ATTRIBUTE_STORE_OK]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
       [payload.address]: payload.address,
     },
   }),
-  [ATTRIBUTE_STORE_ERROR]: (state: StateItem<string>, { payload }: FSA) => ({
+  [ATTRIBUTE_STORE_ERROR]: (state: StateItem<Map>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [ATTRIBUTE_STORE_RESET]: (state: StateItem<string>, { payload }: FSA) => ({
+  [ATTRIBUTE_STORE_RESET]: () => ({
     ...initialState,
   }),
 }

@@ -1,6 +1,7 @@
 import {
   FSA,
   StateItem,
+  GenericMap,
   Participant,
 } from '../../interfaces'
 import {
@@ -9,7 +10,7 @@ import {
 } from '../action-creators/participant'
 import createReducer from './createReducer'
 
-const initialState: StateItem<Participant> = {
+const initialState: StateItem<GenericMap<Participant>> = {
   loading: false,
   request: {},
   data: {},
@@ -17,7 +18,7 @@ const initialState: StateItem<Participant> = {
 }
 
 const handlers = {
-  [PARTICIPANTS_OK]: (state: StateItem<Participant>, { payload }: FSA) => {
+  [PARTICIPANTS_OK]: (state: StateItem<GenericMap<Participant>>, { payload }: FSA) => {
     payload.owner = !Object.keys(state.data).length
 
     return {
@@ -29,7 +30,7 @@ const handlers = {
       },
     }
   },
-  [PARTICIPANTS_RESET]: (state: StateItem<Participant>, { payload }: FSA) => ({
+  [PARTICIPANTS_RESET]: () => ({
     ...initialState,
   }),
 }

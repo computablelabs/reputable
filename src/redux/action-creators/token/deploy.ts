@@ -16,7 +16,7 @@ import {
   TokenDefaults,
   Errors,
 } from '../../../constants'
-import { getOwner } from '../../selectors'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 /**
@@ -51,12 +51,13 @@ const deployTokenError = (err:Error): FSA => (
 const deployToken = (address?:string, supply?:Nos): any => {
   return async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
+    const websocketAddress: string = getWebsocketAddress(state)
     const owner: Participant | undefined = getOwner(state)
 
     let web3
 
     try {
-      web3 = await getWeb3()
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(deployTokenError(err))
       return ''
