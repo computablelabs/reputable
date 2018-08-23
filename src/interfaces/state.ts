@@ -1,5 +1,4 @@
 import {
-  Approval,
   GenericMap,
   Map,
   Parameterizer,
@@ -18,7 +17,6 @@ interface State {
   readonly registry?: Registry
   readonly registryApplications?: StateItem<any>
   readonly token?: StateItem<Token>
-  readonly tokenApprovals?: StateItem<GenericMap<Approval>>
   readonly voting?: Voting
   readonly web3?: StateItem<GenericMap<string>>
 }

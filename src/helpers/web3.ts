@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import { Errors } from '../constants'
 
 let provider: any
 let web3: Web3
@@ -7,11 +6,7 @@ let web3: Web3
 interface Web3Options {
   force?: boolean
 }
-const getWeb3 = async (address: string, { force = false }: Web3Options = {}) => {
-  if (!address) {
-    throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
-  }
-
+const getWeb3 = (address: string, { force = false }: Web3Options = {}) => {
   if (!provider || force) {
     provider = new Web3.providers.WebsocketProvider(address)
   }

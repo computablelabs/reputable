@@ -1,5 +1,6 @@
 import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
+import Erc20 from 'computable/dist/contracts/erc-20'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
@@ -17,7 +18,7 @@ import {
   getApprovals,
   getTransfers,
 } from '../../src/redux/selectors'
-import { getWeb3, getTokenContract } from '../../src/helpers'
+import { getWeb3 } from '../../src/helpers'
 
 describe('token state', () => {
   const port: number = 8544
@@ -72,7 +73,8 @@ describe('token state', () => {
       const state: State = store.getState()
       const owner: Participant = getOwner(state)
       const address: string = getTokenAddress(state)
-      const contract = await getTokenContract({ web3, address, owner })
+      const contract = new Erc20(owner.address)
+      await contract.at(web3, { address })
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
       expect(maybeParseInt(funds)).toBe(1000000)
@@ -113,9 +115,9 @@ describe('token state', () => {
         approvals = getApprovals(state)
 
         expect(approvals && approvals.length).toBe(1)
-        expect(txValues.owner).toBe(owner)
-        expect(txValues.spender).toBe(spender)
-        expect(txValues.value).toBe(amount.toString())
+        expect(txValues.address).toBe(spender)
+        expect(txValues.from).toBe(owner)
+        expect(txValues.amount).toBe(amount.toString())
       })
     })
 
@@ -143,6 +145,9 @@ describe('token state', () => {
         trans = getTransfers(state)
 
         expect(trans && trans.length).toBe(1)
+        expect(txValues.to).toBe(user)
+        expect(txValues.from).toBe(owner)
+        expect(txValues.amount).toBe(amount.toString())
       })
 
       // TODO (geoff) This test is not idempotent...
@@ -151,7 +156,8 @@ describe('token state', () => {
         const state: State = store.getState()
         const owner: Participant = getOwner(state)
         const address: string = getTokenAddress(state)
-        const contract = await getTokenContract({ web3, address, owner })
+        const contract = new Erc20(owner.address)
+        await contract.at(web3, { address })
 
         const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
         expect(maybeParseInt(funds2)).toBe(500000)

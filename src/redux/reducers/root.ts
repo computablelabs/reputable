@@ -6,8 +6,6 @@ import participants from './participant'
 import registry from './registry'
 import registryApplications from './registry-apply'
 import token from './token'
-import tokenApprovals from './token-approve'
-import tokenTransfers from './token-transfer'
 import voting from './voting'
 import web3 from './web3'
 
@@ -20,8 +18,6 @@ export default combineReducers({
   registry,
   registryApplications,
   token,
-  tokenApprovals,
-  tokenTransfers,
   voting,
   web3,
 } as any)

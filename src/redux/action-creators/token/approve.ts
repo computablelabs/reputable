@@ -1,18 +1,17 @@
+import Erc20 from 'computable/dist/contracts/erc-20'
 import { EventLog } from 'web3/types.d'
 import { onData } from 'computable/dist/helpers'
 import {
   FSA,
   Action,
   State,
-  Map
+  Map,
+  Participant,
+  Approval,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import {
-  getWebsocketAddress,
-  getOwner,
-  getTokenAddress,
-} from '../../selectors'
-import { getWeb3, getTokenContract } from '../../../helpers'
+import { getWeb3 } from '../../../helpers'
+import { getOwner, getWebsocketAddress, getTokenAddress } from '../../selectors'
 
 // Action Types
 export const TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST'
@@ -26,7 +25,7 @@ const tokenApproveRequest = (value: Map): FSA => ({
   payload: value,
 })
 
-const tokenApproveOk = (value: Map): FSA => ({
+const tokenApproveOk = (value: Approval): FSA => ({
   type: TOKEN_APPROVE_OK,
   payload: value,
 })
@@ -49,32 +48,27 @@ const approve = (address: string, amount: number | string, from?: string): any =
     const args = { address, amount, from }
     dispatch(tokenApproveRequest(args))
 
-    const owner = getOwner(state)
-    if (!owner) {
-      const error = new Error(Errors.NO_ADMIN_FOUND)
-      dispatch(tokenApproveError(error))
-      return undefined
-    }
-
-    let web3
-    const websocketAddress: string = getWebsocketAddress(state)
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(tokenApproveError(err))
-      return undefined
-    }
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-    let contract
-    const tokenAddress = getTokenAddress(state)
-    try {
-      contract = await getTokenContract({ web3, address: tokenAddress, owner })
-    } catch (err) {
-      dispatch(tokenApproveError(err))
-      return undefined
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    try {
+      const web3 = await getWeb3(websocketAddress)
+
+      const contractAddress = getTokenAddress(state)
+      if (!contractAddress) {
+        throw new Error(Errors.NO_TOKEN_FOUND)
+      }
+
+      const contract = new Erc20(owner.address)
+      await contract.at(web3, { address: contractAddress })
+
       const emitter = contract.getEventEmitter('Approval')
 
       contract.approve(address, amount, { from: from || owner.address })
@@ -82,11 +76,10 @@ const approve = (address: string, amount: number | string, from?: string): any =
       const eventLog: EventLog = await onData(emitter)
       const eventValues = eventLog.returnValues
 
-      // TODO(geoff) `address` is the key in global state, but it has no value
       const out = {
-        owner: eventValues.owner,
-        spender: eventValues.spender,
-        value: eventValues.value,
+        address: eventValues.spender,
+        from: eventValues.owner,
+        amount: eventValues.value,
       }
 
       dispatch(tokenApproveOk(out))
@@ -94,7 +87,6 @@ const approve = (address: string, amount: number | string, from?: string): any =
       return out
     } catch(err) {
       dispatch(tokenApproveError(err))
-
       return undefined
     }
   }

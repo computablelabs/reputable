@@ -10,7 +10,17 @@ import {
 
   TOKEN_ADDRESS_OK,
   TOKEN_ADDRESS_RESET,
-} from '../action-creators/token/deploy'
+
+  TOKEN_APPROVE_REQUEST,
+  TOKEN_APPROVE_OK,
+  TOKEN_APPROVE_ERROR,
+  TOKEN_APPROVE_RESET,
+
+  TOKEN_TRANSFER_REQUEST,
+  TOKEN_TRANSFER_OK,
+  TOKEN_TRANSFER_ERROR,
+  TOKEN_TRANSFER_RESET,
+} from '../action-creators/token'
 import createReducer from './createReducer'
 
 const initialState: StateItem<Token> = {
@@ -26,6 +36,7 @@ const initialState: StateItem<Token> = {
 }
 
 const handlers = {
+  // Deploy Reducers
   [TOKEN_DEPLOY_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -45,6 +56,8 @@ const handlers = {
     loading: false,
     error: payload.toString(),
   }),
+
+  // Address Reducers
   [TOKEN_ADDRESS_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: false,
@@ -60,7 +73,67 @@ const handlers = {
       address: initialState.data.address,
       supply: initialState.data.supply,
     },
-  })
+  }),
+
+  // Approval Reducers
+  [TOKEN_APPROVE_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [TOKEN_APPROVE_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      approvals: [
+        ...state.data.approvals || [],
+        payload,
+      ],
+    },
+  }),
+  [TOKEN_APPROVE_ERROR]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [TOKEN_APPROVE_RESET]: (state: StateItem<Token>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      approvals: initialState.data.approvals,
+    },
+  }),
+
+  // Transfer Reducers
+  [TOKEN_TRANSFER_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [TOKEN_TRANSFER_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      transfers: [
+        ...state.data.transfers || [],
+        payload,
+      ],
+    },
+  }),
+  [TOKEN_TRANSFER_ERROR]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [TOKEN_TRANSFER_RESET]: (state: StateItem<Token>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      transfers: initialState.data.transfers,
+    },
+  }),
 }
 
 export default createReducer(handlers)

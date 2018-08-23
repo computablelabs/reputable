@@ -4,7 +4,5 @@ export * from './participants'
 export * from './registry'
 export * from './registry-apply'
 export * from './token'
-export * from './token-approvals'
-export * from './token-transfers'
 export * from './web3'
 

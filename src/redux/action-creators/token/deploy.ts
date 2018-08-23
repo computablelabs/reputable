@@ -1,3 +1,4 @@
+import Erc20 from 'computable/dist/contracts/erc-20'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import {
   Action,
@@ -6,9 +7,9 @@ import {
   Deployed,
   Participant,
 } from '../../../interfaces'
-import { TokenDefaults, Errors } from '../../../constants'
-import { getWebsocketAddress, getOwner } from '../../selectors'
-import { getWeb3, getTokenContract } from '../../../helpers'
+import { Errors, TokenDefaults } from '../../../constants'
+import { getWeb3 } from '../../../helpers'
+import { getOwner, getWebsocketAddress } from '../../selectors'
 
 // Action Types
 export const TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST'
@@ -54,28 +55,27 @@ const deployToken = (supply?: number): any => (
     const args = { address: undefined, supply }
     dispatch(tokenDeployRequest(args))
 
-    const owner: Participant|undefined = getOwner(state)
-    if (!owner) {
-      dispatch(tokenDeployError(new Error(Errors.NO_ADMIN_FOUND)))
-    }
-
-    let web3
-    const websocketAddress: string = getWebsocketAddress(state)
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(tokenDeployError(err))
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-      return ''
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    const contract = await getTokenContract({ web3, owner })
-    try {
+      const web3 = await getWeb3(websocketAddress)
+      const contract = new Erc20(owner.address)
+
       supply = supply || TokenDefaults.SUPPLY
+
       const tokenAddress = await contract.deploy(web3, {
         address: owner.address,
         supply,
       })
+
       dispatch(tokenDeployOk({ address: tokenAddress, supply }))
 
       return tokenAddress
