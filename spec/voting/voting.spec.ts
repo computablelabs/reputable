@@ -27,7 +27,7 @@ describe('voting state', () => {
     participate('Admin, Pants III', accounts[0])
 
     // expects a deployed token
-    await deployToken(accounts[0])
+    await deployToken()
     // voting deploy demands that dll and attrStore be deployed first
     await deployDll(accounts[0])
     await deployAttributeStore(accounts[0])

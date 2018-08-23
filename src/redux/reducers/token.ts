@@ -1,45 +1,67 @@
-/**
- * Top level reducer for the token state pieces.
- * Subdivides the responsibility of managing:
- * * token
- * * approvals
- * * transfers
- */
-
-import { combineReducers } from 'redux'
-import { Nos } from 'computable/dist/types'
-import {
-  DEPLOY_TOKEN,
-  DEPLOYED_TOKEN,
-  RESET_TOKEN,
-} from '../../constants'
 import {
   FSA,
-  Reducer,
-  ReductionMap,
+  StateItem,
+  Token,
 } from '../../interfaces'
+import {
+  TOKEN_DEPLOY_REQUEST,
+  TOKEN_DEPLOY_OK,
+  TOKEN_DEPLOY_ERROR,
 
-const address:Reducer<string|undefined, FSA> = (address = '', action) => {
-  const map:ReductionMap = {
-    [DEPLOYED_TOKEN]: () => action.payload.address,
+  TOKEN_ADDRESS_OK,
+  TOKEN_ADDRESS_RESET,
+} from '../action-creators/token/deploy'
+import createReducer from './createReducer'
 
-    [RESET_TOKEN]: () => '',
-  }
-
-  return map[action.type] ? map[action.type]() : address
+const initialState: StateItem<Token> = {
+  loading: false,
+  request: {},
+  data: {
+    address: undefined,
+    supply: undefined,
+    approvals: [],
+    transfers: [],
+  },
+  error: undefined,
 }
 
-const supply:Reducer<Nos|undefined, FSA> = (supply = 0, action) => {
-  const map:ReductionMap = {
-    [DEPLOY_TOKEN]: () => action.payload.supply,
-
-    [RESET_TOKEN]: () => 0,
-  }
-
-  return map[action.type] ? map[action.type]() : supply
+const handlers = {
+  [TOKEN_DEPLOY_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [TOKEN_DEPLOY_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      address: payload.address,
+      supply: payload.supply,
+    },
+  }),
+  [TOKEN_DEPLOY_ERROR]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [TOKEN_ADDRESS_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      address: payload.address,
+    },
+  }),
+  [TOKEN_ADDRESS_RESET]: (state: StateItem<Token>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      address: initialState.data.address,
+      supply: initialState.data.supply,
+    },
+  })
 }
 
-export default combineReducers({
-  address,
-  supply,
-})
+export default createReducer(handlers)
+

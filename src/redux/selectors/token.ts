@@ -1,13 +1,27 @@
-import {
-  State,
-  Token,
-} from '../../interfaces'
+import { State, StateItem, Token } from '../../interfaces'
 
-const token = (state:State): Token|undefined => state.token
+const model = 'token'
 
-const address = (state:State): string|undefined => state.token && state.token.address
+const getToken = (state: State = {}): Token|undefined => {
+  const stateItem: StateItem<Token>|undefined = state[model]
+  if (!stateItem) {
+    return undefined
+  }
+
+  return stateItem.data
+}
+
+const getTokenAddress = (state: State = {}): string => {
+  const token: Token|undefined = getToken(state)
+  if (!token) {
+    return ''
+  }
+
+  return token.address || ''
+}
 
 export {
-  token,
-  address,
+  getToken,
+  getTokenAddress,
 }
+

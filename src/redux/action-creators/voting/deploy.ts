@@ -13,10 +13,10 @@ import {
   RESET_VOTING,
   Errors,
 } from '../../../constants'
-import { address as getTokenAddress } from '../../selectors/token'
 import {
-  getOwner,
   getWebsocketAddress,
+  getOwner,
+  getTokenAddress,
   getDllAddress,
   getAttributeStoreAddress,
 } from '../../selectors'

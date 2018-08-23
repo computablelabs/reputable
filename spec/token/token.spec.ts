@@ -1,4 +1,5 @@
 import * as ganache from 'ganache-cli'
+import Web3 from 'web3'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
@@ -9,9 +10,13 @@ import {
   approve,
   transfer,
 } from '../../src/redux/dispatchers/token'
-import { State } from '../../src/interfaces'
-import { address } from '../../src/redux/selectors/token'
-import { getApprovals, getTransfers } from '../../src/redux/selectors'
+import { State, Participant } from '../../src/interfaces'
+import {
+  getOwner,
+  getTokenAddress,
+  getApprovals,
+  getTransfers,
+} from '../../src/redux/selectors'
 import { getWeb3, getTokenContract } from '../../src/helpers'
 
 describe('token state', () => {
@@ -19,6 +24,7 @@ describe('token state', () => {
   const websocketAddress: string = `ws://localhost:${port}`
 
   let server: any
+  let web3: Web3
   let accounts: string[]
 
   beforeAll(async () => {
@@ -26,7 +32,7 @@ describe('token state', () => {
     server.listen(port)
 
     setWebsocketAddress(websocketAddress)
-    const web3 = await getWeb3(websocketAddress, { force: true })
+    web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
     participate('Mr. Admin Pants', accounts[0])
@@ -41,7 +47,7 @@ describe('token state', () => {
   })
 
   it('begins with unhydrated token', () => {
-    expect(address(store.getState())).toBeFalsy()
+    expect(getTokenAddress(store.getState())).toBeFalsy()
   })
 
   describe('deployment', () => {
@@ -52,8 +58,8 @@ describe('token state', () => {
 
       // we could ref the returned address but we are more interested in the state tree as a user will be
       // using subscriptions to react on store changes...
-      await deployToken(accounts[0], 1000000)
-      const addr = address(store.getState())
+      await deployToken(1000000)
+      const addr = getTokenAddress(store.getState())
 
       expect(addr).toBeTruthy()
       // hashed addresses are always 42 chars
@@ -64,7 +70,9 @@ describe('token state', () => {
     //   It relies on the token contract deployment in the previous test
     it('has assigned the initial funds to the admin address', async () => {
       const state: State = store.getState()
-      const contract = await getTokenContract(state)
+      const owner: Participant = getOwner(state)
+      const address: string = getTokenAddress(state)
+      const contract = await getTokenContract({ web3, address, owner })
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
       expect(maybeParseInt(funds)).toBe(1000000)
@@ -73,7 +81,7 @@ describe('token state', () => {
 
   describe('with a deployed token', () => {
     beforeAll(async () => {
-      await deployToken(accounts[0], 1000000)
+      await deployToken(1000000)
     })
 
     afterAll(() => {
@@ -141,7 +149,9 @@ describe('token state', () => {
       //   It relies on the state configured in the spec above.
       it('actually transferred the funds to the other account', async () => {
         const state: State = store.getState()
-        const contract = await getTokenContract(state)
+        const owner: Participant = getOwner(state)
+        const address: string = getTokenAddress(state)
+        const contract = await getTokenContract({ web3, address, owner })
 
         const funds2 = contract && await contract.balanceOf(accounts[2]) || 0
         expect(maybeParseInt(funds2)).toBe(500000)

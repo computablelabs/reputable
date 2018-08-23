@@ -17,7 +17,7 @@ interface State {
   readonly participants?: StateItem<GenericMap<Participant>>
   readonly registry?: Registry
   readonly registryApplications?: StateItem<any>
-  readonly token?: Token
+  readonly token?: StateItem<Token>
   readonly tokenApprovals?: StateItem<GenericMap<Approval>>
   readonly voting?: Voting
   readonly web3?: StateItem<GenericMap<string>>

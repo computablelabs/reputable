@@ -10,11 +10,6 @@ export const LIST = 'list'
 export const LIST_ERROR = 'list-error'
 export const GET_LISTINGS = 'get-listings'
 
-export const DEPLOY_TOKEN = 'deploy-token'
-export const DEPLOY_TOKEN_ERROR = 'deploy-token-error'
-export const DEPLOYED_TOKEN = 'deployed-token'
-export const RESET_TOKEN = 'reset-token'
-
 export const TRANSFER = 'transfer'
 export const TRANSFER_ERROR = 'transfer-error'
 export const TRANSFERRED = 'transferred'

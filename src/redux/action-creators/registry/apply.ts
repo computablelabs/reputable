@@ -47,12 +47,12 @@ const apply = (
 ): any =>
   async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
     const state: State = getState()
-    const websocketAddress: string = getWebsocketAddress(state)
-    const owner: Participant = getOwner(state)
-    const registryAddress: string = getRegistryAddress(state)
+
+    const args = { registryAddress, listing, userAddress, deposit, data }
+    dispatch(registryApplyRequest(args))
 
     let web3
-
+    const websocketAddress: string = getWebsocketAddress(state)
     try {
       web3 = await getWeb3(websocketAddress)
     } catch (err) {
@@ -60,25 +60,21 @@ const apply = (
       return undefined
     }
 
+    const owner: Participant = getOwner(state)
+    // TODO Why aren't we using the regsitry address param?
+    const address: string = getRegistryAddress(state)
     const registry = new Registry(owner.address)
-
     try {
-      registryAddress && await registry.at(web3, { address: registryAddress })
+      registryAddress && await registry.at(web3, { address })
     } catch (err) {
       dispatch(registryApplyError(err))
       return undefined
     }
 
-    const encodedListing: string = web3.utils.toHex(listing)
-
-    const args = { registryAddress, listing, userAddress, deposit, data }
-
-    // dispatch that a request has been initialized
-    dispatch(registryApplyRequest(args))
-
     try {
       const emitter = registry.getEventEmitter('_Application')
 
+      const encodedListing: string = web3.utils.toHex(listing)
       registry.apply(encodedListing, deposit, data, { from: userAddress })
 
       const eventLog: EventLog = await onData(emitter)

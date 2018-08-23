@@ -8,8 +8,11 @@ import {
   Transfer,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { address as addressSelector } from '../../selectors/token'
-import { getWebsocketAddress, getOwner } from '../../selectors'
+import {
+  getWebsocketAddress,
+  getOwner,
+  getTokenAddress,
+} from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 // Action Types
@@ -59,7 +62,7 @@ const transfer = (to: string, amount: number | string, from?: string): any =>
     }
 
     // a token must have been deployed by this point
-    const tokenAddress = addressSelector(state)
+    const tokenAddress = getTokenAddress(state)
     const contract = new Erc20(owner.address)
 
     // instantiate a contract from the deployed token

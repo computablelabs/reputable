@@ -15,9 +15,12 @@ import {
   ParameterizerDefaults,
   Errors,
 } from '../../../constants'
-import { address as getTokenAddress } from '../../selectors/token'
 import { address as getVotingAddress } from '../../selectors/voting'
-import { getWebsocketAddress, getOwner } from '../../selectors'
+import {
+  getWebsocketAddress,
+  getOwner,
+  getTokenAddress,
+} from '../../selectors'
 import { getWeb3 } from '../../../helpers'
 
 /**

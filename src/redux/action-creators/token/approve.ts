@@ -4,10 +4,15 @@ import {
   FSA,
   Action,
   State,
-  Approval,
+  Map
 } from '../../../interfaces'
-import { getOwner } from '../../selectors'
-import { getTokenContract } from '../../../helpers'
+import { Errors } from '../../../constants'
+import {
+  getWebsocketAddress,
+  getOwner,
+  getTokenAddress,
+} from '../../selectors'
+import { getWeb3, getTokenContract } from '../../../helpers'
 
 // Action Types
 export const TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST'
@@ -16,12 +21,12 @@ export const TOKEN_APPROVE_ERROR = 'TOKEN_APPROVE_ERROR'
 export const TOKEN_APPROVE_RESET = 'TOKEN_APPROVE_RESET'
 
 // Actions
-const tokenApproveRequest = (value: Approval): FSA => ({
+const tokenApproveRequest = (value: Map): FSA => ({
   type: TOKEN_APPROVE_REQUEST,
   payload: value,
 })
 
-const tokenApproveOk = (value: { [key: string]: string }): FSA => ({
+const tokenApproveOk = (value: Map): FSA => ({
   type: TOKEN_APPROVE_OK,
   payload: value,
 })
@@ -37,36 +42,47 @@ const tokenApproveReset = (): FSA => ({
 })
 
 // Action Creators
-
-// TODO type the returned thunk vs `any`
-const approve = (address: string, amount: number | string, from?: string): any =>
-  async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
+const approve = (address: string, amount: number | string, from?: string): any => (
+  async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()
+
+    const args = { address, amount, from }
+    dispatch(tokenApproveRequest(args))
+
     const owner = getOwner(state)
+    if (!owner) {
+      const error = new Error(Errors.NO_ADMIN_FOUND)
+      dispatch(tokenApproveError(error))
+      return undefined
+    }
 
-    let contract
-
+    let web3
+    const websocketAddress: string = getWebsocketAddress(state)
     try {
-      contract = await getTokenContract(state)
+      web3 = await getWeb3(websocketAddress)
     } catch (err) {
       dispatch(tokenApproveError(err))
       return undefined
     }
 
-    const args: Approval = { address, amount, from: from || owner.address }
-
-    // dispatch that a request has been initialized
-    dispatch(tokenApproveRequest(args))
+    let contract
+    const tokenAddress = getTokenAddress(state)
+    try {
+      contract = await getTokenContract({ web3, address: tokenAddress, owner })
+    } catch (err) {
+      dispatch(tokenApproveError(err))
+      return undefined
+    }
 
     try {
       const emitter = contract.getEventEmitter('Approval')
 
-      // we can allow the contract to fallback to the account it was instantiated with as `from`
-      contract.approve(address, amount, { from })
+      contract.approve(address, amount, { from: from || owner.address })
 
       const eventLog: EventLog = await onData(emitter)
       const eventValues = eventLog.returnValues
 
+      // TODO(geoff) `address` is the key in global state, but it has no value
       const out = {
         owner: eventValues.owner,
         spender: eventValues.spender,
@@ -82,8 +98,13 @@ const approve = (address: string, amount: number | string, from?: string): any =
       return undefined
     }
   }
+)
 
-const resetTokenApprove = (): Action => tokenApproveReset()
+const resetTokenApprove = (): any => (
+  async (dispatch: Function, getState: Function): Promise<Action> => (
+    dispatch(tokenApproveReset())
+  )
+)
 
 export { approve, resetTokenApprove }
 

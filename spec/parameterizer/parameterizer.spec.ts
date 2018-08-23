@@ -28,7 +28,7 @@ describe('parameterizer state', () => {
     await participate('team admin', accounts[0])
 
     // p11r will want a token deployed
-    await deployToken(accounts[0])
+    await deployToken()
     // voting deploy demands that dll and attrStore be deployed
     await deployDll(accounts[0])
     await deployAttributeStore(accounts[0])

@@ -35,7 +35,7 @@ describe('registry state', () => {
       participate('Admin, son of Pants', accounts[0])
 
       // p11r will want a token deployed
-      await deployToken(accounts[0])
+      await deployToken()
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(accounts[0])
       await deployAttributeStore(accounts[0])
@@ -100,7 +100,7 @@ describe('registry state', () => {
       participate('Admin, son of Pants', owner)
 
       // p11r will want a token deployed
-      await deployToken(owner)
+      await deployToken()
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(owner)
       await deployAttributeStore(owner)
@@ -130,13 +130,15 @@ describe('registry state', () => {
     })
 
     describe('apply', () => {
-      it('applies a listing to a registry', async () => {
+      it('a listing to a registry', async () => {
         const state: State = store.getState()
         const registryAddress: string = getRegistryAddress(state)
         const userAddress = accounts[1]
         const listingData = 'foo listing'
 
-        const txValues = await dispatcher(apply(registryAddress, listingData, userAddress, 100))
+        const txValues = await store.dispatch(
+          apply(registryAddress, listingData, userAddress, 100)
+        )
 
         expect(txValues.applicant).toBe(userAddress)
         expect(txValues.deposit).toBe('100')
