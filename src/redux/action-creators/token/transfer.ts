@@ -10,7 +10,7 @@ import {
   Transfer,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { getWeb3 } from '../../../helpers'
+import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress, getTokenAddress } from '../../selectors'
 
 // Action Types
@@ -41,7 +41,13 @@ const tokenTransferReset = (): FSA => ({
 })
 
 // Action Creators
-const transfer = (to: string, amount: number | string, from?: string): any =>
+// TODO `from` doesn't appear to be used
+interface RegistryTransferParams {
+  to: string
+  amount: number
+  from?: string
+}
+const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
   async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()
 
@@ -93,7 +99,11 @@ const transfer = (to: string, amount: number | string, from?: string): any =>
     }
   }
 
-const resetTokenTransfer = (): Action => tokenTransferReset()
+const resetTokenTransfer = (): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(tokenTransferReset())
+  )
+)
 
 export { transfer, resetTokenTransfer }
 

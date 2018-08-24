@@ -1,19 +1,14 @@
-import { RegistryDeployParams } from 'computable/dist/interfaces'
 import Registry from 'computable/dist/contracts/registry'
 import {
   Action,
   FSA,
   State,
+  Map,
   Deployed,
   Participant,
 } from '../../../interfaces'
-import {
-  DEPLOY_REGISTRY,
-  DEPLOY_REGISTRY_ERROR,
-  DEPLOYED_REGISTRY,
-  RESET_REGISTRY,
-  Errors,
-} from '../../../constants'
+import { Errors } from '../../../constants'
+import { getWeb3 } from '../../../initializers'
 import { address as getVotingAddress } from '../../selectors/voting'
 import { address as getParameterizerAddress } from '../../selectors/parameterizer'
 import {
@@ -21,103 +16,111 @@ import {
   getOwner,
   getTokenAddress,
 } from '../../selectors'
-import { getWeb3 } from '../../../helpers'
 
-/**
- * support actions for the thunk deployToken action itself
- */
-const deployRegistryAction = (
-  tokenAddress:string,
-  votingAddress:string,
-  parameterizerAddress:string,
-  name:string
-): FSA => {
-  const payload:RegistryDeployParams = {
-    tokenAddress,
-    votingAddress,
-    parameterizerAddress,
-    name,
-  }
+// Action Types
+export const REGISTRY_DEPLOY_REQUEST = 'REGISTRY_DEPLOY_REQUEST'
+export const REGISTRY_DEPLOY_OK = 'REGISTRY_DEPLOY_OK'
+export const REGISTRY_DEPLOY_ERROR = 'REGISTRY_DEPLOY_ERROR'
 
-  return { type: DEPLOY_REGISTRY, payload }
-}
+export const REGISTRY_ADDRESS_OK = 'REGISTRY_ADDRESS_OK'
+export const REGISTRY_ADDRESS_RESET = 'REGISTRY_ADDRESS_RESET'
 
-/**
- * Note this action can be used if the application is using an already deployed token.
- * Simply dispatch this with the address of said token
- */
-const deployedRegistry = (address:string): FSA => {
-  const payload:Deployed = { address }
-  return { type: DEPLOYED_REGISTRY, payload }
-}
+// Actions
+const registryDeployRequest = (value: Map): FSA => ({
+  type: REGISTRY_DEPLOY_REQUEST,
+  payload: value,
+})
 
-const deployRegistryError = (err:Error): FSA => (
-  { type: DEPLOY_REGISTRY_ERROR, payload: err }
-)
+const registryDeployOk = (value: Deployed): FSA => ({
+  type: REGISTRY_DEPLOY_OK,
+  payload: value
+})
 
-/**
- * Pass in a name for the registry and optionally a deploy-from address (will default to admin if falsy)
- */
-const deployRegistry = (name:string, address?:string): any => {
-  return async (dispatch:any, getState:any): Promise<string> => {
+const registryDeployError = (value: Error): FSA => ({
+  type: REGISTRY_DEPLOY_ERROR,
+  payload: value,
+})
+
+const registryAddressOk = (value: Deployed): FSA => ({
+  type: REGISTRY_ADDRESS_OK,
+  payload: value,
+})
+
+const registryAddressReset = (): FSA => ({
+  type: REGISTRY_ADDRESS_RESET,
+  payload: {},
+})
+
+// Action Creators
+/* To deploy a new Registry Contract */
+const deployRegistry = (name:string): any => (
+  async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
-    const websocketAddress: string = getWebsocketAddress(state)
-    const owner: Participant | undefined = getOwner(state)
-    const tokenAddress = getTokenAddress(state)
-    const votingAddress = getVotingAddress(state)
-    const parameterizerAddress = getParameterizerAddress(state)
 
-    let web3
+    const args = { name }
+    dispatch(registryDeployRequest(args))
 
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(deployRegistryError(err))
-      return ''
-    }
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-    if (!owner) {
-      dispatch(deployRegistryError(new Error(Errors.NO_ADMIN_FOUND)))
-      return ''
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    if (!tokenAddress) {
-      dispatch(deployRegistryError(new Error(Errors.NO_TOKEN_FOUND)))
-      return ''
-    }
+      const web3 = await getWeb3(websocketAddress)
 
-    if (!votingAddress) {
-      dispatch(deployRegistryError(new Error(Errors.NO_VOTING_FOUND)))
-      return ''
-    }
+      const tokenAddress: string = getTokenAddress(state)
+      if (!tokenAddress) {
+        throw new Error(Errors.NO_TOKEN_FOUND)
+      }
 
-    if (!parameterizerAddress) {
-      dispatch(deployRegistryError(new Error(Errors.NO_PARAMETERIZER_FOUND)))
-      return ''
-    }
+      const votingAddress: string = getVotingAddress(state)
+      if (!votingAddress) {
+        throw new Error(Errors.NO_VOTING_FOUND)
+      }
 
-    // we can dispatch deploy early here, as deploy is not to be confused with deployed
-    const action = deployRegistryAction(tokenAddress, votingAddress, parameterizerAddress, name)
-    dispatch(action)
-    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-    const contract = new Registry(address || owner.address)
+      const parameterizerAddress: string = getParameterizerAddress(state)
+      if (!parameterizerAddress) {
+        throw new Error(Errors.NO_PARAMETERIZER_FOUND)
+      }
 
-    try {
-      // @ts-ignore:2345
-      const registryAddress = await contract.deploy(web3, action.payload)
-      dispatch(deployedRegistry(registryAddress))
+      const contract = new Registry(owner.address)
+
+      const registryAddress: string = await contract.deploy(web3, {
+        name,
+        tokenAddress,
+        votingAddress,
+        parameterizerAddress,
+      })
+
+      dispatch(registryDeployOk({ address: registryAddress }))
 
       return registryAddress
     } catch(err) {
-      dispatch(deployRegistryError(err))
+      dispatch(registryDeployError(err))
 
       return ''
     }
   }
-}
+)
 
-// including with deployment actions as it fits best here
-const resetRegistry = (): Action => ({ type: RESET_REGISTRY })
+/* To store the address of an already deployed Registry Contract */
+const setRegistryAddress = (registryAddress: string): any => (
+  async (dispatch: Function): Promise<void> => (
+    dispatch(registryAddressOk({ address: registryAddress }))
+  )
+)
 
-export { deployRegistry, resetRegistry }
+/* To reset the stored Registry Contract address */
+const resetRegistryAddress = (): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(registryAddressReset())
+  )
+)
+
+export { deployRegistry, setRegistryAddress, resetRegistryAddress }
 

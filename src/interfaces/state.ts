@@ -14,8 +14,7 @@ interface State {
   readonly dllAddress?: StateItem<Map>
   readonly parameterizer?: Parameterizer
   readonly participants?: StateItem<GenericMap<Participant>>
-  readonly registry?: Registry
-  readonly registryApplications?: StateItem<any>
+  readonly registry?: StateItem<Registry>
   readonly token?: StateItem<Token>
   readonly voting?: Voting
   readonly web3?: StateItem<GenericMap<string>>

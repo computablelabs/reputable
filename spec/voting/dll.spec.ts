@@ -5,7 +5,7 @@ import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { getDllAddress } from '../../src/redux/selectors'
-import { getWeb3 } from '../../src/helpers'
+import { getWeb3 } from '../../src/initializers'
 
 describe('deploying a dll contract', () => {
   const port: number = 8552

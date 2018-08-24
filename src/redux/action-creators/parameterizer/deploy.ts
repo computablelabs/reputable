@@ -21,7 +21,7 @@ import {
   getOwner,
   getTokenAddress,
 } from '../../selectors'
-import { getWeb3 } from '../../../helpers'
+import { getWeb3 } from '../../../initializers'
 
 /**
  * support actions for the thunk deployToken action itself

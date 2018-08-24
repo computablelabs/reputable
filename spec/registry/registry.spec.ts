@@ -2,19 +2,17 @@ import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
+import { resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
-import { deployRegistry, resetRegistry } from '../../src/redux/dispatchers/registry'
+import { resetRegistry } from '../../src/redux/dispatchers/registry'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { dispatcher } from '../../src/redux/dispatchers'
-import { approve } from '../../src/redux/action-creators/token/approve'
-import { transfer } from '../../src/redux/action-creators/token/transfer'
-import { apply } from '../../src/redux/action-creators/registry/apply'
+import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
+import { deployRegistry, apply } from '../../src/redux/action-creators/registry'
 import { State } from '../../src/interfaces'
 import { getRegistryAddress } from '../../src/redux/selectors'
-import { getWeb3 } from '../../src/helpers'
+import { getWeb3 } from '../../src/initializers'
 
 describe('registry state', () => {
   describe('deployment', () => {
@@ -23,6 +21,7 @@ describe('registry state', () => {
 
     let server:any
     let accounts:string[]
+    let owner: string
 
     beforeAll(async () => {
       server = ganache.server({ ws:true })
@@ -31,11 +30,12 @@ describe('registry state', () => {
       setWebsocketAddress(websocketAddress)
       const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
+      owner = accounts[0]
 
-      participate('Admin, son of Pants', accounts[0])
+      participate('Admin, son of Pants', owner)
 
       // p11r will want a token deployed
-      await deployToken()
+      await store.dispatch(deployToken())
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(accounts[0])
       await deployAttributeStore(accounts[0])
@@ -68,7 +68,7 @@ describe('registry state', () => {
       // const deployListener = (reg:Registry) => { console.log(reg) },
         // unsub:any = subscriber(deployListener, registry)
 
-      await deployRegistry('the registry', accounts[0])
+      await store.dispatch(deployRegistry('the registry'))
 
       const state: State = store.getState()
       const registryAddress: string = getRegistryAddress(state)
@@ -85,6 +85,8 @@ describe('registry state', () => {
 
     let server:any
     let accounts:string[]
+    let owner: string
+    let user: string
 
     beforeAll(async () => {
       server = ganache.server({ ws:true })
@@ -94,26 +96,32 @@ describe('registry state', () => {
       const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
 
-      const owner = accounts[0]
-      const user = accounts[1]
+      owner = accounts[0]
+      user = accounts[1]
 
       participate('Admin, son of Pants', owner)
 
       // p11r will want a token deployed
-      await deployToken()
+      await store.dispatch(deployToken())
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(owner)
       await deployAttributeStore(owner)
       await deployVoting(owner)
       await deployParameterizer(owner)
 
-      const registryAddress = await deployRegistry('the registry', owner)
+      const registryAddress = await store.dispatch(
+        deployRegistry('the registry')
+      )
 
       // transfer funds to the spender
-      await dispatcher(transfer(user, 100 * 1000))
+      await store.dispatch(
+        transfer({ to: user, amount: 100 * 1000 })
+      )
 
       // approve the registry to spend on behalf of the spender
-      await dispatcher(approve(registryAddress, 100 * 1000, user))
+      await store.dispatch(
+        approve({ address: registryAddress, amount: 100 * 1000, from: user })
+      )
     })
 
     afterAll(() => {
@@ -131,19 +139,16 @@ describe('registry state', () => {
 
     describe('apply', () => {
       it('a listing to a registry', async () => {
-        const state: State = store.getState()
-        const registryAddress: string = getRegistryAddress(state)
-        const userAddress = accounts[1]
-        const listingData = 'foo listing'
+        const listing = 'foo listing'
 
         const txValues = await store.dispatch(
-          apply(registryAddress, listingData, userAddress, 100)
+          apply({ listing, userAddress: user, deposit: 100 })
         )
 
-        expect(txValues.applicant).toBe(userAddress)
-        expect(txValues.deposit).toBe('100')
-        expect(txValues.appEndDate).toBeGreaterThan(0)
-        expect(txValues.listing).toBe(listingData)
+        expect(txValues.listing).toBe(listing)
+        expect(txValues.owner).toBe(user)
+        expect(txValues.unstakedDeposit).toBe('100')
+        expect(txValues.applicationExpiry).toBeGreaterThan(0)
       })
     })
   })

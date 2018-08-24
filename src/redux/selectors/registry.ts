@@ -1,22 +1,23 @@
-import { State, Registry } from '../../interfaces'
+import { State, StateItem, Registry } from '../../interfaces'
 
 const model = 'registry'
 
-const getRegistry = (state: State = {}): Registry | undefined => {
-  const stateItem: Registry | undefined = state[model]
+const getRegistry = (state: State = {}): Registry|undefined => {
+  const stateItem: StateItem<Registry>|undefined = state[model]
   if (!stateItem) {
     return undefined
   }
 
-  return stateItem ?
-    stateItem : undefined
+  return stateItem.data
 }
 
 const getRegistryAddress = (state: State = {}): string => {
-  const registry: Registry | undefined = getRegistry(state)
+  const registry: Registry|undefined = getRegistry(state)
+  if (!registry || !registry.address) {
+    return ''
+  }
 
-  return registry && registry.address ?
-    registry.address : ''
+  return registry.address
 }
 
 export { getRegistry, getRegistryAddress }

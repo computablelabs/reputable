@@ -2,12 +2,13 @@ import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { deployToken, resetToken } from '../../src/redux/dispatchers/token'
+import { resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { deployToken } from '../../src/redux/action-creators/token'
 import { address as votingAddress } from '../../src/redux/selectors/voting'
-import { getWeb3 } from '../../src/helpers'
+import { getWeb3 } from '../../src/initializers'
 
 describe('voting state', () => {
   const port: number = 8556
@@ -27,7 +28,7 @@ describe('voting state', () => {
     participate('Admin, Pants III', accounts[0])
 
     // expects a deployed token
-    await deployToken()
+    await store.dispatch(deployToken())
     // voting deploy demands that dll and attrStore be deployed first
     await deployDll(accounts[0])
     await deployAttributeStore(accounts[0])

@@ -5,12 +5,8 @@ import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { maybeParseInt } from 'computable/dist/helpers'
-import {
-  deployToken,
-  resetToken,
-  approve,
-  transfer,
-} from '../../src/redux/dispatchers/token'
+import { resetToken } from '../../src/redux/dispatchers/token'
+import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { State, Participant } from '../../src/interfaces'
 import {
   getOwner,
@@ -18,7 +14,7 @@ import {
   getApprovals,
   getTransfers,
 } from '../../src/redux/selectors'
-import { getWeb3 } from '../../src/helpers'
+import { getWeb3 } from '../../src/initializers'
 
 describe('token state', () => {
   const port: number = 8544
@@ -59,7 +55,7 @@ describe('token state', () => {
 
       // we could ref the returned address but we are more interested in the state tree as a user will be
       // using subscriptions to react on store changes...
-      await deployToken(1000000)
+      await store.dispatch(deployToken(1000000))
       const addr = getTokenAddress(store.getState())
 
       expect(addr).toBeTruthy()
@@ -83,7 +79,7 @@ describe('token state', () => {
 
   describe('with a deployed token', () => {
     beforeAll(async () => {
-      await deployToken(1000000)
+      await store.dispatch(deployToken(1000000))
     })
 
     afterAll(() => {
@@ -107,7 +103,9 @@ describe('token state', () => {
 
         // we'll just use the 2nd account address in lieu of another deployed contract.
         // @ts-ignore:2532
-        const txValues = await approve(spender, amount, owner)
+        const txValues = await store.dispatch(
+          approve({ address: spender, amount, from: owner })
+        )
 
         expect(txValues).toBeTruthy()
 
@@ -138,7 +136,9 @@ describe('token state', () => {
 
         // we'll just use the 3rd account address in lieu of another deployed contract.
         // @ts-ignore:2532
-        const txValues = await transfer(user, amount, owner) // to, amount, from
+        const txValues = await store.dispatch(
+          transfer({ to: user, amount, from: owner })
+        )
         expect(txValues).toBeTruthy()
 
         state = store.getState()

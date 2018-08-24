@@ -9,7 +9,7 @@ import {
 } from '../../interfaces'
 import { Errors } from '../../constants'
 import { getWebsocketAddress, getOwner } from '../selectors'
-import { getWeb3 } from '../../helpers'
+import { getWeb3 } from '../../initializers'
 
 // Action Types
 export const ATTRIBUTE_STORE_REQUEST = 'ATTRIBUTE_STORE_REQUEST'

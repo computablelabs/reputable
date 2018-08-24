@@ -1,76 +1,131 @@
-/**
- * Top level reducer for the registry state pieces.
- * Subdivides the responsibility of managing:
- * * applicants
- * * challenges
- * * listings
- */
-
-import { combineReducers } from 'redux'
-import {
-  DEPLOYED_REGISTRY,
-  RESET_REGISTRY,
-  LIST,
-  CHALLENGE,
-} from '../../constants'
 import {
   FSA,
-  Reducer,
-  ReductionMap,
-  Challenge,
-  Listing,
+  StateItem,
+  Registry,
+  // Challenge,
+  // Listing,
 } from '../../interfaces'
+import {
+  REGISTRY_DEPLOY_REQUEST,
+  REGISTRY_DEPLOY_OK,
+  REGISTRY_DEPLOY_ERROR,
 
-const address:Reducer<string|undefined, FSA> = (address = '', action) => {
-  const map:ReductionMap = {
-    [DEPLOYED_REGISTRY]: () => action.payload.address,
+  REGISTRY_ADDRESS_OK,
+  REGISTRY_ADDRESS_RESET,
 
-    [RESET_REGISTRY]: () => '',
-  }
+  REGISTRY_APPLY_REQUEST,
+  REGISTRY_APPLY_OK,
+  REGISTRY_APPLY_ERROR,
+  REGISTRY_APPLY_RESET,
+} from '../action-creators/registry'
+import {
+  LIST,
+  // CHALLENGE,
+} from '../../constants'
+import createReducer from './createReducer'
 
-  return map[action.type] ? map[action.type]() : address
+const initialState: StateItem<Registry> = {
+  loading: false,
+  request: {},
+  data: {
+    address: undefined,
+    applicants: [],
+    challenges: [],
+    listings: [],
+  },
+  error: undefined,
 }
 
-// TODO this
-const challenges:Reducer<Challenge[]|undefined, FSA> = (state = [], action) => {
-  const map:ReductionMap = {
-    [CHALLENGE]: () => ([
-      ...state,
-      {
+const handlers = {
+  // Deploy Reducers
+  [REGISTRY_DEPLOY_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [REGISTRY_DEPLOY_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      address: payload.address,
+    },
+  }),
+  [REGISTRY_DEPLOY_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
 
-      }
-    ]),
+  // Address Reducers
+  [REGISTRY_ADDRESS_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      address: payload.address,
+    },
+  }),
+  [REGISTRY_ADDRESS_RESET]: (state: StateItem<Registry>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      address: initialState.data.address,
+    },
+  }),
 
-    [RESET_REGISTRY]: () => ([]),
-  }
+  // Applicant Reducers
+  [REGISTRY_APPLY_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [REGISTRY_APPLY_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      applicants: [
+        ...state.data.applicants || [],
+        payload,
+      ],
+    },
+  }),
+  [REGISTRY_APPLY_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [REGISTRY_APPLY_RESET]: (state: StateItem<Registry>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      applicants: initialState.data.applicants,
+    },
+  }),
 
-  return map[action.type] ? map[action.type]() : state
-}
+  // Challenge Reducers
+  // Listing Reducers
+  [LIST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    data: {
+      ...state.data,
+      listings: [
+        ...state.data.listings || [],
+        payload,
 
-const listings:Reducer<Listing[]|undefined, FSA> = (state = [], action) => {
-  const map:ReductionMap = {
-    // LIST action invoked when the ETHVM returns us the listing
-    [LIST]: () => ([
-      ...state,
-      {
+        /*
         hash: action.payload.hash, // remember this does not come back from VM, we supply
         applicationExpiry: action.payload.applicationExpiry,
         whitelisted: action.payload.whitelisted,
         owner: action.payload.owner,
         unstakedDeposit: action.payload.unstakedDeposit,
         // NOTE: there won't be a challengeID on the initial LIST action
-      }
-    ]),
-
-    [RESET_REGISTRY]: () => ([]),
-  }
-
-  return map[action.type] ? map[action.type]() : state
+        */
+      ],
+    },
+  }),
 }
 
-export default combineReducers({
-  address,
-  challenges,
-  listings,
-})
+export default createReducer(handlers, initialState)
 

@@ -12,7 +12,7 @@ export interface Selector {
 
 // an object which has an `address` attribute due to a deployment
 export interface Deployed {
-  address:string;
+  address: string;
 }
 
 // the functions on ReductionMaps take no args and return something

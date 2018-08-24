@@ -136,5 +136,5 @@ const handlers = {
   }),
 }
 
-export default createReducer(handlers)
+export default createReducer(handlers, initialState)
 

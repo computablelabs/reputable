@@ -20,7 +20,7 @@ import {
   getDllAddress,
   getAttributeStoreAddress,
 } from '../../selectors'
-import { getWeb3 } from '../../../helpers'
+import { getWeb3 } from '../../../initializers'
 
 /**
  * support actions for the thunk action creator

@@ -4,11 +4,13 @@ import { onData } from 'computable/dist/helpers'
 import {
   Action,
   FSA,
+  Map,
   State,
   Participant,
 } from '../../../interfaces'
+import { Errors } from '../../../constants'
+import { getWeb3 } from '../../../initializers'
 import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
-import { getWeb3 } from '../../../helpers'
 
 // Action Types
 export const REGISTRY_APPLY_REQUEST = 'REGISTRY_APPLY_REQUEST'
@@ -17,12 +19,13 @@ export const REGISTRY_APPLY_ERROR = 'REGISTRY_APPLY_ERROR'
 export const REGISTRY_APPLY_RESET = 'REGISTRY_APPLY_RESET'
 
 // Actions
-const registryApplyRequest = (value: { [key: string]: any }) => ({
+const registryApplyRequest = (value: Map): FSA => ({
   type: REGISTRY_APPLY_REQUEST,
   payload: value,
 })
 
-const registryApplyOk = (value: { [key: string]: any }): FSA => ({
+// TODO restrict param type
+const registryApplyOk = (value: Map): FSA => ({
   type: REGISTRY_APPLY_OK,
   payload: value,
 })
@@ -38,40 +41,45 @@ const registryApplyReset = (): FSA => ({
 })
 
 // Action Creators
-const apply = (
-  registryAddress: string,
-  listing: string,
-  userAddress: string,
-  deposit: number | string,
+interface RegistryApplyParams {
+  listing: string
+  userAddress: string
+  deposit: number
   data?: string
-): any =>
-  async (dispatch: Function, getState: Function): Promise<{ [key: string]: string } | undefined> => {
+}
+const apply = ({
+  listing,
+  userAddress,
+  deposit,
+  data,
+}: RegistryApplyParams): any => (
+  async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()
 
-    const args = { registryAddress, listing, userAddress, deposit, data }
+    const args = { listing, userAddress, deposit, data }
     dispatch(registryApplyRequest(args))
 
-    let web3
-    const websocketAddress: string = getWebsocketAddress(state)
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(registryApplyError(err))
-      return undefined
-    }
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-    const owner: Participant = getOwner(state)
-    // TODO Why aren't we using the regsitry address param?
-    const address: string = getRegistryAddress(state)
-    const registry = new Registry(owner.address)
-    try {
-      registryAddress && await registry.at(web3, { address })
-    } catch (err) {
-      dispatch(registryApplyError(err))
-      return undefined
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    try {
+      const web3 = await getWeb3(websocketAddress)
+
+      const contractAddress: string = getRegistryAddress(state)
+      if (!contractAddress) {
+        throw new Error(Errors.NO_REGISTRY_FOUND)
+      }
+
+      const registry = new Registry(owner.address)
+      await registry.at(web3, { address: contractAddress })
+
       const emitter = registry.getEventEmitter('_Application')
 
       const encodedListing: string = web3.utils.toHex(listing)
@@ -81,10 +89,10 @@ const apply = (
       const eventValues = eventLog.returnValues
 
       const out = {
-        applicant: eventValues.applicant,
-        deposit: eventValues.deposit,
-        appEndDate: eventValues.appEndDate,
         listing: web3.utils.hexToUtf8(eventValues.listingHash),
+        applicationExpiry: eventValues.appEndDate,
+        owner: eventValues.applicant,
+        unstakedDeposit: eventValues.deposit,
       }
 
       dispatch(registryApplyOk(out))
@@ -96,8 +104,13 @@ const apply = (
       return undefined
     }
   }
+)
 
-const resetRegistryApply = (): Action => registryApplyReset()
+const resetRegistryApply = (): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(registryApplyReset())
+  )
+)
 
 export { apply, resetRegistryApply }
 

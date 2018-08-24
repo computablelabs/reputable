@@ -5,7 +5,7 @@ import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispa
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { getAttributeStoreAddress } from '../../src/redux/selectors'
-import { getWeb3 } from '../../src/helpers'
+import { getWeb3 } from '../../src/initializers'
 
 describe('deploying an attribute store contract', () => {
   const port: number = 8558

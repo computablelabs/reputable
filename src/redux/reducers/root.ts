@@ -4,7 +4,6 @@ import dllAddress from './dll'
 import parameterizer from './parameterizer'
 import participants from './participant'
 import registry from './registry'
-import registryApplications from './registry-apply'
 import token from './token'
 import voting from './voting'
 import web3 from './web3'
@@ -16,7 +15,6 @@ export default combineReducers({
   parameterizer,
   participants,
   registry,
-  registryApplications,
   token,
   voting,
   web3,

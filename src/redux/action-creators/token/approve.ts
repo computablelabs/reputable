@@ -10,7 +10,7 @@ import {
   Approval,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { getWeb3 } from '../../../helpers'
+import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress, getTokenAddress } from '../../selectors'
 
 // Action Types
@@ -41,7 +41,12 @@ const tokenApproveReset = (): FSA => ({
 })
 
 // Action Creators
-const approve = (address: string, amount: number | string, from?: string): any => (
+interface TokenApproveParams {
+  address: string
+  amount: number
+  from?: string
+}
+const approve = ({ address, amount, from }: TokenApproveParams): any => (
   async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()
 
@@ -93,7 +98,7 @@ const approve = (address: string, amount: number | string, from?: string): any =
 )
 
 const resetTokenApprove = (): any => (
-  async (dispatch: Function, getState: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<Action> => (
     dispatch(tokenApproveReset())
   )
 )
