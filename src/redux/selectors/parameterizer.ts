@@ -1,8 +1,25 @@
-import { State, Parameterizer } from '../../interfaces'
+import { State, StateItem, Parameterizer } from '../../interfaces'
 
-const parameterizer = (state:State): Parameterizer|undefined => state.parameterizer
+const model = 'parameterizer'
 
-const address = (state:State): string => state.parameterizer && state.parameterizer.address || ''
+const getParameterizer = (state: State = {}): Parameterizer|undefined => {
+  const stateItem: StateItem<Parameterizer>|undefined = state[model]
+  if (!stateItem) {
+    return undefined
+  }
 
-export { parameterizer, address }
+  return stateItem.data
+}
+
+const getParameterizerAddress = (state: State = {}): string => {
+  const parameterizer: Parameterizer|undefined = getParameterizer(state)
+  if (!parameterizer || !parameterizer.address) {
+    return ''
+  }
+
+  return parameterizer.address
+}
+
+
+export { getParameterizer, getParameterizerAddress }
 

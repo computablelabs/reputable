@@ -1,12 +1,9 @@
-import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import store from '../store'
-import { deployParameterizer as deploy, resetParameterizer as reset } from '../action-creators/parameterizer'
-
-const deployParameterizer = async (address?:string, opts?:Partial<ParameterizerDeployParams>): Promise<string> =>
-  store.dispatch(deploy(address, opts))
+import { resetParameterizerAddress as resetAddress } from '../action-creators/parameterizer'
 
 const resetParameterizer = (): void => {
-  store.dispatch(reset())
+  store.dispatch(resetAddress())
 }
 
-export { deployParameterizer, resetParameterizer }
+export { resetParameterizer }
+

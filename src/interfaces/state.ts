@@ -12,7 +12,7 @@ import {
 interface State {
   readonly attributeStoreAddress?: StateItem<Map>
   readonly dllAddress?: StateItem<Map>
-  readonly parameterizer?: Parameterizer
+  readonly parameterizer?: StateItem<Parameterizer>
   readonly participants?: StateItem<GenericMap<Participant>>
   readonly registry?: StateItem<Registry>
   readonly token?: StateItem<Token>

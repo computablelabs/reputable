@@ -7,17 +7,18 @@ import { Deployed } from './general'
 
 export default interface Parameterizer extends Deployed {
   // TODO determine if we want these locally as they exist, on demand, via the HOC
-  minDeposit?:Nos;
-  applyStageLen?:Nos;
-  commitPeriodLen?:Nos;
-  revealPeriodLen?:Nos;
-  dispensationPct?:Nos;
-  voteQuorum?:Nos;
+  minDeposit?: Nos
+  applyStageLen?: Nos
+  commitPeriodLen?: Nos
+  revealPeriodLen?: Nos
+  dispensationPct?: Nos
+  voteQuorum?: Nos
   // governance parameters
-  pMinDeposit?:Nos;
-  pApplyStageLen?:Nos;
-  pCommitPeriodLen?:Nos;
-  pRevealPeriodLen?:Nos;
-  pDispensationPct?:Nos;
-  pVoteQuorum?:Nos;
+  pMinDeposit?: Nos
+  pApplyStageLen?: Nos
+  pCommitPeriodLen?: Nos
+  pRevealPeriodLen?: Nos
+  pDispensationPct?: Nos
+  pVoteQuorum?: Nos
 }
+

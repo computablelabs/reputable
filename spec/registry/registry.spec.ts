@@ -4,12 +4,13 @@ import { participate, resetParticipants } from '../../src/redux/dispatchers/part
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
 import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
-import { deployParameterizer, resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
+import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
 import { resetRegistry } from '../../src/redux/dispatchers/registry'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { deployRegistry, apply } from '../../src/redux/action-creators/registry'
+import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { State } from '../../src/interfaces'
 import { getRegistryAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
@@ -37,10 +38,10 @@ describe('registry state', () => {
       // p11r will want a token deployed
       await store.dispatch(deployToken())
       // voting deploy demands that dll and attrStore be deployed
-      await deployDll(accounts[0])
-      await deployAttributeStore(accounts[0])
-      await deployVoting(accounts[0])
-      await deployParameterizer(accounts[0])
+      await deployDll(owner)
+      await deployAttributeStore(owner)
+      await deployVoting(owner)
+      await store.dispatch(deployParameterizer())
     })
 
     afterAll(() => {
@@ -107,7 +108,7 @@ describe('registry state', () => {
       await deployDll(owner)
       await deployAttributeStore(owner)
       await deployVoting(owner)
-      await deployParameterizer(owner)
+      await store.dispatch(deployParameterizer())
 
       const registryAddress = await store.dispatch(
         deployRegistry('the registry')

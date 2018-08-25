@@ -14,11 +14,6 @@ export const TRANSFER = 'transfer'
 export const TRANSFER_ERROR = 'transfer-error'
 export const TRANSFERRED = 'transferred'
 
-export const DEPLOY_PARAMETERIZER = 'deploy-parameterizer'
-export const DEPLOY_PARAMETERIZER_ERROR = 'deploy-parameterizer-error'
-export const DEPLOYED_PARAMETERIZER = 'deployed-parameterizer'
-export const RESET_PARAMETERIZER = 'reset-parameterizer'
-
 export const DEPLOY_VOTING = 'deploy-voting'
 export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
 export const DEPLOYED_VOTING = 'deployed-voting'

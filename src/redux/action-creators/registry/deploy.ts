@@ -10,11 +10,11 @@ import {
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { address as getVotingAddress } from '../../selectors/voting'
-import { address as getParameterizerAddress } from '../../selectors/parameterizer'
 import {
   getWebsocketAddress,
   getOwner,
   getTokenAddress,
+  getParameterizerAddress,
 } from '../../selectors'
 
 // Action Types

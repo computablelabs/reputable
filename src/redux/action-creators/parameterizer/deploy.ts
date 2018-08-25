@@ -4,17 +4,11 @@ import {
   Action,
   FSA,
   State,
+  Map,
   Deployed,
   Participant,
 } from '../../../interfaces'
-import {
-  DEPLOY_PARAMETERIZER,
-  DEPLOY_PARAMETERIZER_ERROR,
-  DEPLOYED_PARAMETERIZER,
-  RESET_PARAMETERIZER,
-  ParameterizerDefaults,
-  Errors,
-} from '../../../constants'
+import { Errors } from '../../../constants'
 import { address as getVotingAddress } from '../../selectors/voting'
 import {
   getWebsocketAddress,
@@ -23,115 +17,111 @@ import {
 } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
 
-/**
- * support actions for the thunk deployToken action itself
- */
-const deployParameterizerAction = (
-  tokenAddress:string,
-  votingAddress:string,
-  opts:Partial<ParameterizerDeployParams> = {}
-): FSA => {
-  // normalize the deploy object by defaulting falsy values here
-  const payload:ParameterizerDeployParams = {
-    // man, can be make the v2 parameterizer less argument-y? TODO
-    tokenAddress,
-    votingAddress,
-    minDeposit: opts.minDeposit || ParameterizerDefaults.MIN_DEPOSIT,
-    pMinDeposit: opts.pMinDeposit || ParameterizerDefaults.P_MIN_DEPOSIT,
-    applyStageLen: opts.applyStageLen || ParameterizerDefaults.APPLY_STAGE_LEN,
-    pApplyStageLen: opts.pApplyStageLen || ParameterizerDefaults.P_APPLY_STAGE_LEN,
-    commitStageLen: opts.commitStageLen || ParameterizerDefaults.COMMIT_STAGE_LEN,
-    pCommitStageLen: opts.pCommitStageLen || ParameterizerDefaults.P_COMMIT_STAGE_LEN,
-    revealStageLen: opts.revealStageLen || ParameterizerDefaults.REVEAL_STAGE_LEN,
-    pRevealStageLen: opts.pRevealStageLen || ParameterizerDefaults.P_REVEAL_STAGE_LEN,
-    dispensationPct: opts.dispensationPct || ParameterizerDefaults.DISPENSATION_PCT,
-    pDispensationPct: opts.pDispensationPct || ParameterizerDefaults.P_DISPENSATION_PCT,
-    voteQuorum: opts.voteQuorum || ParameterizerDefaults.VOTE_QUORUM,
-    pVoteQuorum: opts.pVoteQuorum || ParameterizerDefaults.P_VOTE_QUORUM,
-  }
+// Action Types
+export const PARAMETERIZER_DEPLOY_REQUEST = 'PARAMETERIZER_DEPLOY_REQUEST'
+export const PARAMETERIZER_DEPLOY_OK = 'PARAMETERIZER_DEPLOY_OK'
+export const PARAMETERIZER_DEPLOY_ERROR = 'PARAMETERIZER_DEPLOY_ERROR'
 
-  return { type: DEPLOY_PARAMETERIZER, payload }
-}
+export const PARAMETERIZER_ADDRESS_OK = 'PARAMETERIZER_ADDRESS_OK'
+export const PARAMETERIZER_ADDRESS_RESET = 'PARAMETERIZER_ADDRESS_RESET'
 
-/**
- * Note this action can be used if the application is using an already deployed token.
- * Simply dispatch this with the address of said token
- */
-const deployedParameterizer = (address:string): FSA => {
-  const payload:Deployed = { address }
-  return { type: DEPLOYED_PARAMETERIZER, payload }
-}
+// Actions
+const parameterizerDeployRequest = (value: Map): FSA => ({
+  type: PARAMETERIZER_DEPLOY_REQUEST,
+  payload: value,
+})
 
-const deployParameterizerError = (err:Error): FSA => (
-  { type: DEPLOY_PARAMETERIZER_ERROR, payload: err }
-)
+const parameterizerDeployOk = (value: Deployed): FSA => ({
+  type: PARAMETERIZER_DEPLOY_OK,
+  payload: value,
+})
+
+const parameterizerDeployError = (value: Error): FSA => ({
+  type: PARAMETERIZER_DEPLOY_ERROR,
+  payload: value,
+})
+
+const parameterizerAddressOk = (value: Deployed): FSA => ({
+  type: PARAMETERIZER_ADDRESS_OK,
+  payload: value,
+})
+
+const parameterizerAddressReset = (): FSA => ({
+  type: PARAMETERIZER_ADDRESS_RESET,
+  payload: {},
+})
 
 /**
- * For applications which have not yet deployed a parameterizer, you can do it from here.
- * Used in Specs and tutorial apps as well...
- *
- * Note that we use the object `opts` here to house any number of the possible arguments, any
- * not specified should fall back to a set of defaults defined here in the app. Also, the
- * computable.js lib itself declares a set of defaults for the parameterizer - so any not specified
- * as defaults in this app will fall-back to those...
- *
- * Use of Partial on the deploy params as we do not expect you to pass the addresses of things already deployed
+ * Note that `options` are a partial since a complete set of values is
+ * not expected. Anything not set here will be assigned default values
+ * in Computable.js.
  */
-const deployParameterizer = (address?:string, opts?:Partial<ParameterizerDeployParams>): any => {
-  return async (dispatch:any, getState:any): Promise<string> => {
+/* To deploy a new Parameterizer Contract */
+const deployParameterizer = (options?: Partial<ParameterizerDeployParams>): any => (
+  async (dispatch: Function, getState: Function): Promise<string> => {
     const state:State = getState()
-    const websocketAddress: string = getWebsocketAddress(state)
-    const owner: Participant | undefined = getOwner(state)
-    const tokenAddress = getTokenAddress(state)
-    const votingAddress = getVotingAddress(state)
 
-    let web3
+    const args = { options}
+    dispatch(parameterizerDeployRequest(args))
 
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(deployParameterizerError(err))
-      return ''
-    }
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-    if (!owner) {
-      dispatch(deployParameterizerError(new Error(Errors.NO_ADMIN_FOUND)))
-      return ''
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    if (!tokenAddress) {
-      dispatch(deployParameterizerError(new Error(Errors.NO_TOKEN_FOUND)))
-      return ''
-    }
+      const web3 = await getWeb3(websocketAddress)
 
-    if (!votingAddress) {
-      dispatch(deployParameterizerError(new Error(Errors.NO_VOTING_FOUND)))
-      return ''
-    }
+      const tokenAddress: string = getTokenAddress(state)
+      if (!tokenAddress) {
+        throw new Error(Errors.NO_TOKEN_FOUND)
+      }
 
-    // we can dispatch deploy early here, as deploy is not to be confused with deployed
-    const action = deployParameterizerAction(tokenAddress, votingAddress, opts)
-    dispatch(action)
-    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-    const contract = new Parameterizer(address || owner.address)
+      const votingAddress: string = getVotingAddress(state)
+      if (!votingAddress) {
+        throw new Error(Errors.NO_VOTING_FOUND)
+      }
 
-    try {
-      // TSC is confused here, the payload is guaranteed to be a ParameterizerDeployParams
-      // @ts-ignore:2345
-      const parameterizerAddress = await contract.deploy(web3, action.payload)
-      dispatch(deployedParameterizer(parameterizerAddress))
+      const contract = new Parameterizer(owner.address)
+      const parameterizerAddress: string = await contract.deploy(web3, {
+        tokenAddress,
+        votingAddress,
+        ...options,
+      })
+
+      dispatch(parameterizerDeployOk({ address: parameterizerAddress }))
 
       return parameterizerAddress
-    } catch(err) {
-      dispatch(deployParameterizerError(err))
+    } catch (err) {
+      dispatch(parameterizerDeployError(err))
+
       return ''
     }
   }
-}
+)
 
-const resetParameterizer = (): Action => ({ type: RESET_PARAMETERIZER })
+/* To store the address of an already deployed Parameterizer Contract */
+const setParameterizerAddress = (parameterizerAddress: string): any => (
+  async (dispatch: Function): Promise<void> => (
+    dispatch(parameterizerAddressOk({ address: parameterizerAddress }))
+  )
+)
+
+/* To reset the stored Parameterizer address */
+const resetParameterizerAddress = (): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(parameterizerAddressReset())
+  )
+)
 
 export {
   deployParameterizer,
-  resetParameterizer,
+  setParameterizerAddress,
+  resetParameterizerAddress,
 }
+
