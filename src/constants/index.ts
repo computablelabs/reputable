@@ -10,15 +10,6 @@ export const LIST = 'list'
 export const LIST_ERROR = 'list-error'
 export const GET_LISTINGS = 'get-listings'
 
-export const TRANSFER = 'transfer'
-export const TRANSFER_ERROR = 'transfer-error'
-export const TRANSFERRED = 'transferred'
-
-export const DEPLOY_VOTING = 'deploy-voting'
-export const DEPLOY_VOTING_ERROR = 'deploy-voting-error'
-export const DEPLOYED_VOTING = 'deployed-voting'
-export const RESET_VOTING = 'reset-voting'
-
 export enum Contracts {
   TOKEN         = 'token',
   PARAMETERIZER = 'parameterizer',

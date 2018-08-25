@@ -1,13 +1,15 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
+import { State } from '../../src/interfaces'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
-import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
+import { resetVoting } from '../../src/redux/dispatchers/voting'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { deployToken } from '../../src/redux/action-creators/token'
-import { address as votingAddress } from '../../src/redux/selectors/voting'
+import { deployVoting } from '../../src/redux/action-creators/voting'
+import { getVotingAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
 describe('voting state', () => {
@@ -16,6 +18,7 @@ describe('voting state', () => {
 
   let server:any
   let accounts:string[]
+  let owner: string
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
@@ -24,14 +27,15 @@ describe('voting state', () => {
     setWebsocketAddress(websocketAddress)
     const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
+    owner = accounts[0]
 
-    participate('Admin, Pants III', accounts[0])
+    participate('Admin, Pants III', owner)
 
     // expects a deployed token
     await store.dispatch(deployToken())
     // voting deploy demands that dll and attrStore be deployed first
-    await deployDll(accounts[0])
-    await deployAttributeStore(accounts[0])
+    await deployDll(owner)
+    await deployAttributeStore(owner)
   })
 
   afterAll(() => {
@@ -46,7 +50,10 @@ describe('voting state', () => {
   })
 
   it('begins with unhydrated voting', () => {
-    expect(votingAddress(store.getState())).toBeFalsy()
+    const state: State = store.getState()
+    const address: string = getVotingAddress(state)
+
+    expect(address).toBeFalsy()
   })
 
   describe('deployment', () => {
@@ -55,13 +62,15 @@ describe('voting state', () => {
       // const deployListener = (voting:Voting) => { console.log(voting) },
         // unsub:any = subscriber(deployListener, voting)
 
-      await deployVoting(accounts[0])
+      await store.dispatch(deployVoting())
 
-      const addr = votingAddress(store.getState())
+      const state: State = store.getState()
+      const address: string = getVotingAddress(state)
 
-      expect(addr).toBeTruthy()
+      expect(address).toBeTruthy()
       // hashed addresses are always 42 chars
-      expect(addr && addr.length).toBe(42)
+      expect(address && address.length).toBe(42)
     })
   })
 })
+

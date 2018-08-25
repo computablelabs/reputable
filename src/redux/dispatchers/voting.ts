@@ -1,11 +1,9 @@
 import store from '../store'
-import { deployVoting as deploy, resetVoting as reset } from '../action-creators/voting'
-
-const deployVoting = async (address?:string): Promise<string> =>
-  store.dispatch(deploy(address))
+import { resetVotingAddress as resetAddress } from '../action-creators/voting'
 
 const resetVoting = (): void => {
-  store.dispatch(reset())
+  store.dispatch(resetAddress())
 }
 
-export { deployVoting, resetVoting }
+export { resetVoting }
+

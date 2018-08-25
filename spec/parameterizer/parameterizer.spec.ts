@@ -4,11 +4,12 @@ import { State } from '../../src/interfaces'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
-import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
+import { resetVoting } from '../../src/redux/dispatchers/voting'
 import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
 import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { deployToken } from '../../src/redux/action-creators/token'
+import { deployVoting } from '../../src/redux/action-creators/voting'
 import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { getWeb3 } from '../../src/initializers'
 import { getParameterizerAddress } from '../../src/redux/selectors'
@@ -37,7 +38,7 @@ describe('parameterizer state', () => {
     // voting deploy demands that dll and attrStore be deployed
     await deployDll(owner)
     await deployAttributeStore(owner)
-    await deployVoting(owner)
+    await store.dispatch(deployVoting())
   })
 
   afterAll(() => {

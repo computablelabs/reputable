@@ -9,11 +9,11 @@ import {
   Participant,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { address as getVotingAddress } from '../../selectors/voting'
 import {
   getWebsocketAddress,
   getOwner,
   getTokenAddress,
+  getVotingAddress,
 } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
 
@@ -51,6 +51,7 @@ const parameterizerAddressReset = (): FSA => ({
   payload: {},
 })
 
+// Action Creators
 /**
  * Note that `options` are a partial since a complete set of values is
  * not expected. Anything not set here will be assigned default values
@@ -61,7 +62,7 @@ const deployParameterizer = (options?: Partial<ParameterizerDeployParams>): any 
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state:State = getState()
 
-    const args = { options}
+    const args = { options }
     dispatch(parameterizerDeployRequest(args))
 
     try {
@@ -107,12 +108,12 @@ const deployParameterizer = (options?: Partial<ParameterizerDeployParams>): any 
 
 /* To store the address of an already deployed Parameterizer Contract */
 const setParameterizerAddress = (parameterizerAddress: string): any => (
-  async (dispatch: Function): Promise<void> => (
+  async (dispatch: Function): Promise<Action> => (
     dispatch(parameterizerAddressOk({ address: parameterizerAddress }))
   )
 )
 
-/* To reset the stored Parameterizer address */
+/* To reset the stored Parameterizer Contract address */
 const resetParameterizerAddress = (): any => (
   async (dispatch: Function): Promise<Action> => (
     dispatch(parameterizerAddressReset())

@@ -3,7 +3,7 @@ import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
-import { deployVoting, resetVoting } from '../../src/redux/dispatchers/voting'
+import { resetVoting } from '../../src/redux/dispatchers/voting'
 import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
 import { resetRegistry } from '../../src/redux/dispatchers/registry'
 import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
@@ -11,6 +11,7 @@ import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispa
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { deployRegistry, apply } from '../../src/redux/action-creators/registry'
 import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
+import { deployVoting } from '../../src/redux/action-creators/voting'
 import { State } from '../../src/interfaces'
 import { getRegistryAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
@@ -40,7 +41,7 @@ describe('registry state', () => {
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(owner)
       await deployAttributeStore(owner)
-      await deployVoting(owner)
+      await store.dispatch(deployVoting())
       await store.dispatch(deployParameterizer())
     })
 
@@ -107,7 +108,7 @@ describe('registry state', () => {
       // voting deploy demands that dll and attrStore be deployed
       await deployDll(owner)
       await deployAttributeStore(owner)
-      await deployVoting(owner)
+      await store.dispatch(deployVoting())
       await store.dispatch(deployParameterizer())
 
       const registryAddress = await store.dispatch(

@@ -9,12 +9,12 @@ import {
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
-import { address as getVotingAddress } from '../../selectors/voting'
 import {
   getWebsocketAddress,
   getOwner,
   getTokenAddress,
   getParameterizerAddress,
+  getVotingAddress,
 } from '../../selectors'
 
 // Action Types
@@ -110,7 +110,7 @@ const deployRegistry = (name:string): any => (
 
 /* To store the address of an already deployed Registry Contract */
 const setRegistryAddress = (registryAddress: string): any => (
-  async (dispatch: Function): Promise<void> => (
+  async (dispatch: Function): Promise<Action> => (
     dispatch(registryAddressOk({ address: registryAddress }))
   )
 )

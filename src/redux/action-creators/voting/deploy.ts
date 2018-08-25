@@ -3,16 +3,11 @@ import {
   Action,
   FSA,
   State,
+  Map,
   Deployed,
   Participant,
 } from '../../../interfaces'
-import {
-  DEPLOY_VOTING,
-  DEPLOY_VOTING_ERROR,
-  DEPLOYED_VOTING,
-  RESET_VOTING,
-  Errors,
-} from '../../../constants'
+import { Errors } from '../../../constants'
 import {
   getWebsocketAddress,
   getOwner,
@@ -22,89 +17,109 @@ import {
 } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
 
-/**
- * support actions for the thunk action creator
- *
- * Note that we treat the deployment of the DLL and AttributeStore contracts seperate
- * from deploying the Voting contract
- *
- * That does not mean that we can't introduce a bundled action later that deploys
- * the dependencies (dll, attrStore) first, then the voting...
- */
+// Action Types
+export const VOTING_DEPLOY_REQUEST = 'VOTING_DEPLOY_REQUEST'
+export const VOTING_DEPLOY_OK = 'VOTING_DEPLOY_OK'
+export const VOTING_DEPLOY_ERROR = 'VOTING_DEPLOY_ERROR'
 
-// NOTE all 3 necessary addresses should be in the state tree by this point: token, dll, attributeStore
-const deployVotingAction = (): Action => ({ type: DEPLOY_VOTING })
+export const VOTING_ADDRESS_OK = 'VOTING_DEPLOY_ADDRESS_OK'
+export const VOTING_ADDRESS_RESET = 'VOTING_DEPLOY_ADDRESS_RESET'
 
-const deployedVoting = (address:string): FSA => {
-  const payload:Deployed = { address }
-  return { type: DEPLOYED_VOTING, payload }
-}
+// Actions
+const votingDeployRequest = (value: Map): FSA => ({
+  type: VOTING_DEPLOY_REQUEST,
+  payload: value,
+})
 
-const deployVotingError = (err:Error): FSA => ({ type: DEPLOY_VOTING_ERROR, payload: err })
+const votingDeployOk = (value: Deployed): FSA => ({
+  type: VOTING_DEPLOY_OK,
+  payload: value,
+})
 
-const deployVoting = (address?:string): any => {
-  return async (dispatch:any, getState:any): Promise<string> => {
+const votingDeployError = (value: Error): FSA => ({
+  type: VOTING_DEPLOY_ERROR,
+  payload: value,
+})
+
+const votingAddressOk = (value: Deployed): FSA => ({
+  type: VOTING_ADDRESS_OK,
+  payload: value,
+})
+
+const votingAddressReset = (): FSA => ({
+  type: VOTING_ADDRESS_RESET,
+  payload: {},
+})
+
+
+// Action Creators
+/* To deploy a new Voting Contract */
+const deployVoting = (): any => (
+  async (dispatch: Function, getState: Function): Promise<string> => {
     const state:State = getState()
-    const owner: Participant | undefined = getOwner(state)
-    const websocketAddress: string = getWebsocketAddress(state)
-    const tokenAddress = getTokenAddress(state)
-    const dllAddress = getDllAddress(state)
-    const attributeStoreAddress = getAttributeStoreAddress(state)
 
-    let web3
+    const args = {}
+    dispatch(votingDeployRequest(args))
 
     try {
-      web3 = await getWeb3(websocketAddress)
-    } catch (err) {
-      dispatch(deployVotingError(err))
-      return ''
-    }
+      const owner: Participant = getOwner(state)
+      if (!owner) {
+        throw new Error(Errors.NO_ADMIN_FOUND)
+      }
 
-    if (!owner) {
-      dispatch(deployVotingError(new Error(Errors.NO_ADMIN_FOUND)))
-      return ''
-    }
+      const websocketAddress: string = getWebsocketAddress(state)
+      if (!websocketAddress) {
+        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
+      }
 
-    if (!tokenAddress) {
-      dispatch(deployVotingError(new Error(Errors.NO_TOKEN_FOUND)))
-      return ''
-    }
+      const web3 = await getWeb3(websocketAddress)
 
-    if (!dllAddress) {
-      dispatch(deployVotingError(new Error(Errors.NO_DLL_FOUND)))
-      return ''
-    }
+      const tokenAddress: string = getTokenAddress(state)
+      if (!tokenAddress) {
+        throw new Error(Errors.NO_TOKEN_FOUND)
+      }
 
-    if (!attributeStoreAddress) {
-      dispatch(deployVotingError(new Error(Errors.NO_ATTRIBUTESTORE_FOUND)))
-      return ''
-    }
+      const dllAddress: string = getDllAddress(state)
+      if (!dllAddress) {
+        throw new Error(Errors.NO_DLL_FOUND)
+      }
 
-    // we can dispatch deploy early here, as deploy is not to be confused with deployed)
-    dispatch(deployVotingAction())
-    // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-    const contract = new Voting(address || owner.address)
+      const attributeStoreAddress: string = getAttributeStoreAddress(state)
+      if (!attributeStoreAddress) {
+        throw new Error(Errors.NO_ATTRIBUTESTORE_FOUND)
+      }
 
-    try {
-      const votingAddress = await contract.deploy(web3, {
+      const contract = new Voting(owner.address)
+      const votingAddress: string = await contract.deploy(web3, {
         tokenAddress,
         dllAddress,
         attributeStoreAddress,
       })
 
-      dispatch(deployedVoting(votingAddress))
+      dispatch(votingDeployOk({ address: votingAddress }))
 
       return votingAddress
-    } catch(err) {
-      dispatch(deployVotingError(err))
+    } catch (err) {
+      dispatch(votingDeployError(err))
+
       return ''
     }
   }
-}
+)
 
-const resetVoting = (): Action => ({ type: RESET_VOTING })
+/* To store the address of an already deployed Voting Contract */
+const setVotingAddress = (votingAddress: string): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(votingAddressOk({ address: votingAddress }))
+  )
+)
 
-export {
-  deployVoting,
-  resetVoting,
-}
+/* To reset the stored Voting Contract address */
+const resetVotingAddress = (): any => (
+  async (dispatch: Function): Promise<Action> => (
+    dispatch(votingAddressReset())
+  )
+)
+
+export { deployVoting, setVotingAddress, resetVotingAddress }
+

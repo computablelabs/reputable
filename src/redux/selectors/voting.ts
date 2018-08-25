@@ -1,8 +1,24 @@
-import { State, Voting } from '../../interfaces'
+import { State, StateItem, Voting } from '../../interfaces'
 
-const voting = (state:State): Voting|undefined => state.voting
+const model = 'voting'
 
-const address = (state:State): string => state.voting && state.voting.address || ''
+const getVoting = (state: State = {}): Voting|undefined => {
+  const stateItem: StateItem<Voting>|undefined = state[model]
+  if (!stateItem) {
+    return undefined
+  }
 
-export { voting, address }
+  return stateItem.data
+}
+
+const getVotingAddress = (state: State = {}): string => {
+  const voting: Voting|undefined = getVoting(state)
+  if (!voting) {
+    return ''
+  }
+
+  return voting.address
+}
+
+export { getVoting, getVotingAddress }
 

@@ -93,7 +93,7 @@ const deployToken = (supply?: number): any => (
 //    If we set the contract address of an existing token, when do we set the
 //    supply value? Do we need the supply in global state?
 const setTokenAddress = (tokenAddress: string): any => (
-  async (dispatch: Function): Promise<void> => (
+  async (dispatch: Function): Promise<Action> => (
     dispatch(tokenAddressOk({ address: tokenAddress }))
   )
 )

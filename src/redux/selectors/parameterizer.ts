@@ -20,6 +20,5 @@ const getParameterizerAddress = (state: State = {}): string => {
   return parameterizer.address
 }
 
-
 export { getParameterizer, getParameterizerAddress }
 
