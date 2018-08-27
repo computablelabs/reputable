@@ -6,13 +6,26 @@ const getRegistry = (state = {}) => {
     if (!stateItem) {
         return undefined;
     }
-    return stateItem ?
-        stateItem : undefined;
+    return stateItem.data;
 };
 exports.getRegistry = getRegistry;
 const getRegistryAddress = (state = {}) => {
     const registry = getRegistry(state);
-    return registry && registry.address ?
-        registry.address : '';
+    if (!registry || !registry.address) {
+        return '';
+    }
+    return registry.address;
 };
 exports.getRegistryAddress = getRegistryAddress;
+const getApplicants = (state = {}) => {
+    const registry = getRegistry(state);
+    if (!registry) {
+        return [];
+    }
+    const applicants = registry.applicants;
+    if (!applicants) {
+        return [];
+    }
+    return applicants;
+};
+exports.getApplicants = getApplicants;

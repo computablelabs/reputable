@@ -1,16 +1,17 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __importDefault(require("./helpers"));
 const model = 'participants';
-const getParticipants = (state, { ids } = {}) => helpers_1.default.getList({ state, model, ids });
+const getParticipants = (state = {}) => {
+    const stateItem = state[model];
+    if (!stateItem) {
+        return [];
+    }
+    return stateItem.data || [];
+};
 exports.getParticipants = getParticipants;
-const getParticipant = (state, key) => helpers_1.default.getItem({ state, model, key });
-exports.getParticipant = getParticipant;
-const getOwner = (state) => {
-    const predicate = (item) => item.owner;
-    return helpers_1.default.getList({ state, model, predicate })[0];
+const getOwner = (state = {}) => {
+    const participants = getParticipants(state);
+    const owner = participants.find((participant) => !!participant.owner);
+    return owner;
 };
 exports.getOwner = getOwner;

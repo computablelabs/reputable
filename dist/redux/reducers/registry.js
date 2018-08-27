@@ -1,51 +1,37 @@
 "use strict";
-/**
- * Top level reducer for the registry state pieces.
- * Subdivides the responsibility of managing:
- * * applicants
- * * challenges
- * * listings
- */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const redux_1 = require("redux");
-const constants_1 = require("../../constants");
-const address = (address = '', action) => {
-    const map = {
-        [constants_1.DEPLOYED_REGISTRY]: () => action.payload.address,
-        [constants_1.RESET_REGISTRY]: () => '',
-    };
-    return map[action.type] ? map[action.type]() : address;
+const registry_1 = require("../action-creators/registry");
+const createReducer_1 = __importDefault(require("./createReducer"));
+const initialState = {
+    loading: false,
+    request: {},
+    data: {
+        address: undefined,
+        applicants: [],
+        challenges: [],
+        listings: [],
+    },
+    error: undefined,
 };
-// TODO this
-const challenges = (state = [], action) => {
-    const map = {
-        [constants_1.CHALLENGE]: () => ([
-            ...state,
-            {}
-        ]),
-        [constants_1.RESET_REGISTRY]: () => ([]),
-    };
-    return map[action.type] ? map[action.type]() : state;
+const handlers = {
+    [registry_1.REGISTRY_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
+    [registry_1.REGISTRY_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [registry_1.REGISTRY_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
+    [registry_1.REGISTRY_ADDRESS_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [registry_1.REGISTRY_ADDRESS_RESET]: (state) => (Object.assign({}, state, { data: Object.assign({}, state.data, { address: initialState.data.address }) })),
+    [registry_1.REGISTRY_APPLY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
+    [registry_1.REGISTRY_APPLY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { applicants: [
+                ...state.data.applicants || [],
+                payload,
+            ] }) })),
+    [registry_1.REGISTRY_APPLY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
+    [registry_1.REGISTRY_APPLY_RESET]: (state) => (Object.assign({}, state, { data: Object.assign({}, state.data, { applicants: initialState.data.applicants }) })),
+    ['LIST']: (state, { payload }) => (Object.assign({}, state, { data: Object.assign({}, state.data, { listings: [
+                ...state.data.listings || [],
+                payload,
+            ] }) })),
 };
-const listings = (state = [], action) => {
-    const map = {
-        // LIST action invoked when the ETHVM returns us the listing
-        [constants_1.LIST]: () => ([
-            ...state,
-            {
-                hash: action.payload.hash,
-                applicationExpiry: action.payload.applicationExpiry,
-                whitelisted: action.payload.whitelisted,
-                owner: action.payload.owner,
-                unstakedDeposit: action.payload.unstakedDeposit,
-            }
-        ]),
-        [constants_1.RESET_REGISTRY]: () => ([]),
-    };
-    return map[action.type] ? map[action.type]() : state;
-};
-exports.default = redux_1.combineReducers({
-    address,
-    challenges,
-    listings,
-});
+exports.default = createReducer_1.default(handlers, initialState);

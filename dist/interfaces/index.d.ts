@@ -4,6 +4,7 @@ export { default as Reducer } from './reducer';
 export { default as State } from './state';
 export { default as StateItem } from './stateItem';
 export * from './actions/action';
+export * from './map';
 export * from './token';
 export * from './voting';
 export * from './registry';

@@ -11,18 +11,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const web3_1 = __importDefault(require("web3"));
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const helpers_1 = require("computable/dist/helpers");
-const token_1 = require("../../selectors/token");
-const selectors_1 = require("../../selectors");
 const constants_1 = require("../../../constants");
-// Action Types
+const initializers_1 = require("../../../initializers");
+const selectors_1 = require("../../selectors");
 exports.TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST';
 exports.TOKEN_TRANSFER_OK = 'TOKEN_TRANSFER_OK';
 exports.TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR';
 exports.TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET';
-// Actions
 const tokenTransferRequest = (value) => ({
     type: exports.TOKEN_TRANSFER_REQUEST,
     payload: value,
@@ -39,33 +36,27 @@ const tokenTransferReset = () => ({
     type: exports.TOKEN_TRANSFER_RESET,
     payload: {},
 });
-// Action Creators
-// TODO type the returned thunk
-const transfer = (to, amount, from) => 
-// TODO type the thunk args
-(dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
+const transfer = ({ to, amount, from }) => (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
-    const owner = selectors_1.getOwner(state);
-    // a token must have been deployed by this point
-    const tokenAddress = token_1.address(state);
-    const ws = state.websocketAddress || '';
-    const web3Provider = new web3_1.default.providers.WebsocketProvider(ws);
-    const web3 = new web3_1.default(web3Provider);
-    const contract = new erc_20_1.default(owner.address);
-    // instantiate a contract from the deployed token
-    tokenAddress && (yield contract.at(web3, { address: tokenAddress }, { from: owner.address }));
-    if (!contract) {
-        const error = new Error(constants_1.Errors.NO_TOKEN_FOUND);
-        dispatch(tokenTransferError(error));
-        return undefined;
-    }
-    const args = { to, amount, from: from || owner.address };
-    // dispatch that a request has been initialized
+    const args = { to, amount, from };
     dispatch(tokenTransferRequest(args));
-    // try the actual on-chain transfer
     try {
+        const owner = selectors_1.getOwner(state);
+        if (!owner) {
+            throw new Error(constants_1.Errors.NO_ADMIN_FOUND);
+        }
+        const websocketAddress = selectors_1.getWebsocketAddress(state);
+        if (!websocketAddress) {
+            throw new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND);
+        }
+        const web3 = yield initializers_1.getWeb3(websocketAddress);
+        const contractAddress = selectors_1.getTokenAddress(state);
+        if (!contractAddress) {
+            throw new Error(constants_1.Errors.NO_TOKEN_FOUND);
+        }
+        const contract = new erc_20_1.default(owner.address);
+        yield contract.at(web3, { address: contractAddress });
         const emitter = contract.getEventEmitter('Transfer');
-        // we can allow the contract to fallback on the default account it was made from
         contract.transfer(to, amount);
         const eventLog = yield helpers_1.onData(emitter);
         const eventValues = eventLog.returnValues;
@@ -73,7 +64,6 @@ const transfer = (to, amount, from) =>
             from: eventValues.from,
             to: eventValues.to,
             amount: eventValues.value,
-            id: eventLog.transactionHash,
         };
         dispatch(tokenTransferOk(out));
         return out;
@@ -84,5 +74,7 @@ const transfer = (to, amount, from) =>
     }
 });
 exports.transfer = transfer;
-const resetTokenTransfer = () => tokenTransferReset();
+const resetTokenTransfer = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(tokenTransferReset()));
+}));
 exports.resetTokenTransfer = resetTokenTransfer;

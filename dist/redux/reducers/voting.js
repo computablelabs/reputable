@@ -1,14 +1,21 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const redux_1 = require("redux");
-const constants_1 = require("../../constants");
-const address = (address = '', action) => {
-    if (action.type === constants_1.DEPLOYED_VOTING)
-        return action.payload.address;
-    if (action.type === constants_1.RESET_VOTING)
-        return '';
-    return address;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.default = redux_1.combineReducers({
-    address,
-});
+Object.defineProperty(exports, "__esModule", { value: true });
+const voting_1 = require("../action-creators/voting");
+const createReducer_1 = __importDefault(require("./createReducer"));
+const initialState = {
+    loading: false,
+    request: {},
+    data: { address: '' },
+    error: undefined,
+};
+const handlers = {
+    [voting_1.VOTING_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
+    [voting_1.VOTING_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [voting_1.VOTING_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
+    [voting_1.VOTING_ADDRESS_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [voting_1.VOTING_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { data: Object.assign({}, state.data, { address: initialState.data.address }) }))
+};
+exports.default = createReducer_1.default(handlers, initialState);

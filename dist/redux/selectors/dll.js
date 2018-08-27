@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const model = 'dllAddress';
+const model = 'dll';
 const getDllAddress = (state = {}) => {
     const stateItem = state[model];
     if (!stateItem) {
@@ -10,8 +10,6 @@ const getDllAddress = (state = {}) => {
     if (!data) {
         return '';
     }
-    const keys = Object.keys(data);
-    return keys.length ?
-        data[keys[0]] : '';
+    return data.address;
 };
 exports.getDllAddress = getDllAddress;

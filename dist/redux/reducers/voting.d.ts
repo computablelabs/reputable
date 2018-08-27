@@ -1,4 +1,3 @@
-declare const _default: import("redux").Reducer<{
-    address: string | undefined;
-}, import("redux").AnyAction>;
+import { StateItem } from '../../interfaces';
+declare const _default: (state: StateItem<any> | undefined, action: import("src/interfaces/actions/action").Action) => any;
 export default _default;

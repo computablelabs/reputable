@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const voting = (state) => state.voting;
-exports.voting = voting;
-const address = (state) => state.voting && state.voting.address;
-exports.address = address;
+const model = 'voting';
+const getVoting = (state = {}) => {
+    const stateItem = state[model];
+    if (!stateItem) {
+        return undefined;
+    }
+    return stateItem.data;
+};
+exports.getVoting = getVoting;
+const getVotingAddress = (state = {}) => {
+    const voting = getVoting(state);
+    if (!voting) {
+        return '';
+    }
+    return voting.address;
+};
+exports.getVotingAddress = getVotingAddress;

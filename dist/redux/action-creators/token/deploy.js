@@ -11,64 +11,69 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const web3_1 = __importDefault(require("web3"));
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const constants_1 = require("../../../constants");
+const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
-/**
- * support actions for the thunk deployToken action itself
- */
-const deployTokenAction = (address, supply) => {
-    const payload = {
-        address,
-        supply: supply || constants_1.TokenDefaults.SUPPLY,
-    };
-    return { type: constants_1.DEPLOY_TOKEN, payload };
-};
-/**
- * Note this action can be used if the application is using an already deployed token.
- * Simply dispatch this with the address of said token
- */
-const deployedToken = (address) => {
-    const payload = { address };
-    return { type: constants_1.DEPLOYED_TOKEN, payload };
-};
-const deployTokenError = (err) => ({ type: constants_1.DEPLOY_TOKEN_ERROR, payload: err });
-/**
- * For applications which have not yet deployed a token, you can do it from here.
- * Used in Specs and tutorial apps as well...
- */
-const deployToken = (address, supply) => {
-    return (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
-        const state = getState();
-        const websocketAddress = state.websocketAddress;
+exports.TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST';
+exports.TOKEN_DEPLOY_OK = 'TOKEN_DEPLOY_OK';
+exports.TOKEN_DEPLOY_ERROR = 'TOKEN_DEPLOY_ERROR';
+exports.TOKEN_ADDRESS_OK = 'TOKEN_ADDRESS_OK';
+exports.TOKEN_ADDRESS_RESET = 'TOKEN_ADDRESS_RESET';
+const tokenDeployRequest = (value) => ({
+    type: exports.TOKEN_DEPLOY_REQUEST,
+    payload: value,
+});
+const tokenDeployOk = (value) => ({
+    type: exports.TOKEN_DEPLOY_OK,
+    payload: value,
+});
+const tokenDeployError = (value) => ({
+    type: exports.TOKEN_DEPLOY_ERROR,
+    payload: value,
+});
+const tokenAddressOk = (value) => ({
+    type: exports.TOKEN_ADDRESS_OK,
+    payload: value,
+});
+const tokenAddressReset = () => ({
+    type: exports.TOKEN_ADDRESS_RESET,
+    payload: {},
+});
+const deployToken = (supply) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
+    const state = getState();
+    const args = { address: undefined, supply };
+    dispatch(tokenDeployRequest(args));
+    try {
         const owner = selectors_1.getOwner(state);
-        let tokenAddress = '';
-        if (!websocketAddress)
-            dispatch(deployTokenError(new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND)));
-        else if (!owner)
-            dispatch(deployTokenError(new Error(constants_1.Errors.NO_ADMIN_FOUND)));
-        else {
-            // create web3 on demand with our provider
-            const web3 = new web3_1.default(new web3_1.default.providers.WebsocketProvider(websocketAddress)), 
-            // we can dispatch deploy early here, as deploy is not to be confused with deployed
-            action = deployTokenAction(address || owner.address);
-            dispatch(action);
-            // now that the deploy action is in flight, do the actual evm deploy and wait for the address
-            const contract = new erc_20_1.default(address || owner.address);
-            try {
-                // we can just re-use our deploy action payload from above
-                tokenAddress = yield contract.deploy(web3, action.payload);
-                dispatch(deployedToken(tokenAddress));
-            }
-            catch (err) {
-                dispatch(deployTokenError(err));
-            }
+        if (!owner) {
+            throw new Error(constants_1.Errors.NO_ADMIN_FOUND);
         }
+        const websocketAddress = selectors_1.getWebsocketAddress(state);
+        if (!websocketAddress) {
+            throw new Error(constants_1.Errors.NO_WEBSOCKETADDRESS_FOUND);
+        }
+        const web3 = yield initializers_1.getWeb3(websocketAddress);
+        const contract = new erc_20_1.default(owner.address);
+        supply = supply || constants_1.TokenDefaults.SUPPLY;
+        const tokenAddress = yield contract.deploy(web3, {
+            address: owner.address,
+            supply,
+        });
+        dispatch(tokenDeployOk({ address: tokenAddress, supply }));
         return tokenAddress;
-    });
-};
+    }
+    catch (err) {
+        dispatch(tokenDeployError(err));
+        return '';
+    }
+}));
 exports.deployToken = deployToken;
-// including with deployment actions as it fits best here
-const resetToken = () => ({ type: constants_1.RESET_TOKEN });
-exports.resetToken = resetToken;
+const setTokenAddress = (tokenAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(tokenAddressOk({ address: tokenAddress })));
+}));
+exports.setTokenAddress = setTokenAddress;
+const resetTokenAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(tokenAddressReset()));
+}));
+exports.resetTokenAddress = resetTokenAddress;

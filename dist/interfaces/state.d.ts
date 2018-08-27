@@ -1,14 +1,12 @@
-import { StateItem, Participant, Approval, Token, Parameterizer, Voting, Registry } from '.';
+import { Parameterizer, Participant, Registry, StateItem, Token, Voting, Deployed } from '.';
 interface State {
-    readonly websocketAddress?: string;
-    readonly participants?: StateItem<Participant>;
-    readonly token?: Token;
-    readonly tokenApprovals?: StateItem<Approval>;
-    readonly parameterizer?: Parameterizer;
-    readonly voting?: Voting;
-    readonly registry?: Registry;
-    readonly registryApplications?: StateItem<any>;
-    readonly dllAddress?: StateItem<string>;
-    readonly attributeStoreAddress?: StateItem<string>;
+    readonly attributeStore?: StateItem<Deployed>;
+    readonly dll?: StateItem<Deployed>;
+    readonly parameterizer?: StateItem<Parameterizer>;
+    readonly participants?: StateItem<Participant[]>;
+    readonly registry?: StateItem<Registry>;
+    readonly token?: StateItem<Token>;
+    readonly voting?: StateItem<Voting>;
+    readonly web3?: StateItem<Deployed>;
 }
 export default State;

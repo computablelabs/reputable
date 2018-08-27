@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jasmine-ts ./spec/**/*.spec.ts",
     "build": "npm run build:clean && tsc -p ./tsbuild.json",
-    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/interfaces && rm -rf ./dist/redux",
+    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/initializers && rm -rf ./dist/interfaces && rm -rf ./dist/redux",
     "build:dry": "tsc -noEmit -p ./tsbuild.json",
     "test:init": "jasmine-ts init"
   },

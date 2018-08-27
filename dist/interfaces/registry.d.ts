@@ -1,6 +1,3 @@
-/**
- * hold state related to the registry contract
- */
 import { RegistryListing } from 'computable/dist/interfaces';
 import { Nos } from 'computable/dist/types';
 export interface Applicant {
@@ -15,7 +12,7 @@ export interface Listing extends RegistryListing {
 }
 export interface Registry {
     address?: string;
-    applicants: Applicant[];
-    challenges: Challenge[];
-    listings: Listing[];
+    applicants?: Applicant[];
+    challenges?: Challenge[];
+    listings?: Listing[];
 }

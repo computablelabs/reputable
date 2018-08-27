@@ -1,8 +1,9 @@
-import { Action } from '../../../interfaces';
-/**
- * For applications which have not yet deployed a token, you can do it from here.
- * Used in Specs and tutorial apps as well...
- */
-declare const deployToken: (address?: string | undefined, supply?: string | number | undefined) => any;
-declare const resetToken: () => Action;
-export { deployToken, resetToken, };
+export declare const TOKEN_DEPLOY_REQUEST = "TOKEN_DEPLOY_REQUEST";
+export declare const TOKEN_DEPLOY_OK = "TOKEN_DEPLOY_OK";
+export declare const TOKEN_DEPLOY_ERROR = "TOKEN_DEPLOY_ERROR";
+export declare const TOKEN_ADDRESS_OK = "TOKEN_ADDRESS_OK";
+export declare const TOKEN_ADDRESS_RESET = "TOKEN_ADDRESS_RESET";
+declare const deployToken: (supply?: number | undefined) => any;
+declare const setTokenAddress: (tokenAddress: string) => any;
+declare const resetTokenAddress: () => any;
+export { deployToken, setTokenAddress, resetTokenAddress };
