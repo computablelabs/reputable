@@ -1,4 +1,4 @@
-import { FSA, Participant } from '../../interfaces'
+import { FSA, Participant } from '../../../interfaces'
 
 // Action Types
 export const PARTICIPANTS_OK = 'PARTICIPANTS_OK'
@@ -17,17 +17,15 @@ const participantsReset = (): FSA => ({
 
 // Action Creators
 const participate = (name:string, address:string): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function): Promise<void> => (
     dispatch(participantsOk({ name, address }))
-    return Promise.resolve()
-  }
+  )
 )
 
 const resetParticipants = (): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function): Promise<void> => (
     dispatch(participantsReset())
-    return Promise.resolve()
-  }
+  )
 )
 
 export { participate, resetParticipants }

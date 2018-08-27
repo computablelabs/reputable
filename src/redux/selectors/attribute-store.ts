@@ -1,9 +1,9 @@
-import { State, StateItem, Map } from '../../interfaces'
+import { State, StateItem, Deployed } from '../../interfaces'
 
-const model = 'attributeStoreAddress'
+const model = 'attributeStore'
 
 const getAttributeStoreAddress = (state: State = {}): string => {
-  const stateItem: StateItem<Map> | undefined = state[model]
+  const stateItem: StateItem<Deployed>|undefined = state[model]
   if (!stateItem) {
     return ''
   }
@@ -13,10 +13,7 @@ const getAttributeStoreAddress = (state: State = {}): string => {
     return ''
   }
 
-  const keys = Object.keys(data)
-
-  return keys.length ?
-    data[keys[0]] : ''
+  return data.address
 }
 
 export { getAttributeStoreAddress }

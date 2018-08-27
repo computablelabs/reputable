@@ -3,9 +3,10 @@ import Web3 from 'web3'
 import Erc20 from 'computable/dist/contracts/erc-20'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { maybeParseInt } from 'computable/dist/helpers'
 import { resetToken } from '../../src/redux/dispatchers/token'
+import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { State, Participant } from '../../src/interfaces'
 import {
@@ -28,7 +29,7 @@ describe('token state', () => {
     server = ganache.server({ ws:true })
     server.listen(port)
 
-    setWebsocketAddress(websocketAddress)
+    store.dispatch(setWebsocketAddress(websocketAddress))
     web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
@@ -67,9 +68,9 @@ describe('token state', () => {
     //   It relies on the token contract deployment in the previous test
     it('has assigned the initial funds to the admin address', async () => {
       const state: State = store.getState()
-      const owner: Participant = getOwner(state)
+      const owner: Participant|undefined = getOwner(state)
       const address: string = getTokenAddress(state)
-      const contract = new Erc20(owner.address)
+      const contract = new Erc20(owner && owner.address)
       await contract.at(web3, { address })
       const funds = contract && await contract.balanceOf(accounts[0]) || 0
 
@@ -154,9 +155,9 @@ describe('token state', () => {
       //   It relies on the state configured in the spec above.
       it('actually transferred the funds to the other account', async () => {
         const state: State = store.getState()
-        const owner: Participant = getOwner(state)
+        const owner: Participant|undefined = getOwner(state)
         const address: string = getTokenAddress(state)
-        const contract = new Erc20(owner.address)
+        const contract = new Erc20(owner && owner.address)
         await contract.at(web3, { address })
 
         const funds2 = contract && await contract.balanceOf(accounts[2]) || 0

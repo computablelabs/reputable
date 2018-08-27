@@ -5,15 +5,11 @@
  */
 
 import store from '../store'
-import { setWebsocketAddress as setAddress, resetWebsocketAddress as reset } from '../action-creators/web3'
-
-const setWebsocketAddress = (address:string): void => {
-  store.dispatch(setAddress(address))
-}
+import { resetWebsocketAddress as resetAddress } from '../action-creators/web3'
 
 const resetWebsocketAddress = (): void => {
-  // const o:Action = { type: RESET_WEB3 }
-  store.dispatch(reset())
+  store.dispatch(resetAddress())
 }
 
-export { setWebsocketAddress, resetWebsocketAddress }
+export { resetWebsocketAddress }
+

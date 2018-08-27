@@ -1,23 +1,22 @@
 import {
-  GenericMap,
-  Map,
   Parameterizer,
   Participant,
   Registry,
   StateItem,
   Token,
   Voting,
+  Deployed,
 } from '.'
 
 interface State {
-  readonly attributeStoreAddress?: StateItem<Map>
-  readonly dllAddress?: StateItem<Map>
+  readonly attributeStore?: StateItem<Deployed>
+  readonly dll?: StateItem<Deployed>
   readonly parameterizer?: StateItem<Parameterizer>
-  readonly participants?: StateItem<GenericMap<Participant>>
+  readonly participants?: StateItem<Participant[]>
   readonly registry?: StateItem<Registry>
   readonly token?: StateItem<Token>
   readonly voting?: StateItem<Voting>
-  readonly web3?: StateItem<GenericMap<string>>
+  readonly web3?: StateItem<Deployed>
 }
 
 export default State

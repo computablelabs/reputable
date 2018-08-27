@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import attributeStoreAddress from './attribute-store'
-import dllAddress from './dll'
+import attributeStore from './attribute-store'
+import dll from './dll'
 import parameterizer from './parameterizer'
 import participants from './participant'
 import registry from './registry'
@@ -10,8 +10,8 @@ import web3 from './web3'
 
 // TODO it appears that upcoming versions of redux typings will make the cast to 'any' not needed...
 export default combineReducers({
-  attributeStoreAddress,
-  dllAddress,
+  attributeStore,
+  dll,
   parameterizer,
   participants,
   registry,

@@ -1,30 +1,18 @@
-export const GET_APPLICATIONS = 'get-applications'
-export const GET_APPLICATIONS_ERROR = 'get-applications-error'
-
-export const CHALLENGE = 'challenge'
-export const CHALLENGE_ERROR = 'challenge-error'
-export const GET_CHALLENGES = 'get-challenges'
-export const GET_CHALLENGES_ERROR = 'get-challenges-error'
-
-export const LIST = 'list'
-export const LIST_ERROR = 'list-error'
-export const GET_LISTINGS = 'get-listings'
-
-export enum Contracts {
+enum Contracts {
   TOKEN         = 'token',
   PARAMETERIZER = 'parameterizer',
   VOTING        = 'voting',
   REGISTRY      = 'registry',
 }
 
-export enum TokenDefaults {
+enum TokenDefaults {
   SUPPLY = 1000000,
 }
 
 const THREE_MINUTES = 180
 const HALF = 50
 
-export enum ParameterizerDefaults {
+enum ParameterizerDefaults {
   MIN_DEPOSIT        = 1,             // the minimum deposit, in whatever funds, required to participate
   P_MIN_DEPOSIT      = 10,            // min dep required to propose a parameterization change
   APPLY_STAGE_LEN    = THREE_MINUTES, // time, in seconds, applicants must wait to be whitelisted. using 3 mins to allow time to challenge but not too long for a demo
@@ -39,7 +27,7 @@ export enum ParameterizerDefaults {
   P_VOTE_QUORUM      = HALF,
 }
 
-export enum Errors {
+enum Errors {
   NO_ADMIN_FOUND            = 'No admin participant can be located. Be sure to register at least one participant',
   NO_WEBSOCKETADDRESS_FOUND = 'No Websocket address can be found. Make sure to set your ws address as it is needed for a web3 provider',
   NO_TOKEN_FOUND            = 'No address for a deployed Token contract can be found. Be sure to deploy your Token contract',
@@ -49,3 +37,6 @@ export enum Errors {
   NO_VOTING_FOUND           = 'No address for a deployed PLCRVoting contract can be found. Be sure to deploy the Voting contract',
   NO_PARAMETERIZER_FOUND    = 'No address for a deployed Parameterizer contract can be found. Be sure to deploy the Parameterizer contract',
 }
+
+export { Contracts, TokenDefaults, ParameterizerDefaults, Errors }
+

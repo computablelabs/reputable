@@ -3,7 +3,10 @@
  */
 
 import store from '../store'
-import { participate as add, resetParticipants as reset } from '../action-creators/participant'
+import {
+  participate as add,
+  resetParticipants as reset,
+} from '../action-creators/participants'
 
 const participate = async (name:string, address:string): Promise<void> => (
   await store.dispatch(add(name, address))

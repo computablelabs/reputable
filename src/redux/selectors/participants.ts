@@ -1,22 +1,24 @@
-import { State, Participant } from '../../interfaces'
-import utils from './helpers'
+import { State, StateItem, Participant } from '../../interfaces'
 
 const model = 'participants'
 
-const getParticipants = (state: State, { ids }: any = {}): Participant[] =>
-  utils.getList({ state, model, ids })
+const getParticipants = (state: State = {}): Participant[] => {
+  const stateItem: StateItem<Participant[]>|undefined = state[model]
+  if (!stateItem) {
+    return []
+  }
 
-const getParticipant = (state: State, key: string): Participant =>
-  utils.getItem({ state, model, key })
-
-const getOwner = (state: State): Participant => {
-  const predicate = (item: Participant) => item.owner
-  return utils.getList({ state, model, predicate })[0]
+  return stateItem.data || []
 }
 
-export {
-  getParticipants,
-  getParticipant,
-  getOwner,
+const getOwner = (state: State = {}): Participant|undefined => {
+  const participants: Participant[] = getParticipants(state)
+  const owner: Participant|undefined = participants.find(
+    (participant: Participant) => !!participant.owner
+  )
+
+  return owner
 }
+
+export { getParticipants, getOwner }
 

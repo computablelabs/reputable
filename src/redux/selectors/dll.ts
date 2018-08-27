@@ -1,9 +1,9 @@
-import { State, StateItem, Map } from '../../interfaces'
+import { State, StateItem, Deployed } from '../../interfaces'
 
-const model = 'dllAddress'
+const model = 'dll'
 
 const getDllAddress = (state: State = {}): string => {
-  const stateItem: StateItem<Map> | undefined = state[model]
+  const stateItem: StateItem<Deployed>|undefined = state[model]
   if (!stateItem) {
     return ''
   }
@@ -13,10 +13,7 @@ const getDllAddress = (state: State = {}): string => {
     return ''
   }
 
-  const keys = Object.keys(data)
-
-  return keys.length ?
-    data[keys[0]] : ''
+  return data.address
 }
 
 export { getDllAddress }

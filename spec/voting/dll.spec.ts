@@ -1,9 +1,11 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
+import { resetDll } from '../../src/redux/dispatchers/dll'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { deployDll } from '../../src/redux/action-creators/dll'
 import { getDllAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
@@ -13,16 +15,18 @@ describe('deploying a dll contract', () => {
 
   let server:any
   let accounts:string[]
+  let owner: string
 
   beforeAll(async () => {
     server = ganache.server({ ws:true })
     server.listen(port)
 
-    setWebsocketAddress(websocketAddress)
+    store.dispatch(setWebsocketAddress(websocketAddress))
     const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
+    owner = accounts[0]
 
-    participate('Mrs. Admin Pants', accounts[0])
+    participate('Mrs. Admin Pants', owner)
   })
 
   afterAll(() => {
@@ -40,7 +44,7 @@ describe('deploying a dll contract', () => {
   })
 
   it('has a dll address', async () => {
-    await deployDll(accounts[0])
+    await store.dispatch(deployDll())
 
     const state: State = store.getState()
     const address = getDllAddress(state)

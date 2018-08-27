@@ -56,7 +56,7 @@ const deployToken = (supply?: number): any => (
     dispatch(tokenDeployRequest(args))
 
     try {
-      const owner: Participant = getOwner(state)
+      const owner: Participant|undefined = getOwner(state)
       if (!owner) {
         throw new Error(Errors.NO_ADMIN_FOUND)
       }

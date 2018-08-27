@@ -1,33 +1,32 @@
 import {
   FSA,
   StateItem,
-  GenericMap,
   Participant,
 } from '../../interfaces'
 import {
   PARTICIPANTS_OK,
   PARTICIPANTS_RESET,
-} from '../action-creators/participant'
+} from '../action-creators/participants'
 import createReducer from './createReducer'
 
-const initialState: StateItem<GenericMap<Participant>> = {
+const initialState: StateItem<Participant[]> = {
   loading: false,
   request: {},
-  data: {},
+  data: [],
   error: undefined,
 }
 
 const handlers = {
-  [PARTICIPANTS_OK]: (state: StateItem<GenericMap<Participant>>, { payload }: FSA) => {
-    payload.owner = !Object.keys(state.data).length
+  [PARTICIPANTS_OK]: (state: StateItem<Participant[]>, { payload }: FSA) => {
+    payload.owner = !state.data.length
 
     return {
       ...state,
       loading: false,
-      data: {
-        ...state.data,
-        [payload.address]: payload,
-      },
+      data: [
+        ...state.data || [],
+        payload,
+      ],
     }
   },
   [PARTICIPANTS_RESET]: () => ({

@@ -1,14 +1,14 @@
-import { State, StateItem, GenericMap } from '../../interfaces'
+import { State, StateItem, Deployed } from '../../interfaces'
 
 const model = 'web3'
 
 const getWebsocketAddress = (state: State = {}): string => {
-  const stateItem: StateItem<GenericMap<string>> | undefined = state[model]
+  const stateItem: StateItem<Deployed>|undefined = state[model]
   if (!stateItem) {
     return ''
   }
 
-  const data: GenericMap<string> = stateItem.data
+  const data: Deployed = stateItem.data
   if (!data) {
     return ''
   }

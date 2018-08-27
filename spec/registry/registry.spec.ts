@@ -1,14 +1,17 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
 import { resetVoting } from '../../src/redux/dispatchers/voting'
 import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
 import { resetRegistry } from '../../src/redux/dispatchers/registry'
-import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
-import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { resetDll } from '../../src/redux/dispatchers/dll'
+import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
+import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { deployDll } from '../../src/redux/action-creators/dll'
 import { deployRegistry, apply } from '../../src/redux/action-creators/registry'
 import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { deployVoting } from '../../src/redux/action-creators/voting'
@@ -29,7 +32,7 @@ describe('registry state', () => {
       server = ganache.server({ ws:true })
       server.listen(port)
 
-      setWebsocketAddress(websocketAddress)
+      store.dispatch(setWebsocketAddress(websocketAddress))
       const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
       owner = accounts[0]
@@ -39,8 +42,8 @@ describe('registry state', () => {
       // p11r will want a token deployed
       await store.dispatch(deployToken())
       // voting deploy demands that dll and attrStore be deployed
-      await deployDll(owner)
-      await deployAttributeStore(owner)
+      await store.dispatch(deployDll())
+      await store.dispatch(deployAttributeStore())
       await store.dispatch(deployVoting())
       await store.dispatch(deployParameterizer())
     })
@@ -94,7 +97,7 @@ describe('registry state', () => {
       server = ganache.server({ ws:true })
       server.listen(port)
 
-      setWebsocketAddress(websocketAddress)
+      store.dispatch(setWebsocketAddress(websocketAddress))
       const web3 = await getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
 
@@ -106,8 +109,8 @@ describe('registry state', () => {
       // p11r will want a token deployed
       await store.dispatch(deployToken())
       // voting deploy demands that dll and attrStore be deployed
-      await deployDll(owner)
-      await deployAttributeStore(owner)
+      await store.dispatch(deployDll())
+      await store.dispatch(deployAttributeStore())
       await store.dispatch(deployVoting())
       await store.dispatch(deployParameterizer())
 

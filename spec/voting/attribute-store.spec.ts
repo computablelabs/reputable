@@ -1,9 +1,11 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
 import { getAttributeStoreAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
@@ -13,16 +15,18 @@ describe('deploying an attribute store contract', () => {
 
   let server:any
   let accounts:string[]
+  let owner: string
 
   beforeAll( async () => {
     server = ganache.server({ ws:true })
     server.listen(port)
 
-    setWebsocketAddress(websocketAddress)
+    store.dispatch(setWebsocketAddress(websocketAddress))
     const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
+    owner = accounts[0]
 
-    participate('Sir Admin Pants', accounts[0])
+    participate('Sir Admin Pants', owner)
   })
 
   afterAll(() => {
@@ -41,7 +45,7 @@ describe('deploying an attribute store contract', () => {
   })
 
   it('has an attr store address', async () => {
-    await deployAttributeStore(accounts[0])
+    await store.dispatch(deployAttributeStore())
     const state: State = store.getState()
     const attributeStoreAddress = getAttributeStoreAddress(state)
 

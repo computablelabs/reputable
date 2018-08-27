@@ -1,4 +1,4 @@
-import { State, StateItem, Registry } from '../../interfaces'
+import { State, StateItem, Registry, Applicant } from '../../interfaces'
 
 const model = 'registry'
 
@@ -20,5 +20,19 @@ const getRegistryAddress = (state: State = {}): string => {
   return registry.address
 }
 
-export { getRegistry, getRegistryAddress }
+const getApplicants = (state: State = {}): Applicant[] => {
+  const registry: Registry|undefined = getRegistry(state)
+  if (!registry) {
+    return []
+  }
+
+  const applicants: Applicant[]|undefined = registry.applicants
+  if (!applicants) {
+    return []
+  }
+
+  return applicants
+}
+
+export { getRegistry, getRegistryAddress, getApplicants }
 

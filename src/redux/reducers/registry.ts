@@ -18,10 +18,6 @@ import {
   REGISTRY_APPLY_ERROR,
   REGISTRY_APPLY_RESET,
 } from '../action-creators/registry'
-import {
-  LIST,
-  // CHALLENGE,
-} from '../../constants'
 import createReducer from './createReducer'
 
 const initialState: StateItem<Registry> = {
@@ -106,7 +102,8 @@ const handlers = {
 
   // Challenge Reducers
   // Listing Reducers
-  [LIST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+  // TODO implement everything associated with this action type
+  ['LIST']: (state: StateItem<Registry>, { payload }: FSA) => ({
     ...state,
     data: {
       ...state.data,

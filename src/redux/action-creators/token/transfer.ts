@@ -55,7 +55,7 @@ const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
     dispatch(tokenTransferRequest(args))
 
     try {
-      const owner: Participant = getOwner(state)
+      const owner: Participant|undefined = getOwner(state)
       if (!owner) {
         throw new Error(Errors.NO_ADMIN_FOUND)
       }

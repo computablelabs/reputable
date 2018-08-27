@@ -1,4 +1,4 @@
-import { FSA, StateItem, Map } from '../../interfaces'
+import { FSA, StateItem, Deployed } from '../../interfaces'
 import {
   DLL_REQUEST,
   DLL_OK,
@@ -7,27 +7,27 @@ import {
 } from '../action-creators/dll'
 import createReducer from './createReducer'
 
-const initialState: StateItem<Map> = {
+const initialState: StateItem<Deployed> = {
   loading: false,
   request: {},
-  data: {},
+  data: { address: '' },
   error: undefined,
 }
 
 const handlers = {
-  [DLL_REQUEST]: (state: StateItem<Map>, { payload }: FSA) => ({
+  [DLL_REQUEST]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [DLL_OK]: (state: StateItem<Map>, { payload }: FSA) => ({
+  [DLL_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
-      [payload.address]: payload.address,
+      address: payload.address,
     },
   }),
-  [DLL_ERROR]: (state: StateItem<Map>, { payload }: FSA) => ({
+  [DLL_ERROR]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),

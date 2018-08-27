@@ -2,12 +2,15 @@ import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
+import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { resetToken } from '../../src/redux/dispatchers/token'
 import { resetVoting } from '../../src/redux/dispatchers/voting'
-import { deployDll, resetDll } from '../../src/redux/dispatchers/dll'
-import { deployAttributeStore, resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { resetDll } from '../../src/redux/dispatchers/dll'
+import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
+import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
 import { deployToken } from '../../src/redux/action-creators/token'
+import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { deployDll } from '../../src/redux/action-creators/dll'
 import { deployVoting } from '../../src/redux/action-creators/voting'
 import { getVotingAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
@@ -24,7 +27,7 @@ describe('voting state', () => {
     server = ganache.server({ ws:true })
     server.listen(port)
 
-    setWebsocketAddress(websocketAddress)
+    store.dispatch(setWebsocketAddress(websocketAddress))
     const web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
     owner = accounts[0]
@@ -34,8 +37,8 @@ describe('voting state', () => {
     // expects a deployed token
     await store.dispatch(deployToken())
     // voting deploy demands that dll and attrStore be deployed first
-    await deployDll(owner)
-    await deployAttributeStore(owner)
+    await store.dispatch(deployDll())
+    await store.dispatch(deployAttributeStore())
   })
 
   afterAll(() => {
