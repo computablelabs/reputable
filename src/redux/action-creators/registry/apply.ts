@@ -93,6 +93,7 @@ const apply = ({
         applicationExpiry: eventValues.appEndDate,
         owner: eventValues.applicant,
         unstakedDeposit: eventValues.deposit,
+        data: eventValues.data,
       }
 
       dispatch(registryApplyOk(out))

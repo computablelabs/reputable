@@ -66,6 +66,7 @@ const apply = ({ listing, userAddress, deposit, data, }) => ((dispatch, getState
             applicationExpiry: eventValues.appEndDate,
             owner: eventValues.applicant,
             unstakedDeposit: eventValues.deposit,
+            data: eventValues.data,
         };
         dispatch(registryApplyOk(out));
         return out;

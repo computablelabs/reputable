@@ -144,16 +144,18 @@ describe('registry state', () => {
 
     describe('apply', () => {
       it('a listing to a registry', async () => {
-        const listing = 'foo listing'
+        const listing = 'random listing hash'
+        const data = 'ipfs hash'
 
         const txValues = await store.dispatch(
-          apply({ listing, userAddress: user, deposit: 100 })
+          apply({ listing, userAddress: user, deposit: 100, data })
         )
 
         expect(txValues.listing).toBe(listing)
         expect(txValues.owner).toBe(user)
         expect(txValues.unstakedDeposit).toBe('100')
         expect(txValues.applicationExpiry).toBeGreaterThan(0)
+        expect(txValues.data).toBe(data)
       })
     })
   })
