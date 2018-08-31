@@ -1,3 +1,6 @@
+declare enum DataSources {
+    IPFS = "ipfs"
+}
 declare enum Contracts {
     TOKEN = "token",
     PARAMETERIZER = "parameterizer",
@@ -31,4 +34,4 @@ declare enum Errors {
     NO_VOTING_FOUND = "No address for a deployed PLCRVoting contract can be found. Be sure to deploy the Voting contract",
     NO_PARAMETERIZER_FOUND = "No address for a deployed Parameterizer contract can be found. Be sure to deploy the Parameterizer contract"
 }
-export { Contracts, TokenDefaults, ParameterizerDefaults, Errors };
+export { DataSources, Contracts, TokenDefaults, ParameterizerDefaults, Errors };

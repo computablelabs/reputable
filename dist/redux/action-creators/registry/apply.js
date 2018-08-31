@@ -15,6 +15,7 @@ const registry_1 = __importDefault(require("computable/dist/contracts/registry")
 const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
+const ipfs_1 = require("../../../utils/ipfs");
 const selectors_1 = require("../../selectors");
 exports.REGISTRY_APPLY_REQUEST = 'REGISTRY_APPLY_REQUEST';
 exports.REGISTRY_APPLY_OK = 'REGISTRY_APPLY_OK';
@@ -58,7 +59,8 @@ const apply = ({ listing, userAddress, deposit, data, }) => ((dispatch, getState
         yield registry.at(web3, { address: contractAddress });
         const emitter = registry.getEventEmitter('_Application');
         const encodedListing = web3.utils.toHex(listing);
-        registry.apply(encodedListing, deposit, data, { from: userAddress });
+        const stringifiedData = yield encodeData(data || { value: '' });
+        registry.apply(encodedListing, deposit, stringifiedData, { from: userAddress });
         const eventLog = yield helpers_1.onData(emitter);
         const eventValues = eventLog.returnValues;
         const out = {
@@ -66,7 +68,7 @@ const apply = ({ listing, userAddress, deposit, data, }) => ((dispatch, getState
             applicationExpiry: eventValues.appEndDate,
             owner: eventValues.applicant,
             unstakedDeposit: eventValues.deposit,
-            data: eventValues.data,
+            data: yield decodeData(eventValues.data),
         };
         dispatch(registryApplyOk(out));
         return out;
@@ -81,3 +83,22 @@ const resetRegistryApply = () => ((dispatch) => __awaiter(this, void 0, void 0, 
     return (dispatch(registryApplyReset()));
 }));
 exports.resetRegistryApply = resetRegistryApply;
+const encodeData = (applicantData) => __awaiter(this, void 0, void 0, function* () {
+    if (applicantData.source === constants_1.DataSources.IPFS) {
+        const cid = yield ipfs_1.IPFSWrite(applicantData.value);
+        applicantData.value = cid;
+        return JSON.stringify(applicantData);
+    }
+    return JSON.stringify(applicantData);
+});
+const decodeData = (data) => __awaiter(this, void 0, void 0, function* () {
+    const parsedData = JSON.parse(data);
+    if (parsedData.source === constants_1.DataSources.IPFS) {
+        const cid = typeof parsedData.value === 'string' ?
+            parsedData.value : '';
+        const ipfsData = yield ipfs_1.IPFSRead(cid);
+        parsedData.value = ipfsData;
+        return parsedData;
+    }
+    return parsedData;
+});

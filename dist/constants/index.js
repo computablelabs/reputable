@@ -1,5 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var DataSources;
+(function (DataSources) {
+    DataSources["IPFS"] = "ipfs";
+})(DataSources || (DataSources = {}));
+exports.DataSources = DataSources;
 var Contracts;
 (function (Contracts) {
     Contracts["TOKEN"] = "token";
