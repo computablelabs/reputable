@@ -1,3 +1,7 @@
+enum DataSources {
+  IPFS = 'ipfs',
+}
+
 enum Contracts {
   TOKEN         = 'token',
   PARAMETERIZER = 'parameterizer',
@@ -38,5 +42,5 @@ enum Errors {
   NO_PARAMETERIZER_FOUND    = 'No address for a deployed Parameterizer contract can be found. Be sure to deploy the Parameterizer contract',
 }
 
-export { Contracts, TokenDefaults, ParameterizerDefaults, Errors }
+export { DataSources, Contracts, TokenDefaults, ParameterizerDefaults, Errors }
 

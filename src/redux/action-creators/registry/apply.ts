@@ -7,9 +7,11 @@ import {
   Map,
   State,
   Participant,
+  ApplicantData,
 } from '../../../interfaces'
-import { Errors } from '../../../constants'
+import { DataSources, Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
+import { IPFSWrite, IPFSRead } from '../../../utils/ipfs'
 import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
 
 // Action Types
@@ -45,7 +47,7 @@ interface RegistryApplyParams {
   listing: string
   userAddress: string
   deposit: number
-  data?: string
+  data?: ApplicantData
 }
 const apply = ({
   listing,
@@ -83,7 +85,15 @@ const apply = ({
       const emitter = registry.getEventEmitter('_Application')
 
       const encodedListing: string = web3.utils.toHex(listing)
-      registry.apply(encodedListing, deposit, data, { from: userAddress })
+
+      const stringifiedData: string = await encodeData(data || { value: '' })
+
+      registry.apply(
+        encodedListing,
+        deposit,
+        stringifiedData,
+        { from: userAddress },
+      )
 
       const eventLog: EventLog = await onData(emitter)
       const eventValues = eventLog.returnValues
@@ -93,7 +103,7 @@ const apply = ({
         applicationExpiry: eventValues.appEndDate,
         owner: eventValues.applicant,
         unstakedDeposit: eventValues.deposit,
-        data: eventValues.data,
+        data: await decodeData(eventValues.data),
       }
 
       dispatch(registryApplyOk(out))
@@ -112,6 +122,32 @@ const resetRegistryApply = (): any => (
     dispatch(registryApplyReset())
   )
 )
+
+const encodeData = async (applicantData: ApplicantData): Promise<string> => {
+  if (applicantData.source === DataSources.IPFS) {
+    const cid: string = await IPFSWrite(applicantData.value)
+    applicantData.value = cid
+    return JSON.stringify(applicantData)
+  }
+
+  return JSON.stringify(applicantData)
+}
+
+const decodeData = async (data: string): Promise<Map|string> => {
+  const parsedData: ApplicantData = JSON.parse(data)
+
+  if (parsedData.source === DataSources.IPFS) {
+    const cid: string = typeof parsedData.value === 'string' ?
+      parsedData.value : ''
+    const ipfsData: Map|string = await IPFSRead(cid)
+
+    parsedData.value = ipfsData
+
+    return parsedData
+  }
+
+  return parsedData
+}
 
 export { apply, resetRegistryApply }
 
