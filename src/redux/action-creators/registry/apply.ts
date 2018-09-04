@@ -11,7 +11,7 @@ import {
 } from '../../../interfaces'
 import { DataSources, Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
-import { IPFSWrite, IPFSRead } from '../../../utils/ipfs'
+import { IPFSWrite, IPFSRead } from '../../../helpers/ipfs'
 import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
 
 // Action Types
