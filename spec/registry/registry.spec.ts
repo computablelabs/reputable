@@ -1,4 +1,5 @@
 import * as ganache from 'ganache-cli'
+import { increaseTime } from 'computable/dist/helpers'
 import store from '../../src/redux/store'
 import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
 import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
@@ -12,20 +13,25 @@ import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
 import { deployDll } from '../../src/redux/action-creators/dll'
-import { deployRegistry, apply } from '../../src/redux/action-creators/registry'
+import {
+  deployRegistry,
+  fetchListing,
+  applyListing,
+  updateListingStatus,
+} from '../../src/redux/action-creators/registry'
 import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { deployVoting } from '../../src/redux/action-creators/voting'
-import { State } from '../../src/interfaces'
-import { getRegistryAddress } from '../../src/redux/selectors'
-import { getWeb3 } from '../../src/initializers'
+import { State, Listing } from '../../src/interfaces'
+import { getRegistryAddress, getListing } from '../../src/redux/selectors'
+import { getWeb3, getProvider } from '../../src/initializers'
 
 describe('registry state', () => {
-  describe('deployment', () => {
+  describe('#deploy', () => {
     const port: number = 8447
     const websocketAddress: string = `ws://localhost:${port}`
 
-    let server:any
-    let accounts:string[]
+    let server: any
+    let accounts: string[]
     let owner: string
 
     beforeAll(async () => {
@@ -33,7 +39,7 @@ describe('registry state', () => {
       server.listen(port)
 
       store.dispatch(setWebsocketAddress(websocketAddress))
-      const web3 = await getWeb3(websocketAddress, { force: true })
+      const web3 = getWeb3(websocketAddress, { force: true })
       accounts = await web3.eth.getAccounts()
       owner = accounts[0]
 
@@ -87,9 +93,12 @@ describe('registry state', () => {
   describe('with a deployed registry', () => {
     const port: number = 8448
     const websocketAddress: string = `ws://localhost:${port}`
+    const applyStageLen = 60
 
-    let server:any
-    let accounts:string[]
+    let server: any
+    let web3: any
+    let provider: any
+    let accounts: string[]
     let owner: string
     let user: string
 
@@ -98,7 +107,8 @@ describe('registry state', () => {
       server.listen(port)
 
       store.dispatch(setWebsocketAddress(websocketAddress))
-      const web3 = await getWeb3(websocketAddress, { force: true })
+      web3 = getWeb3(websocketAddress, { force: true })
+      provider = getProvider()
       accounts = await web3.eth.getAccounts()
 
       owner = accounts[0]
@@ -112,7 +122,7 @@ describe('registry state', () => {
       await store.dispatch(deployDll())
       await store.dispatch(deployAttributeStore())
       await store.dispatch(deployVoting())
-      await store.dispatch(deployParameterizer())
+      await store.dispatch(deployParameterizer({ applyStageLen }))
 
       const registryAddress = await store.dispatch(
         deployRegistry('the registry')
@@ -142,20 +152,94 @@ describe('registry state', () => {
       resetRegistry()
     })
 
-    describe('apply', () => {
+    describe('#fetchListing', () => {
+      let listingHash: string
+      const listing: string = 'listing'
+      const data = { value: 'data value' }
+
+      beforeEach(async () => {
+        const txValues = await store.dispatch(
+          applyListing({ listing, userAddress: user, deposit: 100, data })
+        )
+
+        listingHash = txValues.listingHash
+      })
+
+      it('fetchesd an existing listing from a registry', async () => {
+        const listing: Listing = await store.dispatch(
+          fetchListing(listingHash)
+        )
+
+        expect(listing.listingHash).toBe(listingHash)
+      })
+    })
+
+    describe('#applyListing', () => {
       it('a listing to a registry', async () => {
-        const listing = 'random listing hash'
+        const listing: string = 'random listing'
         const data = { value: 'random data' }
 
         const txValues = await store.dispatch(
-          apply({ listing, userAddress: user, deposit: 100, data })
+          applyListing({ listing, userAddress: user, deposit: 100, data })
         )
 
-        expect(txValues.listing).toBe(listing)
+        const returnedListing: string = web3.utils.hexToUtf8(txValues.listingHash)
+        expect(returnedListing).toBe(listing)
         expect(txValues.owner).toBe(user)
         expect(txValues.unstakedDeposit).toBe('100')
         expect(txValues.applicationExpiry).toBeGreaterThan(0)
         expect(txValues.data).toEqual(data)
+      })
+    })
+
+    describe('#updateListingStatus', () => {
+      let listingHash: string
+      let listing: string
+      const data = { value: 'data value' }
+
+      beforeEach(async () => {
+        // generate a random listing value
+        listing = 'listing ' + Math.floor(Math.random() * 1000 * 1000).toString()
+
+        const txValues = await store.dispatch(
+          applyListing({ listing, userAddress: user, deposit: 100, data })
+        )
+
+        listingHash = txValues.listingHash
+      })
+
+      it('whitelists a listing', async () => {
+        let state: State = store.getState()
+        let listing: Listing|undefined = getListing(state, listingHash)
+
+        expect(listing && listing.whitelisted).toBe(false)
+
+        await increaseTime(provider, applyStageLen + 1)
+
+        await store.dispatch(
+          updateListingStatus(listingHash)
+        )
+
+        state = store.getState()
+        listing = getListing(state, listingHash)
+
+        expect(listing && listing.whitelisted).toBe(true)
+      })
+
+      it('does not whitelist a listing if applicant expiry has not occured', async () => {
+        let state: State = store.getState()
+        let listing: Listing|undefined = getListing(state, listingHash)
+
+        expect(listing && listing.whitelisted).toBe(false)
+
+        await store.dispatch(
+          updateListingStatus(listingHash)
+        )
+
+        state = store.getState()
+        listing = getListing(state, listingHash)
+
+        expect(listing && listing.whitelisted).toBe(false)
       })
     })
   })

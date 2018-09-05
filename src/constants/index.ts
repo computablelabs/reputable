@@ -13,7 +13,7 @@ enum TokenDefaults {
   SUPPLY = 1000000,
 }
 
-const THREE_MINUTES = 180
+const THREE_MINUTES = 3 * 60
 const HALF = 50
 
 enum ParameterizerDefaults {

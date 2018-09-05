@@ -1,12 +1,12 @@
 import store from '../store'
 import {
-  resetRegistryAddress as resetAddress,
-  resetRegistryApply as resetApplicants,
+  resetRegistryAddress,
+  resetRegistryListings,
 } from '../action-creators/registry'
 
 const resetRegistry = (): void => {
-  store.dispatch(resetAddress())
-  store.dispatch(resetApplicants())
+  store.dispatch(resetRegistryAddress())
+  store.dispatch(resetRegistryListings())
 }
 
 export { resetRegistry }

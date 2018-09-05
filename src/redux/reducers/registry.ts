@@ -3,7 +3,6 @@ import {
   StateItem,
   Registry,
   // Challenge,
-  // Listing,
 } from '../../interfaces'
 import {
   REGISTRY_DEPLOY_REQUEST,
@@ -13,10 +12,16 @@ import {
   REGISTRY_ADDRESS_OK,
   REGISTRY_ADDRESS_RESET,
 
+  REGISTRY_LISTING_REQUEST,
+  REGISTRY_LISTING_OK,
+  REGISTRY_LISTING_REMOVE,
+  REGISTRY_LISTING_ERROR,
+  REGISTRY_LISTING_RESET,
+
   REGISTRY_APPLY_REQUEST,
   REGISTRY_APPLY_OK,
   REGISTRY_APPLY_ERROR,
-  REGISTRY_APPLY_RESET,
+
 } from '../action-creators/registry'
 import createReducer from './createReducer'
 
@@ -25,9 +30,8 @@ const initialState: StateItem<Registry> = {
   request: {},
   data: {
     address: undefined,
-    applicants: [],
-    challenges: [],
-    listings: [],
+    challenges: {},
+    listings: {},
   },
   error: undefined,
 }
@@ -70,6 +74,49 @@ const handlers = {
     },
   }),
 
+  // Listing Reducers
+  [REGISTRY_LISTING_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [REGISTRY_LISTING_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      listings: {
+        ...state.data.listings || {},
+        [payload.listingHash]: payload,
+      },
+    },
+  }),
+  [REGISTRY_LISTING_REMOVE]: (state: StateItem<Registry>, { payload }: FSA) => {
+    const listings = state.data.listings || {}
+    delete listings[payload.listingHash]
+
+    return {
+      ...state,
+      loading: false,
+      data: {
+        ...state.data,
+        listings,
+      }
+    }
+  },
+  [REGISTRY_LISTING_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [REGISTRY_LISTING_RESET]: (state: StateItem<Registry>) => ({
+    ...state,
+    data: {
+      ...state.data,
+      listings: initialState.data.listings,
+    },
+  }),
+
   // Applicant Reducers
   [REGISTRY_APPLY_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
     ...state,
@@ -81,10 +128,10 @@ const handlers = {
     loading: false,
     data: {
       ...state.data,
-      applicants: [
-        ...state.data.applicants || [],
-        payload,
-      ],
+      listings: {
+        ...state.data.listings || {},
+        [payload.listingHash]: payload,
+      },
     },
   }),
   [REGISTRY_APPLY_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
@@ -92,36 +139,9 @@ const handlers = {
     loading: false,
     error: payload.toString(),
   }),
-  [REGISTRY_APPLY_RESET]: (state: StateItem<Registry>) => ({
-    ...state,
-    data: {
-      ...state.data,
-      applicants: initialState.data.applicants,
-    },
-  }),
 
   // Challenge Reducers
-  // Listing Reducers
   // TODO implement everything associated with this action type
-  ['LIST']: (state: StateItem<Registry>, { payload }: FSA) => ({
-    ...state,
-    data: {
-      ...state.data,
-      listings: [
-        ...state.data.listings || [],
-        payload,
-
-        /*
-        hash: action.payload.hash, // remember this does not come back from VM, we supply
-        applicationExpiry: action.payload.applicationExpiry,
-        whitelisted: action.payload.whitelisted,
-        owner: action.payload.owner,
-        unstakedDeposit: action.payload.unstakedDeposit,
-        // NOTE: there won't be a challengeID on the initial LIST action
-        */
-      ],
-    },
-  }),
 }
 
 export default createReducer(handlers, initialState)

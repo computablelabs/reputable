@@ -1,4 +1,9 @@
-import { State, StateItem, Registry, Applicant } from '../../interfaces'
+import {
+  State,
+  StateItem,
+  Registry,
+  Listing,
+} from '../../interfaces'
 
 const model = 'registry'
 
@@ -20,19 +25,54 @@ const getRegistryAddress = (state: State = {}): string => {
   return registry.address
 }
 
-const getApplicants = (state: State = {}): Applicant[] => {
+const getListings = (state: State = {}): Listing[] => {
   const registry: Registry|undefined = getRegistry(state)
   if (!registry) {
     return []
   }
 
-  const applicants: Applicant[]|undefined = registry.applicants
-  if (!applicants) {
+  if (!registry.listings) {
     return []
   }
 
-  return applicants
+  return Object.values(registry.listings)
 }
 
-export { getRegistry, getRegistryAddress, getApplicants }
+const getListing = (state: State = {}, key: string): Listing|undefined => {
+  const registry: Registry|undefined = getRegistry(state)
+  if (!registry) {
+    return undefined
+  }
+
+  if (!registry.listings) {
+    return undefined
+  }
+
+  return registry.listings[key]
+}
+
+const getAppliedListings = (state: State = {}): Listing[] => {
+  const listings: Listing[] = getListings(state)
+
+  return listings.filter(
+    (listing) => !listing.whitelisted
+  )
+}
+
+const getWhitelistedListings = (state: State = {}): Listing[] => {
+  const listings: Listing[] = getListings(state)
+
+  return listings.filter(
+    (listing) => listing.whitelisted
+  )
+}
+
+export {
+  getRegistry,
+  getRegistryAddress,
+  getListings,
+  getListing,
+  getAppliedListings,
+  getWhitelistedListings,
+}
 

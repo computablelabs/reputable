@@ -18,5 +18,13 @@ const getWeb3 = (address: string, { force = false }: Web3Options = {}) => {
   return web3
 }
 
-export { getWeb3 }
+const getProvider = () => {
+  if (!provider) {
+    return undefined
+  }
+
+  return provider
+}
+
+export { getWeb3, getProvider }
 
