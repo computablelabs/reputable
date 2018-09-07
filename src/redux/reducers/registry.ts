@@ -1,9 +1,4 @@
-import {
-  FSA,
-  StateItem,
-  Registry,
-  // Challenge,
-} from '../../interfaces'
+import { FSA, StateItem, Registry } from '../../interfaces'
 import {
   REGISTRY_DEPLOY_REQUEST,
   REGISTRY_DEPLOY_OK,
@@ -22,6 +17,10 @@ import {
   REGISTRY_APPLY_OK,
   REGISTRY_APPLY_ERROR,
 
+  REGISTRY_CHALLENGE_REQUEST,
+  REGISTRY_CHALLENGE_OK,
+  REGISTRY_CHALLENGE_ERROR,
+  REGISTRY_CHALLENGE_RESET,
 } from '../action-creators/registry'
 import createReducer from './createReducer'
 
@@ -141,7 +140,34 @@ const handlers = {
   }),
 
   // Challenge Reducers
-  // TODO implement everything associated with this action type
+  [REGISTRY_CHALLENGE_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [REGISTRY_CHALLENGE_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      challenges: {
+        ...state.data.challenges,
+        [payload.challengeID]: payload,
+      },
+    },
+  }),
+  [REGISTRY_CHALLENGE_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+  [REGISTRY_CHALLENGE_RESET]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    data: {
+      ...state.data,
+      challenges: initialState.data.challenges,
+    }
+  })
 }
 
 export default createReducer(handlers, initialState)

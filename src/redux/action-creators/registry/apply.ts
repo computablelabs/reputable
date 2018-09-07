@@ -1,8 +1,7 @@
-import { EventLog } from 'web3/types.d'
 import Registry from 'computable/dist/contracts/registry'
-import { onData } from 'computable/dist/helpers'
 import {
-  FSA,
+  EventEmitter,
+  EventLog,
   Map,
   State,
   Participant,
@@ -13,60 +12,18 @@ import { DataSources, Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { IPFSWrite, IPFSRead } from '../../../helpers/ipfs'
 import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
+import {
+  registryListingRequest,
+  registryListingOk,
+  registryListingError,
+  registryListingReset,
 
-// Action Types
-export const REGISTRY_LISTING_REQUEST = 'REGISTRY_LISTING_REQUEST'
-export const REGISTRY_LISTING_OK = 'REGISTRY_LISTING_OK'
-export const REGISTRY_LISTING_REMOVE = 'REGISTRY_LISTING_REMOVE'
-export const REGISTRY_LISTING_ERROR = 'REGISTRY_LISTING_ERROR'
-export const REGISTRY_LISTING_RESET = 'REGISTRY_LISTING_RESET'
+  registryApplyRequest,
+  registryApplyOk,
+  registryApplyError,
 
-export const REGISTRY_APPLY_REQUEST = 'REGISTRY_APPLY_REQUEST'
-export const REGISTRY_APPLY_OK = 'REGISTRY_APPLY_OK'
-export const REGISTRY_APPLY_ERROR = 'REGISTRY_APPLY_ERROR'
-
-// Actions
-const registryListingRequest = (value: Map): FSA => ({
-  type: REGISTRY_LISTING_REQUEST,
-  payload: value,
-})
-
-const registryListingOk = (value: Map): FSA => ({
-  type: REGISTRY_LISTING_OK,
-  payload: value,
-})
-
-/*
-const registryListingRemove = (value: string): FSA => ({
-  type: REGISTRY_LISTING_REMOVE,
-  payload: value,
-})
-*/
-
-const registryListingError = (value: Error): FSA => ({
-  type: REGISTRY_LISTING_ERROR,
-  payload: value,
-})
-
-const registryListingReset = (): FSA => ({
-  type: REGISTRY_LISTING_RESET,
-  payload: {},
-})
-
-const registryApplyRequest = (value: Map): FSA => ({
-  type: REGISTRY_APPLY_REQUEST,
-  payload: value,
-})
-
-const registryApplyOk = (value: Listing): FSA => ({
-  type: REGISTRY_APPLY_OK,
-  payload: value,
-})
-
-const registryApplyError = (value: Error): FSA => ({
-  type: REGISTRY_APPLY_ERROR,
-  payload: value,
-})
+  registryChallengeOk,
+} from './actions'
 
 // Action Creators
 const fetchListing = (listingHash: string): any => (
@@ -97,7 +54,7 @@ const fetchListing = (listingHash: string): any => (
       const registry = new Registry(owner.address)
       await registry.at(web3, { address: contractAddress })
 
-      const listing: any = await registry.listings(listingHash)
+      const listing: Listing = await registry.listings(listingHash) as Listing
 
       const out = {
         listingHash,
@@ -161,32 +118,35 @@ const applyListing = ({
       const registry = new Registry(owner.address)
       await registry.at(web3, { address: contractAddress })
 
-      const emitter = registry.getEventEmitter('_Application')
+      let out: any = {}
+
+      const emitter: EventEmitter = registry.getEventEmitter('_Application') as EventEmitter
+      emitter.on('data', async (log: EventLog) => {
+        const eventValues = log.returnValues
+
+        out = {
+          listingHash: eventValues.listingHash,
+          applicationExpiry: eventValues.appEndDate,
+          whitelisted: false,
+          owner: eventValues.applicant,
+          unstakedDeposit: eventValues.deposit,
+          data: await decodeData(eventValues.data),
+        }
+
+        dispatch(registryApplyOk(out))
+      })
 
       const encodedListing: string = web3.utils.toHex(listing)
-
       const stringifiedData: string = await encodeData(data || { value: '' })
 
-      registry.apply(
+      await registry.apply(
         encodedListing,
         deposit,
         stringifiedData,
         { from: userAddress },
       )
 
-      const eventLog: EventLog = await onData(emitter)
-      const eventValues = eventLog.returnValues
-
-      const out = {
-        listingHash: eventValues.listingHash,
-        applicationExpiry: eventValues.appEndDate,
-        whitelisted: false,
-        owner: eventValues.applicant,
-        unstakedDeposit: eventValues.deposit,
-        data: await decodeData(eventValues.data),
-      }
-
-      dispatch(registryApplyOk(out))
+      emitter.unsubscribe()
 
       return out
     } catch (err) {
@@ -227,7 +187,7 @@ const updateListingStatus = (listingHash: string): any => (
 
       let out = {}
 
-      const emitterWhitelisted = registry.getEventEmitter('_ApplicationWhitelisted')
+      const emitterWhitelisted = registry.getEventEmitter('_ApplicationWhitelisted') as EventEmitter
       emitterWhitelisted.on('data', (log: EventLog) => {
         const eventValues = log.returnValues
 
@@ -235,15 +195,43 @@ const updateListingStatus = (listingHash: string): any => (
           listingHash: eventValues.listingHash,
           whitelisted: true,
         }
+
+        dispatch(registryListingOk(out))
       })
 
-      // TODO (geoff) subscribe to challenge events
-      // const emitterChallengeSucceeded = registry.getEventEmitter('_ChallengeSucceeded')
-      // const emitterChallengeFailed = registry.getEventEmitter('_ChallengeFailed')
+      const emitterChallengeFailed = registry.getEventEmitter('_ChallengeFailed') as EventEmitter
+      emitterChallengeFailed.on('data', (log: EventLog) => {
+        const eventValues = log.returnValues
+
+        out = {
+          listingHash: eventValues.listingHash,
+          challengeID: eventValues.challengeID,
+          rewardPool: eventValues.rewardPool,
+          totalTokens: eventValues.totalTokens,
+        }
+
+        dispatch(registryChallengeOk(out))
+      })
+
+      const emitterChallengeSucceeded = registry.getEventEmitter('_ChallengeSucceeded') as EventEmitter
+      emitterChallengeSucceeded.on('data', (log: EventLog) => {
+        const eventValues = log.returnValues
+
+        out = {
+          listingHash: eventValues.listingHash,
+          challengeID: eventValues.challengeID,
+          rewardPool: eventValues.rewardPool,
+          totalTokens: eventValues.totalTokens,
+        }
+
+        dispatch(registryChallengeOk(out))
+      })
 
       await registry.updateStatus(listingHash)
 
-      dispatch(registryListingOk(out))
+      emitterWhitelisted.unsubscribe()
+      emitterChallengeFailed.unsubscribe()
+      emitterChallengeSucceeded.unsubscribe()
 
       return out
     } catch (err) {

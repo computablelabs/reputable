@@ -6,7 +6,7 @@
   },
   "exclude": [ /* Files not to be included in the output dir */
     "node_modules",
-    "**/*.spec.ts"
+    "spec"
   ]
 }
 

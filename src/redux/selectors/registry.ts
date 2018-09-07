@@ -3,6 +3,7 @@ import {
   StateItem,
   Registry,
   Listing,
+  Challenge,
 } from '../../interfaces'
 
 const model = 'registry'
@@ -67,6 +68,32 @@ const getWhitelistedListings = (state: State = {}): Listing[] => {
   )
 }
 
+const getChallenges = (state: State = {}): Challenge[] => {
+  const registry: Registry|undefined = getRegistry(state)
+  if (!registry) {
+    return []
+  }
+
+  if (!registry.challenges) {
+    return []
+  }
+
+  return Object.values(registry.challenges)
+}
+
+const getChallenge = (state: State = {}, key: string): Challenge|undefined => {
+  const registry: Registry|undefined = getRegistry(state)
+  if (!registry) {
+    return undefined
+  }
+
+  if (!registry.challenges) {
+    return undefined
+  }
+
+  return registry.challenges[key]
+}
+
 export {
   getRegistry,
   getRegistryAddress,
@@ -74,5 +101,7 @@ export {
   getListing,
   getAppliedListings,
   getWhitelistedListings,
+  getChallenges,
+  getChallenge,
 }
 

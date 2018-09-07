@@ -1,7 +1,7 @@
 import Erc20 from 'computable/dist/contracts/erc-20'
-import { EventLog } from 'web3/types.d'
-import { onData } from 'computable/dist/helpers'
 import {
+  EventEmitter,
+  EventLog,
   FSA,
   Action,
   State,
@@ -74,24 +74,29 @@ const approve = ({ address, amount, from }: TokenApproveParams): any => (
       const contract = new Erc20(owner.address)
       await contract.at(web3, { address: contractAddress })
 
-      const emitter = contract.getEventEmitter('Approval')
+      let out: any = {}
 
-      contract.approve(address, amount, { from: from || owner.address })
+      const emitter = contract.getEventEmitter('Approval') as EventEmitter
+      emitter.on('data', async (log: EventLog) => {
+        const eventValues = log.returnValues
 
-      const eventLog: EventLog = await onData(emitter)
-      const eventValues = eventLog.returnValues
+        out = {
+          address: eventValues.spender,
+          from: eventValues.owner,
+          amount: eventValues.value,
+        }
 
-      const out = {
-        address: eventValues.spender,
-        from: eventValues.owner,
-        amount: eventValues.value,
-      }
+        dispatch(tokenApproveOk(out))
+      })
 
-      dispatch(tokenApproveOk(out))
+      await contract.approve(address, amount, { from: from || owner.address })
+
+      emitter.unsubscribe()
 
       return out
     } catch(err) {
       dispatch(tokenApproveError(err))
+
       return undefined
     }
   }

@@ -1,12 +1,5 @@
 import Registry from 'computable/dist/contracts/registry'
-import {
-  Action,
-  FSA,
-  State,
-  Map,
-  Deployed,
-  Participant,
-} from '../../../interfaces'
+import { Action, State, Participant } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import {
@@ -16,40 +9,14 @@ import {
   getParameterizerAddress,
   getVotingAddress,
 } from '../../selectors'
+import {
+  registryDeployRequest,
+  registryDeployOk,
+  registryDeployError,
 
-// Action Types
-export const REGISTRY_DEPLOY_REQUEST = 'REGISTRY_DEPLOY_REQUEST'
-export const REGISTRY_DEPLOY_OK = 'REGISTRY_DEPLOY_OK'
-export const REGISTRY_DEPLOY_ERROR = 'REGISTRY_DEPLOY_ERROR'
-
-export const REGISTRY_ADDRESS_OK = 'REGISTRY_ADDRESS_OK'
-export const REGISTRY_ADDRESS_RESET = 'REGISTRY_ADDRESS_RESET'
-
-// Actions
-const registryDeployRequest = (value: Map): FSA => ({
-  type: REGISTRY_DEPLOY_REQUEST,
-  payload: value,
-})
-
-const registryDeployOk = (value: Deployed): FSA => ({
-  type: REGISTRY_DEPLOY_OK,
-  payload: value
-})
-
-const registryDeployError = (value: Error): FSA => ({
-  type: REGISTRY_DEPLOY_ERROR,
-  payload: value,
-})
-
-const registryAddressOk = (value: Deployed): FSA => ({
-  type: REGISTRY_ADDRESS_OK,
-  payload: value,
-})
-
-const registryAddressReset = (): FSA => ({
-  type: REGISTRY_ADDRESS_RESET,
-  payload: {},
-})
+  registryAddressOk,
+  registryAddressReset,
+} from './actions'
 
 // Action Creators
 /* To deploy a new Registry Contract */

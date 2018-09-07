@@ -17,13 +17,20 @@ import {
   deployRegistry,
   fetchListing,
   applyListing,
+  challengeListing,
   updateListingStatus,
 } from '../../src/redux/action-creators/registry'
 import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { deployVoting } from '../../src/redux/action-creators/voting'
-import { State, Listing } from '../../src/interfaces'
-import { getRegistryAddress, getListing } from '../../src/redux/selectors'
+import { State, Listing, Challenge } from '../../src/interfaces'
+import {
+  getRegistryAddress,
+  getListing,
+  getChallenges,
+  getChallenge,
+} from '../../src/redux/selectors'
 import { getWeb3, getProvider } from '../../src/initializers'
+import { createListing } from '../helpers'
 
 describe('registry state', () => {
   describe('#deploy', () => {
@@ -194,18 +201,10 @@ describe('registry state', () => {
 
     describe('#updateListingStatus', () => {
       let listingHash: string
-      let listing: string
-      const data = { value: 'data value' }
 
       beforeEach(async () => {
-        // generate a random listing value
-        listing = 'listing ' + Math.floor(Math.random() * 1000 * 1000).toString()
-
-        const txValues = await store.dispatch(
-          applyListing({ listing, userAddress: user, deposit: 100, data })
-        )
-
-        listingHash = txValues.listingHash
+        const listingValues = await createListing(user)
+        listingHash = listingValues.listingHash
       })
 
       it('whitelists a listing', async () => {
@@ -240,6 +239,39 @@ describe('registry state', () => {
         listing = getListing(state, listingHash)
 
         expect(listing && listing.whitelisted).toBe(false)
+      })
+    })
+
+    describe('#challenge', () => {
+      let listingHash: string
+
+      beforeEach(async () => {
+        const listingValues = await createListing(user)
+        listingHash = listingValues.listingHash
+      })
+
+      it('creates a challenge against a listing', async () => {
+        let state: State = store.getState()
+        let listing: Listing = getListing(state, listingHash) as Listing
+        let challenges: Challenge[] = getChallenges(state)
+
+        expect(listing.challengeID).toBeUndefined()
+        expect(challenges.length).toBe(0)
+
+        await store.dispatch(challengeListing({ listingHash, userAddress: user }))
+
+        state = store.getState()
+        listing = getListing(state, listingHash) as Listing
+        const { challengeID } = listing
+        challenges = getChallenges(state)
+
+        expect(challenges.length).toBe(1)
+        expect(challengeID).not.toBeUndefined()
+
+        const challenge: Challenge = getChallenge(state, challengeID as string) as Challenge
+
+        expect(challenge.challengeID).toBe(challengeID as string)
+        expect(challenge.address).toBe(user)
       })
     })
   })

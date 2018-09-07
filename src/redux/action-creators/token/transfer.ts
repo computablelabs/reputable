@@ -1,7 +1,7 @@
 import Erc20 from 'computable/dist/contracts/erc-20'
-import { EventLog } from 'web3/types.d'
-import { onData } from 'computable/dist/helpers'
 import {
+  EventEmitter,
+  EventLog,
   FSA,
   Action,
   State,
@@ -75,21 +75,25 @@ const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
       const contract = new Erc20(owner.address)
       await contract.at(web3, { address: contractAddress })
 
-      const emitter = contract.getEventEmitter('Transfer')
+      let out: any = {}
+
+      const emitter = contract.getEventEmitter('Transfer') as EventEmitter
+      emitter.on('data', async (log: EventLog) => {
+        const eventValues = log.returnValues
+
+        out = {
+          from: eventValues.from,
+          to: eventValues.to,
+          amount: eventValues.value,
+        }
+
+        dispatch(tokenTransferOk(out))
+      })
 
       // we can allow the contract to fallback on the default account it was made from
-      contract.transfer(to, amount)
+      await contract.transfer(to, amount)
 
-      const eventLog: EventLog = await onData(emitter)
-      const eventValues = eventLog.returnValues
-
-      const out = {
-        from: eventValues.from,
-        to: eventValues.to,
-        amount: eventValues.value,
-      }
-
-      dispatch(tokenTransferOk(out))
+      emitter.unsubscribe()
 
       return out
     } catch(err) {

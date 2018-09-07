@@ -2,7 +2,7 @@
  * hold state related to the registry contract
  */
 
-import { RegistryListing } from 'computable/dist/interfaces'
+import { RegistryListing, Challenge as RegistryChallenge } from 'computable/dist/interfaces'
 import { GenericMap, Map } from '../interfaces'
 
 interface Registry {
@@ -17,8 +17,8 @@ interface ApplicantData {
   value: Map|string
 }
 
-interface Challenge {
-
+interface Challenge extends RegistryChallenge {
+  challengeID: string
 }
 
 // the registry listing in computable does not keep the generated hash
