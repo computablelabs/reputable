@@ -79,20 +79,28 @@ const handlers = {
     loading: true,
     request: payload,
   }),
-  [REGISTRY_LISTING_OK]: (state: StateItem<Registry>, { payload }: FSA) => ({
-    ...state,
-    loading: false,
-    data: {
-      ...state.data,
-      listings: {
-        ...state.data.listings || {},
-        [payload.listingHash]: payload,
+  [REGISTRY_LISTING_OK]: (state: StateItem<Registry>, { payload }: FSA) => {
+    const listings = state.data.listings || {};
+    const listing = {
+      ...listings[payload.listingHash],
+      ...payload,
+    };
+
+    return {
+      ...state,
+      loading: false,
+      data: {
+        ...state.data,
+        listings: {
+          ...listings,
+          [payload.listingHash]: listing,
+        },
       },
-    },
-  }),
+    };
+  },
   [REGISTRY_LISTING_REMOVE]: (state: StateItem<Registry>, { payload }: FSA) => {
     const listings = state.data.listings || {}
-    delete listings[payload.listingHash]
+    delete listings[payload]
 
     return {
       ...state,

@@ -18,8 +18,8 @@ import {
   registryAddressReset,
 } from './actions'
 
-// Action Creators
-/* To deploy a new Registry Contract */
+/* Action Creators */
+// To deploy a new Registry Contract
 const deployRegistry = (name:string): any => (
   async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
@@ -75,14 +75,14 @@ const deployRegistry = (name:string): any => (
   }
 )
 
-/* To store the address of an already deployed Registry Contract */
+// To store the address of an already deployed Registry Contract
 const setRegistryAddress = (registryAddress: string): any => (
   async (dispatch: Function): Promise<Action> => (
     dispatch(registryAddressOk({ address: registryAddress }))
   )
 )
 
-/* To reset the stored Registry Contract address */
+// To reset the stored Registry Contract address
 const resetRegistryAddress = (): any => (
   async (dispatch: Function): Promise<Action> => (
     dispatch(registryAddressReset())

@@ -26,7 +26,7 @@ import {
   // registryListingRemove,
 } from './actions'
 
-// Action Creators
+/* Action Creators */
 const fetchChallenge = (challengeID: string): any => (
   async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()

@@ -19,6 +19,7 @@ interface ApplicantData {
 
 interface Challenge extends RegistryChallenge {
   challengeID: string
+  listingHash: string
 }
 
 // the registry listing in computable does not keep the generated hash

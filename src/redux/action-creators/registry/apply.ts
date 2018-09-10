@@ -15,6 +15,7 @@ import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selecto
 import {
   registryListingRequest,
   registryListingOk,
+  registryListingRemove,
   registryListingError,
   registryListingReset,
 
@@ -25,7 +26,7 @@ import {
   registryChallengeOk,
 } from './actions'
 
-// Action Creators
+/* Action Creators */
 const fetchListing = (listingHash: string): any => (
   async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
     const state: State = getState()
@@ -225,6 +226,7 @@ const updateListingStatus = (listingHash: string): any => (
         }
 
         dispatch(registryChallengeOk(out))
+        dispatch(registryListingRemove(eventValues.listingHash))
       })
 
       await registry.updateStatus(listingHash)

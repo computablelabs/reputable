@@ -1,10 +1,7 @@
 import Voting from 'computable/dist/contracts/plcr-voting'
 import {
   Action,
-  FSA,
   State,
-  Map,
-  Deployed,
   Participant,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
@@ -16,47 +13,20 @@ import {
   getAttributeStoreAddress,
 } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
+import {
+  votingDeployRequest,
+  votingDeployOk,
+  votingDeployError,
 
-// Action Types
-export const VOTING_DEPLOY_REQUEST = 'VOTING_DEPLOY_REQUEST'
-export const VOTING_DEPLOY_OK = 'VOTING_DEPLOY_OK'
-export const VOTING_DEPLOY_ERROR = 'VOTING_DEPLOY_ERROR'
+  votingAddressOk,
+  votingAddressReset,
+} from './actions'
 
-export const VOTING_ADDRESS_OK = 'VOTING_DEPLOY_ADDRESS_OK'
-export const VOTING_ADDRESS_RESET = 'VOTING_DEPLOY_ADDRESS_RESET'
-
-// Actions
-const votingDeployRequest = (value: Map): FSA => ({
-  type: VOTING_DEPLOY_REQUEST,
-  payload: value,
-})
-
-const votingDeployOk = (value: Deployed): FSA => ({
-  type: VOTING_DEPLOY_OK,
-  payload: value,
-})
-
-const votingDeployError = (value: Error): FSA => ({
-  type: VOTING_DEPLOY_ERROR,
-  payload: value,
-})
-
-const votingAddressOk = (value: Deployed): FSA => ({
-  type: VOTING_ADDRESS_OK,
-  payload: value,
-})
-
-const votingAddressReset = (): FSA => ({
-  type: VOTING_ADDRESS_RESET,
-  payload: {},
-})
-
-
-// Action Creators
-/* To deploy a new Voting Contract */
+/* Action Creators */
+// To deploy a new Voting Contract
 const deployVoting = (): any => (
   async (dispatch: Function, getState: Function): Promise<string> => {
-    const state:State = getState()
+    const state: State = getState()
 
     const args = {}
     dispatch(votingDeployRequest(args))
@@ -107,14 +77,14 @@ const deployVoting = (): any => (
   }
 )
 
-/* To store the address of an already deployed Voting Contract */
+// To store the address of an already deployed Voting Contract
 const setVotingAddress = (votingAddress: string): any => (
   async (dispatch: Function): Promise<Action> => (
     dispatch(votingAddressOk({ address: votingAddress }))
   )
 )
 
-/* To reset the stored Voting Contract address */
+// To reset the stored Voting Contract address
 const resetVotingAddress = (): any => (
   async (dispatch: Function): Promise<Action> => (
     dispatch(votingAddressReset())

@@ -1,4 +1,4 @@
-import { FSA, StateItem, Deployed } from '../../interfaces'
+import { FSA, StateItem, Deployed, Map } from '../../interfaces'
 import {
   VOTING_DEPLOY_REQUEST,
   VOTING_DEPLOY_OK,
@@ -6,6 +6,10 @@ import {
 
   VOTING_ADDRESS_OK,
   VOTING_ADDRESS_RESET,
+
+  VOTING_VOTE_REQUEST,
+  VOTING_VOTE_OK,
+  VOTING_VOTE_ERROR,
 } from '../action-creators/voting'
 import createReducer from './createReducer'
 
@@ -50,7 +54,20 @@ const handlers = {
       ...state.data,
       address: initialState.data.address,
     },
-  })
+  }),
+
+  // Vote
+  [VOTING_VOTE_REQUEST]: (state: StateItem<Map>, { payload }: FSA) => ({
+    // TODO implement
+  }),
+  [VOTING_VOTE_OK]: (state: StateItem<Map>, { payload }: FSA) => ({
+    // TODO implement
+  }),
+  [VOTING_VOTE_ERROR]: (state: StateItem<Map>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
 }
 
 export default createReducer(handlers, initialState)
