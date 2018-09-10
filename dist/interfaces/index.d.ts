@@ -9,3 +9,4 @@ export * from './token';
 export * from './voting';
 export * from './registry';
 export * from './general';
+export * from './web3-events';

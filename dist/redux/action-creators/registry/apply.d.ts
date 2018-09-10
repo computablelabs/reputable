@@ -1,14 +1,12 @@
 import { ApplicantData } from '../../../interfaces';
-export declare const REGISTRY_APPLY_REQUEST = "REGISTRY_APPLY_REQUEST";
-export declare const REGISTRY_APPLY_OK = "REGISTRY_APPLY_OK";
-export declare const REGISTRY_APPLY_ERROR = "REGISTRY_APPLY_ERROR";
-export declare const REGISTRY_APPLY_RESET = "REGISTRY_APPLY_RESET";
+declare const fetchListing: (listingHash: string) => any;
 interface RegistryApplyParams {
     listing: string;
     userAddress: string;
     deposit: number;
     data?: ApplicantData;
 }
-declare const apply: ({ listing, userAddress, deposit, data, }: RegistryApplyParams) => any;
-declare const resetRegistryApply: () => any;
-export { apply, resetRegistryApply };
+declare const applyListing: ({ listing, userAddress, deposit, data, }: RegistryApplyParams) => any;
+declare const updateListingStatus: (listingHash: string) => any;
+declare const resetRegistryListings: () => any;
+export { fetchListing, applyListing, updateListingStatus, resetRegistryListings, };

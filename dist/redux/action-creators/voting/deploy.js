@@ -15,35 +15,11 @@ const plcr_voting_1 = __importDefault(require("computable/dist/contracts/plcr-vo
 const constants_1 = require("../../../constants");
 const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
-exports.VOTING_DEPLOY_REQUEST = 'VOTING_DEPLOY_REQUEST';
-exports.VOTING_DEPLOY_OK = 'VOTING_DEPLOY_OK';
-exports.VOTING_DEPLOY_ERROR = 'VOTING_DEPLOY_ERROR';
-exports.VOTING_ADDRESS_OK = 'VOTING_DEPLOY_ADDRESS_OK';
-exports.VOTING_ADDRESS_RESET = 'VOTING_DEPLOY_ADDRESS_RESET';
-const votingDeployRequest = (value) => ({
-    type: exports.VOTING_DEPLOY_REQUEST,
-    payload: value,
-});
-const votingDeployOk = (value) => ({
-    type: exports.VOTING_DEPLOY_OK,
-    payload: value,
-});
-const votingDeployError = (value) => ({
-    type: exports.VOTING_DEPLOY_ERROR,
-    payload: value,
-});
-const votingAddressOk = (value) => ({
-    type: exports.VOTING_ADDRESS_OK,
-    payload: value,
-});
-const votingAddressReset = () => ({
-    type: exports.VOTING_ADDRESS_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployVoting = () => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = {};
-    dispatch(votingDeployRequest(args));
+    dispatch(actions_1.votingDeployRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -72,20 +48,20 @@ const deployVoting = () => ((dispatch, getState) => __awaiter(this, void 0, void
             dllAddress,
             attributeStoreAddress,
         });
-        dispatch(votingDeployOk({ address: votingAddress }));
+        dispatch(actions_1.votingDeployOk({ address: votingAddress }));
         return votingAddress;
     }
     catch (err) {
-        dispatch(votingDeployError(err));
+        dispatch(actions_1.votingDeployError(err));
         return '';
     }
 }));
 exports.deployVoting = deployVoting;
 const setVotingAddress = (votingAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(votingAddressOk({ address: votingAddress })));
+    return (dispatch(actions_1.votingAddressOk({ address: votingAddress })));
 }));
 exports.setVotingAddress = setVotingAddress;
 const resetVotingAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(votingAddressReset()));
+    return (dispatch(actions_1.votingAddressReset()));
 }));
 exports.resetVotingAddress = resetVotingAddress;

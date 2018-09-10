@@ -16,3 +16,10 @@ const getWeb3 = (address, { force = false } = {}) => {
     return web3;
 };
 exports.getWeb3 = getWeb3;
+const getProvider = () => {
+    if (!provider) {
+        return undefined;
+    }
+    return provider;
+};
+exports.getProvider = getProvider;

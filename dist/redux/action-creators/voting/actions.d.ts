@@ -1,0 +1,17 @@
+import { FSA, Map, Deployed } from '../../../interfaces';
+export declare const VOTING_DEPLOY_REQUEST = "VOTING_DEPLOY_REQUEST";
+export declare const VOTING_DEPLOY_OK = "VOTING_DEPLOY_OK";
+export declare const VOTING_DEPLOY_ERROR = "VOTING_DEPLOY_ERROR";
+export declare const VOTING_ADDRESS_OK = "VOTING_DEPLOY_ADDRESS_OK";
+export declare const VOTING_ADDRESS_RESET = "VOTING_DEPLOY_ADDRESS_RESET";
+export declare const VOTING_VOTE_REQUEST = "VOTING_VOTE_REQUEST";
+export declare const VOTING_VOTE_OK = "VOTING_VOTE_OK";
+export declare const VOTING_VOTE_ERROR = "VOTING_VOTE_ERROR";
+export declare const votingDeployRequest: (value: Map) => FSA;
+export declare const votingDeployOk: (value: Deployed) => FSA;
+export declare const votingDeployError: (value: Error) => FSA;
+export declare const votingAddressOk: (value: Deployed) => FSA;
+export declare const votingAddressReset: () => FSA;
+export declare const votingVoteRequest: (value: Map) => FSA;
+export declare const votingVoteOk: (value: Map) => FSA;
+export declare const votingVoteError: (value: Error) => FSA;

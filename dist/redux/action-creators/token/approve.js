@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
-const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
@@ -56,16 +55,19 @@ const approve = ({ address, amount, from }) => ((dispatch, getState) => __awaite
         }
         const contract = new erc_20_1.default(owner.address);
         yield contract.at(web3, { address: contractAddress });
+        let out = {};
         const emitter = contract.getEventEmitter('Approval');
-        contract.approve(address, amount, { from: from || owner.address });
-        const eventLog = yield helpers_1.onData(emitter);
-        const eventValues = eventLog.returnValues;
-        const out = {
-            address: eventValues.spender,
-            from: eventValues.owner,
-            amount: eventValues.value,
-        };
-        dispatch(tokenApproveOk(out));
+        emitter.on('data', (log) => __awaiter(this, void 0, void 0, function* () {
+            const eventValues = log.returnValues;
+            out = {
+                address: eventValues.spender,
+                from: eventValues.owner,
+                amount: eventValues.value,
+            };
+            dispatch(tokenApproveOk(out));
+        }));
+        yield contract.approve(address, amount, { from: from || owner.address });
+        emitter.unsubscribe();
         return out;
     }
     catch (err) {

@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
-const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
@@ -56,16 +55,19 @@ const transfer = ({ to, amount, from }) => (dispatch, getState) => __awaiter(thi
         }
         const contract = new erc_20_1.default(owner.address);
         yield contract.at(web3, { address: contractAddress });
+        let out = {};
         const emitter = contract.getEventEmitter('Transfer');
-        contract.transfer(to, amount);
-        const eventLog = yield helpers_1.onData(emitter);
-        const eventValues = eventLog.returnValues;
-        const out = {
-            from: eventValues.from,
-            to: eventValues.to,
-            amount: eventValues.value,
-        };
-        dispatch(tokenTransferOk(out));
+        emitter.on('data', (log) => __awaiter(this, void 0, void 0, function* () {
+            const eventValues = log.returnValues;
+            out = {
+                from: eventValues.from,
+                to: eventValues.to,
+                amount: eventValues.value,
+            };
+            dispatch(tokenTransferOk(out));
+        }));
+        yield contract.transfer(to, amount);
+        emitter.unsubscribe();
         return out;
     }
     catch (err) {

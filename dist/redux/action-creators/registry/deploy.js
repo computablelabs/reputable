@@ -15,35 +15,11 @@ const registry_1 = __importDefault(require("computable/dist/contracts/registry")
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
-exports.REGISTRY_DEPLOY_REQUEST = 'REGISTRY_DEPLOY_REQUEST';
-exports.REGISTRY_DEPLOY_OK = 'REGISTRY_DEPLOY_OK';
-exports.REGISTRY_DEPLOY_ERROR = 'REGISTRY_DEPLOY_ERROR';
-exports.REGISTRY_ADDRESS_OK = 'REGISTRY_ADDRESS_OK';
-exports.REGISTRY_ADDRESS_RESET = 'REGISTRY_ADDRESS_RESET';
-const registryDeployRequest = (value) => ({
-    type: exports.REGISTRY_DEPLOY_REQUEST,
-    payload: value,
-});
-const registryDeployOk = (value) => ({
-    type: exports.REGISTRY_DEPLOY_OK,
-    payload: value
-});
-const registryDeployError = (value) => ({
-    type: exports.REGISTRY_DEPLOY_ERROR,
-    payload: value,
-});
-const registryAddressOk = (value) => ({
-    type: exports.REGISTRY_ADDRESS_OK,
-    payload: value,
-});
-const registryAddressReset = () => ({
-    type: exports.REGISTRY_ADDRESS_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployRegistry = (name) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = { name };
-    dispatch(registryDeployRequest(args));
+    dispatch(actions_1.registryDeployRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -73,20 +49,20 @@ const deployRegistry = (name) => ((dispatch, getState) => __awaiter(this, void 0
             votingAddress,
             parameterizerAddress,
         });
-        dispatch(registryDeployOk({ address: registryAddress }));
+        dispatch(actions_1.registryDeployOk({ address: registryAddress }));
         return registryAddress;
     }
     catch (err) {
-        dispatch(registryDeployError(err));
+        dispatch(actions_1.registryDeployError(err));
         return '';
     }
 }));
 exports.deployRegistry = deployRegistry;
 const setRegistryAddress = (registryAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(registryAddressOk({ address: registryAddress })));
+    return (dispatch(actions_1.registryAddressOk({ address: registryAddress })));
 }));
 exports.setRegistryAddress = setRegistryAddress;
 const resetRegistryAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(registryAddressReset()));
+    return (dispatch(actions_1.registryAddressReset()));
 }));
 exports.resetRegistryAddress = resetRegistryAddress;

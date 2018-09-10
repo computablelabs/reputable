@@ -16,6 +16,9 @@ const handlers = {
     [voting_1.VOTING_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
     [voting_1.VOTING_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
     [voting_1.VOTING_ADDRESS_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
-    [voting_1.VOTING_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { data: Object.assign({}, state.data, { address: initialState.data.address }) }))
+    [voting_1.VOTING_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { data: Object.assign({}, state.data, { address: initialState.data.address }) })),
+    [voting_1.VOTING_VOTE_REQUEST]: (state, { payload }) => ({}),
+    [voting_1.VOTING_VOTE_OK]: (state, { payload }) => ({}),
+    [voting_1.VOTING_VOTE_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
 };
 exports.default = createReducer_1.default(handlers, initialState);

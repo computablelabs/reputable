@@ -12,8 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ipfs_1 = __importDefault(require("../initializers/ipfs"));
+const encryption_1 = require("./encryption");
 const IPFSWrite = (data) => __awaiter(this, void 0, void 0, function* () {
-    const buffer = Buffer.from(JSON.stringify(data));
+    const dataString = JSON.stringify(data);
+    const dataEncrypted = yield encryption_1.encrypt(dataString);
+    const buffer = Buffer.from(dataEncrypted);
     const ipfsBlock = yield ipfs_1.default.block.put(buffer);
     const cid = ipfsBlock.cid.toBaseEncodedString();
     return cid;
@@ -22,7 +25,8 @@ exports.IPFSWrite = IPFSWrite;
 const IPFSRead = (cid) => __awaiter(this, void 0, void 0, function* () {
     const block = yield ipfs_1.default.block.get(cid);
     const dataString = block.data.toString();
-    const data = JSON.parse(dataString);
+    const dataDecrypted = yield encryption_1.decrypt(dataString);
+    const data = JSON.parse(dataDecrypted);
     return data;
 });
 exports.IPFSRead = IPFSRead;

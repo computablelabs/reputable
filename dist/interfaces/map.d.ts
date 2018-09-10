@@ -1,7 +1,7 @@
 interface Map {
-    readonly [key: string]: any;
+    [key: string]: any;
 }
 interface GenericMap<T> {
-    readonly [key: string]: T;
+    [key: string]: T;
 }
 export { Map, GenericMap };

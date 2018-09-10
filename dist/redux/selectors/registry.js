@@ -17,15 +17,57 @@ const getRegistryAddress = (state = {}) => {
     return registry.address;
 };
 exports.getRegistryAddress = getRegistryAddress;
-const getApplicants = (state = {}) => {
+const getListings = (state = {}) => {
     const registry = getRegistry(state);
     if (!registry) {
         return [];
     }
-    const applicants = registry.applicants;
-    if (!applicants) {
+    if (!registry.listings) {
         return [];
     }
-    return applicants;
+    return Object.values(registry.listings);
 };
-exports.getApplicants = getApplicants;
+exports.getListings = getListings;
+const getListing = (state = {}, key) => {
+    const registry = getRegistry(state);
+    if (!registry) {
+        return undefined;
+    }
+    if (!registry.listings) {
+        return undefined;
+    }
+    return registry.listings[key];
+};
+exports.getListing = getListing;
+const getAppliedListings = (state = {}) => {
+    const listings = getListings(state);
+    return listings.filter((listing) => !listing.whitelisted);
+};
+exports.getAppliedListings = getAppliedListings;
+const getWhitelistedListings = (state = {}) => {
+    const listings = getListings(state);
+    return listings.filter((listing) => listing.whitelisted);
+};
+exports.getWhitelistedListings = getWhitelistedListings;
+const getChallenges = (state = {}) => {
+    const registry = getRegistry(state);
+    if (!registry) {
+        return [];
+    }
+    if (!registry.challenges) {
+        return [];
+    }
+    return Object.values(registry.challenges);
+};
+exports.getChallenges = getChallenges;
+const getChallenge = (state = {}, key) => {
+    const registry = getRegistry(state);
+    if (!registry) {
+        return undefined;
+    }
+    if (!registry.challenges) {
+        return undefined;
+    }
+    return registry.challenges[key];
+};
+exports.getChallenge = getChallenge;

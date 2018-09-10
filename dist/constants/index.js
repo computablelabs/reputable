@@ -18,7 +18,7 @@ var TokenDefaults;
     TokenDefaults[TokenDefaults["SUPPLY"] = 1000000] = "SUPPLY";
 })(TokenDefaults || (TokenDefaults = {}));
 exports.TokenDefaults = TokenDefaults;
-const THREE_MINUTES = 180;
+const THREE_MINUTES = 3 * 60;
 const HALF = 50;
 var ParameterizerDefaults;
 (function (ParameterizerDefaults) {

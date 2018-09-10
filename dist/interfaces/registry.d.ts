@@ -1,24 +1,20 @@
-import { RegistryListing } from 'computable/dist/interfaces';
-import { Nos } from 'computable/dist/types';
-import { Map } from '../interfaces';
+import { RegistryListing, Challenge as RegistryChallenge } from 'computable/dist/interfaces';
+import { GenericMap, Map } from '../interfaces';
 interface Registry {
     address?: string;
-    applicants?: Applicant[];
-    challenges?: Challenge[];
-    listings?: Listing[];
-}
-interface Applicant {
-    name: string;
-    deposit?: Nos;
-    data?: string;
+    challenges?: GenericMap<Challenge>;
+    listings?: GenericMap<Listing>;
 }
 interface ApplicantData {
     source?: string;
     value: Map | string;
 }
-interface Challenge {
+interface Challenge extends RegistryChallenge {
+    id: string;
+    listingHash: string;
 }
 interface Listing extends RegistryListing {
-    hash: string;
+    listingHash: string;
+    data?: ApplicantData | string;
 }
-export { Registry, Applicant, ApplicantData, Challenge, Listing, };
+export { Registry, ApplicantData, Challenge, Listing, };
