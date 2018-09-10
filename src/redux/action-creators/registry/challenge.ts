@@ -60,13 +60,11 @@ const fetchChallenge = (challengeID: string): any => (
       const out = {
         challengeID,
         rewardPool: challenge.rewardPool,
-        // TODO (geoff) rename to `challenger`
-        address: challenge.address,
+        challenger: challenge.challenger,
         resolved: challenge.resolved,
         stake: challenge.stake,
         totalTokens: challenge.totalTokens,
-        // TODO (geoff) rename to `rewardsClaimed`
-        tokenClaims: challenge.tokenClaims,
+        rewardsClaimed: challenge.rewardsClaimed,
       }
 
       dispatch(registryChallengeOk(out))
@@ -121,19 +119,17 @@ const challengeListing = ({ listingHash, userAddress }: RegistryChallengeListing
         // add challenge to global state
         out = {
           listingHash: eventValues.listingHash,
-          challengeID: eventValues.challengeID,
-          address: eventValues.challenger,
-          // TODO (geoff) rename to `commitExpiry`
-          commitEndDate: eventValues.commitEndDate,
-          // TODO (geoff) rename to `revealExpiry`
-          revealEndDate: eventValues.revealEndDate,
+          id: eventValues.id,
+          challenger: eventValues.challenger,
+          commitExpiry: eventValues.commitExpiry,
+          revealExpiry: eventValues.revealExpiry,
         }
         dispatch(registryChallengeOk(out))
 
         // update listing metadata
         const listing: Listing|undefined = getListing(state, eventValues.listingHash)
         if (listing) {
-          listing.challengeID = eventValues.challengeID
+          listing.challenge = eventValues.id
 
           dispatch(registryListingOk(listing))
         }

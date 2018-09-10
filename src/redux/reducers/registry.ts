@@ -160,7 +160,7 @@ const handlers = {
       ...state.data,
       challenges: {
         ...state.data.challenges,
-        [payload.challengeID]: payload,
+        [payload.id]: payload,
       },
     },
   }),

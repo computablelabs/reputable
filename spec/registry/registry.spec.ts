@@ -255,14 +255,15 @@ describe('registry state', () => {
         let listing: Listing = getListing(state, listingHash) as Listing
         let challenges: Challenge[] = getChallenges(state)
 
-        expect(listing.challengeID).toBeUndefined()
+        expect(listing.challenge).toBeUndefined()
         expect(challenges.length).toBe(0)
 
         await store.dispatch(challengeListing({ listingHash, userAddress: user }))
 
         state = store.getState()
         listing = getListing(state, listingHash) as Listing
-        const { challengeID } = listing
+        const { challenge: challengeID } = listing
+
         challenges = getChallenges(state)
 
         expect(challenges.length).toBe(1)
@@ -270,8 +271,8 @@ describe('registry state', () => {
 
         const challenge: Challenge = getChallenge(state, challengeID as string) as Challenge
 
-        expect(challenge.challengeID).toBe(challengeID as string)
-        expect(challenge.address).toBe(user)
+        expect(challenge.id).toBe(challengeID as string)
+        expect(challenge.challenger).toBe(user)
       })
     })
   })

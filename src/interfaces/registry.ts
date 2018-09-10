@@ -18,7 +18,7 @@ interface ApplicantData {
 }
 
 interface Challenge extends RegistryChallenge {
-  challengeID: string
+  id: string
   listingHash: string
 }
 

@@ -61,12 +61,9 @@ const fetchListing = (listingHash: string): any => (
         listingHash,
         applicationExpiry: listing.applicationExpiry,
         whitelisted: listing.whitelisted,
-        // TODO (geoff) having a challenge ID does not mean a challenge is active
-        challengeID: listing.challengeID,
+        challenge: listing.challenge,
         owner: listing.owner,
         unstakedDeposit: listing.unstakedDeposit,
-        // TODO (geoff) `data` is not returned
-        // data: await decodeData(listing.data),
       }
 
       dispatch(registryListingOk(out))
