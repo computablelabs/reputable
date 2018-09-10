@@ -136,7 +136,7 @@ const updateListingStatus = (listingHash) => ((dispatch, getState) => __awaiter(
             const eventValues = log.returnValues;
             out = {
                 listingHash: eventValues.listingHash,
-                challengeID: eventValues.challengeID,
+                challengeID: eventValues.id,
                 rewardPool: eventValues.rewardPool,
                 totalTokens: eventValues.totalTokens,
             };
@@ -147,7 +147,7 @@ const updateListingStatus = (listingHash) => ((dispatch, getState) => __awaiter(
             const eventValues = log.returnValues;
             out = {
                 listingHash: eventValues.listingHash,
-                challengeID: eventValues.challengeID,
+                challengeID: eventValues.id,
                 rewardPool: eventValues.rewardPool,
                 totalTokens: eventValues.totalTokens,
             };

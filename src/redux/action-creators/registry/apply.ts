@@ -203,7 +203,7 @@ const updateListingStatus = (listingHash: string): any => (
 
         out = {
           listingHash: eventValues.listingHash,
-          challengeID: eventValues.challengeID,
+          challengeID: eventValues.id,
           rewardPool: eventValues.rewardPool,
           totalTokens: eventValues.totalTokens,
         }
@@ -217,7 +217,7 @@ const updateListingStatus = (listingHash: string): any => (
 
         out = {
           listingHash: eventValues.listingHash,
-          challengeID: eventValues.challengeID,
+          challengeID: eventValues.id,
           rewardPool: eventValues.rewardPool,
           totalTokens: eventValues.totalTokens,
         }
