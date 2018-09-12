@@ -4,7 +4,7 @@
   "description": "Redux state container for the Computable Protocol",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-ts ./spec/**/*.spec.ts",
+    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine-ts",
     "build": "npm run build:clean && tsc -p ./tsbuild.json",
     "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/initializers && rm -rf ./dist/interfaces && rm -rf ./dist/redux && rm -rf ./dist/utils",
     "build:dry": "tsc -noEmit -p ./tsbuild.json",
@@ -27,6 +27,7 @@
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
     "jasmine-ts": "^0.2.1",
+    "ts-sinon": "^1.0.12",
     "typescript": "^3.0.1"
   },
   "dependencies": {

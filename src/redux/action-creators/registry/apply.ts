@@ -8,9 +8,9 @@ import {
   Listing,
   ApplicantData,
 } from '../../../interfaces'
-import { DataSources, Errors } from '../../../constants'
+import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
-import { IPFSWrite, IPFSRead } from '../../../helpers/ipfs'
+import { encodeData, decodeData } from '../../../helpers/data'
 import { getWebsocketAddress, getOwner, getRegistryAddress } from '../../selectors'
 import {
   registryListingRequest,
@@ -246,32 +246,6 @@ const resetRegistryListings = (): any => (
     dispatch(registryListingReset())
   }
 )
-
-const encodeData = async (applicantData: ApplicantData): Promise<string> => {
-  if (applicantData.source === DataSources.IPFS) {
-    const cid: string = await IPFSWrite(applicantData.value)
-    applicantData.value = cid
-    return JSON.stringify(applicantData)
-  }
-
-  return JSON.stringify(applicantData)
-}
-
-const decodeData = async (data: string): Promise<ApplicantData> => {
-  const parsedData: ApplicantData = JSON.parse(data)
-
-  if (parsedData.source === DataSources.IPFS) {
-    const cid: string = typeof parsedData.value === 'string' ?
-      parsedData.value : ''
-    const ipfsData: Map|string = await IPFSRead(cid)
-
-    parsedData.value = ipfsData
-
-    return parsedData
-  }
-
-  return parsedData
-}
 
 export {
   fetchListing,

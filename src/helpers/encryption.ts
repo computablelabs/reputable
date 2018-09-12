@@ -6,7 +6,9 @@ const ENCRYPTION_KEY: string = '12345678901234567890123456789012'
 const IV_LENGTH: number = 16
 const ENCRYPTION_TYPE = 'aes-256-cbc'
 
-const encrypt = async (value: string): Promise<string> => {
+const encrypt = async (value: Map|string): Promise<string> => {
+  value = JSON.stringify(value)
+
   const iv: Buffer = crypto.randomBytes(IV_LENGTH)
   const encryptionKey: Buffer = new Buffer(ENCRYPTION_KEY)
   const cipher: Map = crypto.createCipheriv(ENCRYPTION_TYPE, encryptionKey, iv)
@@ -16,7 +18,7 @@ const encrypt = async (value: string): Promise<string> => {
   return `${iv.toString('hex')}:${encryptedBuffer.toString('hex')}`
 }
 
-const decrypt = async (value: string): Promise<string> => {
+const decrypt = async (value: string): Promise<Map|string> => {
   const valueTokens: string[] = value.split(':')
   let iv: Buffer = new Buffer(valueTokens.shift() || '', 'hex')
   let encryptedText = new Buffer(valueTokens.join(':'), 'hex')
@@ -26,7 +28,9 @@ const decrypt = async (value: string): Promise<string> => {
 
   decrypted = Buffer.concat([decrypted, decipher.final()])
 
-  return decrypted.toString()
+  const parsedData = JSON.parse(decrypted.toString())
+
+  return parsedData
 }
 
 export { encrypt, decrypt }
