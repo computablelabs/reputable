@@ -2,45 +2,22 @@ import Erc20 from 'computable/dist/contracts/erc-20'
 import {
   EventEmitter,
   EventLog,
-  FSA,
   Action,
   State,
   Map,
   Participant,
-  Transfer,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress, getTokenAddress } from '../../selectors'
+import {
+  tokenTransferRequest,
+  tokenTransferOk,
+  tokenTransferError,
+  tokenTransferReset,
+} from './actions'
 
-// Action Types
-export const TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST'
-export const TOKEN_TRANSFER_OK = 'TOKEN_TRANSFER_OK'
-export const TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR'
-export const TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET'
-
-// Actions
-const tokenTransferRequest = (value: Map): FSA => ({
-  type: TOKEN_TRANSFER_REQUEST,
-  payload: value,
-})
-
-const tokenTransferOk = (value: Transfer): FSA => ({
-  type: TOKEN_TRANSFER_OK,
-  payload: value,
-})
-
-const tokenTransferError = (value: Error): FSA => ({
-  type: TOKEN_TRANSFER_ERROR,
-  payload: value,
-})
-
-const tokenTransferReset = (): FSA => ({
-  type: TOKEN_TRANSFER_RESET,
-  payload: {},
-})
-
-// Action Creators
+/* Action Creators */
 // TODO `from` doesn't appear to be used
 interface RegistryTransferParams {
   to: string

@@ -2,44 +2,20 @@ import { Contract } from 'web3/types.d'
 import { deployDll as deploy } from 'computable/dist/helpers'
 import {
   Action,
-  FSA,
   State,
-  Map,
-  Deployed,
   Participant,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
+import {
+  dllRequest,
+  dllOk,
+  dllError,
+  dllReset,
+} from './actions'
 
-// Action Types
-export const DLL_REQUEST = 'DLL_REQUEST'
-export const DLL_OK = 'DLL_OK'
-export const DLL_ERROR = 'DLL_ERROR'
-export const DLL_RESET = 'DLL_RESET'
-
-// Actions
-const dllRequest = (value: Map): FSA => ({
-  type: DLL_REQUEST,
-  payload: value,
-})
-
-const dllOk = (value: Deployed): FSA => ({
-  type: DLL_OK,
-  payload: value,
-})
-
-const dllError = (value: Error): FSA => ({
-  type: DLL_ERROR,
-  payload: value,
-})
-
-const dllReset = (): FSA => ({
-  type: DLL_RESET,
-  payload: {},
-})
-
-// Action Creators
+/* Action Creators */
 const deployDll = (): any =>
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()

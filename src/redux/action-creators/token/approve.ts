@@ -2,45 +2,22 @@ import Erc20 from 'computable/dist/contracts/erc-20'
 import {
   EventEmitter,
   EventLog,
-  FSA,
   Action,
   State,
   Map,
   Participant,
-  Approval,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress, getTokenAddress } from '../../selectors'
+import {
+  tokenApproveRequest,
+  tokenApproveOk,
+  tokenApproveError,
+  tokenApproveReset,
+} from './actions'
 
-// Action Types
-export const TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST'
-export const TOKEN_APPROVE_OK = 'TOKEN_APPROVE_OK'
-export const TOKEN_APPROVE_ERROR = 'TOKEN_APPROVE_ERROR'
-export const TOKEN_APPROVE_RESET = 'TOKEN_APPROVE_RESET'
-
-// Actions
-const tokenApproveRequest = (value: Map): FSA => ({
-  type: TOKEN_APPROVE_REQUEST,
-  payload: value,
-})
-
-const tokenApproveOk = (value: Approval): FSA => ({
-  type: TOKEN_APPROVE_OK,
-  payload: value,
-})
-
-const tokenApproveError = (value: Error): FSA => ({
-  type: TOKEN_APPROVE_ERROR,
-  payload: value,
-})
-
-const tokenApproveReset = (): FSA => ({
-  type: TOKEN_APPROVE_RESET,
-  payload: {},
-})
-
-// Action Creators
+/* Action Creators */
 interface TokenApproveParams {
   address: string
   amount: number

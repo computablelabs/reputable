@@ -2,10 +2,7 @@ import { ParameterizerDeployParams } from 'computable/dist/interfaces'
 import Parameterizer from 'computable/dist/contracts/parameterizer'
 import {
   Action,
-  FSA,
   State,
-  Map,
-  Deployed,
   Participant,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
@@ -16,42 +13,16 @@ import {
   getVotingAddress,
 } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
+import {
+  parameterizerDeployRequest,
+  parameterizerDeployOk,
+  parameterizerDeployError,
 
-// Action Types
-export const PARAMETERIZER_DEPLOY_REQUEST = 'PARAMETERIZER_DEPLOY_REQUEST'
-export const PARAMETERIZER_DEPLOY_OK = 'PARAMETERIZER_DEPLOY_OK'
-export const PARAMETERIZER_DEPLOY_ERROR = 'PARAMETERIZER_DEPLOY_ERROR'
+  parameterizerAddressOk,
+  parameterizerAddressReset,
+} from './actions'
 
-export const PARAMETERIZER_ADDRESS_OK = 'PARAMETERIZER_ADDRESS_OK'
-export const PARAMETERIZER_ADDRESS_RESET = 'PARAMETERIZER_ADDRESS_RESET'
-
-// Actions
-const parameterizerDeployRequest = (value: Map): FSA => ({
-  type: PARAMETERIZER_DEPLOY_REQUEST,
-  payload: value,
-})
-
-const parameterizerDeployOk = (value: Deployed): FSA => ({
-  type: PARAMETERIZER_DEPLOY_OK,
-  payload: value,
-})
-
-const parameterizerDeployError = (value: Error): FSA => ({
-  type: PARAMETERIZER_DEPLOY_ERROR,
-  payload: value,
-})
-
-const parameterizerAddressOk = (value: Deployed): FSA => ({
-  type: PARAMETERIZER_ADDRESS_OK,
-  payload: value,
-})
-
-const parameterizerAddressReset = (): FSA => ({
-  type: PARAMETERIZER_ADDRESS_RESET,
-  payload: {},
-})
-
-// Action Creators
+/* Action Creators */
 /**
  * Note that `options` are a partial since a complete set of values is
  * not expected. Anything not set here will be assigned default values

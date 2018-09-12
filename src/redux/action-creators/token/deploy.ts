@@ -1,52 +1,22 @@
 import Erc20 from 'computable/dist/contracts/erc-20'
-import { Erc20DeployParams } from 'computable/dist/interfaces'
 import {
   Action,
-  FSA,
   State,
-  Deployed,
   Participant,
 } from '../../../interfaces'
 import { Errors, TokenDefaults } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress } from '../../selectors'
+import {
+  tokenDeployRequest,
+  tokenDeployOk,
+  tokenDeployError,
 
-// Action Types
-export const TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST'
-export const TOKEN_DEPLOY_OK = 'TOKEN_DEPLOY_OK'
-export const TOKEN_DEPLOY_ERROR = 'TOKEN_DEPLOY_ERROR'
+  tokenAddressOk,
+  tokenAddressReset,
+} from './actions'
 
-export const TOKEN_ADDRESS_OK = 'TOKEN_ADDRESS_OK'
-export const TOKEN_ADDRESS_RESET = 'TOKEN_ADDRESS_RESET'
-
-// Actions
-const tokenDeployRequest = (value: Erc20DeployParams): FSA => ({
-  type: TOKEN_DEPLOY_REQUEST,
-  payload: value,
-})
-
-const tokenDeployOk = (value: Erc20DeployParams): FSA => ({
-  type: TOKEN_DEPLOY_OK,
-  payload: value,
-})
-
-const tokenDeployError = (value: Error): FSA => ({
-  type: TOKEN_DEPLOY_ERROR,
-  payload: value,
-})
-
-const tokenAddressOk = (value: Deployed): FSA => ({
-  type: TOKEN_ADDRESS_OK,
-  payload: value,
-})
-
-const tokenAddressReset = (): FSA => ({
-  type: TOKEN_ADDRESS_RESET,
-  payload: {},
-})
-
-
-// Action Creators
+/* Action Creators */
 /* To deploy a new Token Contract */
 const deployToken = (supply?: number): any => (
   async (dispatch: Function, getState: Function): Promise<string> => {
