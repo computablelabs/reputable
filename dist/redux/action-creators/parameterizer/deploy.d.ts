@@ -1,9 +1,4 @@
 import { ParameterizerDeployParams } from 'computable/dist/interfaces';
-export declare const PARAMETERIZER_DEPLOY_REQUEST = "PARAMETERIZER_DEPLOY_REQUEST";
-export declare const PARAMETERIZER_DEPLOY_OK = "PARAMETERIZER_DEPLOY_OK";
-export declare const PARAMETERIZER_DEPLOY_ERROR = "PARAMETERIZER_DEPLOY_ERROR";
-export declare const PARAMETERIZER_ADDRESS_OK = "PARAMETERIZER_ADDRESS_OK";
-export declare const PARAMETERIZER_ADDRESS_RESET = "PARAMETERIZER_ADDRESS_RESET";
 declare const deployParameterizer: (options?: Partial<ParameterizerDeployParams> | undefined) => any;
 declare const setParameterizerAddress: (parameterizerAddress: string) => any;
 declare const resetParameterizerAddress: () => any;

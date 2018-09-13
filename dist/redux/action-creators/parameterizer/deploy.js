@@ -15,35 +15,11 @@ const parameterizer_1 = __importDefault(require("computable/dist/contracts/param
 const constants_1 = require("../../../constants");
 const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
-exports.PARAMETERIZER_DEPLOY_REQUEST = 'PARAMETERIZER_DEPLOY_REQUEST';
-exports.PARAMETERIZER_DEPLOY_OK = 'PARAMETERIZER_DEPLOY_OK';
-exports.PARAMETERIZER_DEPLOY_ERROR = 'PARAMETERIZER_DEPLOY_ERROR';
-exports.PARAMETERIZER_ADDRESS_OK = 'PARAMETERIZER_ADDRESS_OK';
-exports.PARAMETERIZER_ADDRESS_RESET = 'PARAMETERIZER_ADDRESS_RESET';
-const parameterizerDeployRequest = (value) => ({
-    type: exports.PARAMETERIZER_DEPLOY_REQUEST,
-    payload: value,
-});
-const parameterizerDeployOk = (value) => ({
-    type: exports.PARAMETERIZER_DEPLOY_OK,
-    payload: value,
-});
-const parameterizerDeployError = (value) => ({
-    type: exports.PARAMETERIZER_DEPLOY_ERROR,
-    payload: value,
-});
-const parameterizerAddressOk = (value) => ({
-    type: exports.PARAMETERIZER_ADDRESS_OK,
-    payload: value,
-});
-const parameterizerAddressReset = () => ({
-    type: exports.PARAMETERIZER_ADDRESS_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployParameterizer = (options) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = { options };
-    dispatch(parameterizerDeployRequest(args));
+    dispatch(actions_1.parameterizerDeployRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -65,20 +41,20 @@ const deployParameterizer = (options) => ((dispatch, getState) => __awaiter(this
         const contract = new parameterizer_1.default(owner.address);
         const parameterizerAddress = yield contract.deploy(web3, Object.assign({ tokenAddress,
             votingAddress }, options));
-        dispatch(parameterizerDeployOk({ address: parameterizerAddress }));
+        dispatch(actions_1.parameterizerDeployOk({ address: parameterizerAddress }));
         return parameterizerAddress;
     }
     catch (err) {
-        dispatch(parameterizerDeployError(err));
+        dispatch(actions_1.parameterizerDeployError(err));
         return '';
     }
 }));
 exports.deployParameterizer = deployParameterizer;
 const setParameterizerAddress = (parameterizerAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(parameterizerAddressOk({ address: parameterizerAddress })));
+    return (dispatch(actions_1.parameterizerAddressOk({ address: parameterizerAddress })));
 }));
 exports.setParameterizerAddress = setParameterizerAddress;
 const resetParameterizerAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(parameterizerAddressReset()));
+    return (dispatch(actions_1.parameterizerAddressReset()));
 }));
 exports.resetParameterizerAddress = resetParameterizerAddress;

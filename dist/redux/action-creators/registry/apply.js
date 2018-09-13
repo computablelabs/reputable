@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const registry_1 = __importDefault(require("computable/dist/contracts/registry"));
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
-const ipfs_1 = require("../../../helpers/ipfs");
+const data_1 = require("../../../helpers/data");
 const selectors_1 = require("../../selectors");
 const actions_1 = require("./actions");
 const fetchListing = (listingHash) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
@@ -85,12 +85,12 @@ const applyListing = ({ listing, userAddress, deposit, data, }) => ((dispatch, g
                 whitelisted: false,
                 owner: eventValues.applicant,
                 unstakedDeposit: eventValues.deposit,
-                data: yield decodeData(eventValues.data),
+                data: yield data_1.decodeData(eventValues.data),
             };
             dispatch(actions_1.registryApplyOk(out));
         }));
         const encodedListing = web3.utils.toHex(listing);
-        const stringifiedData = yield encodeData(data || { value: '' });
+        const stringifiedData = yield data_1.encodeData(data || { value: '' });
         yield registry.apply(encodedListing, deposit, stringifiedData, { from: userAddress });
         emitter.unsubscribe();
         return out;
@@ -170,22 +170,3 @@ const resetRegistryListings = () => ((dispatch) => __awaiter(this, void 0, void 
     dispatch(actions_1.registryListingReset());
 }));
 exports.resetRegistryListings = resetRegistryListings;
-const encodeData = (applicantData) => __awaiter(this, void 0, void 0, function* () {
-    if (applicantData.source === constants_1.DataSources.IPFS) {
-        const cid = yield ipfs_1.IPFSWrite(applicantData.value);
-        applicantData.value = cid;
-        return JSON.stringify(applicantData);
-    }
-    return JSON.stringify(applicantData);
-});
-const decodeData = (data) => __awaiter(this, void 0, void 0, function* () {
-    const parsedData = JSON.parse(data);
-    if (parsedData.source === constants_1.DataSources.IPFS) {
-        const cid = typeof parsedData.value === 'string' ?
-            parsedData.value : '';
-        const ipfsData = yield ipfs_1.IPFSRead(cid);
-        parsedData.value = ipfsData;
-        return parsedData;
-    }
-    return parsedData;
-});

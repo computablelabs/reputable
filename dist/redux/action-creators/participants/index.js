@@ -10,19 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PARTICIPANTS_OK = 'PARTICIPANTS_OK';
 exports.PARTICIPANTS_RESET = 'PARTICIPANTS_RESET';
-const participantsOk = (value) => ({
+exports.participantsOk = (value) => ({
     type: exports.PARTICIPANTS_OK,
     payload: value,
 });
-const participantsReset = () => ({
+exports.participantsReset = () => ({
     type: exports.PARTICIPANTS_RESET,
     payload: {},
 });
 const participate = (name, address) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(participantsOk({ name, address })));
+    return (dispatch(exports.participantsOk({ name, address })));
 }));
 exports.participate = participate;
 const resetParticipants = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(participantsReset()));
+    return (dispatch(exports.participantsReset()));
 }));
 exports.resetParticipants = resetParticipants;

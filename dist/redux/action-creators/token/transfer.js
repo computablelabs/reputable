@@ -15,30 +15,11 @@ const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
-exports.TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST';
-exports.TOKEN_TRANSFER_OK = 'TOKEN_TRANSFER_OK';
-exports.TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR';
-exports.TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET';
-const tokenTransferRequest = (value) => ({
-    type: exports.TOKEN_TRANSFER_REQUEST,
-    payload: value,
-});
-const tokenTransferOk = (value) => ({
-    type: exports.TOKEN_TRANSFER_OK,
-    payload: value,
-});
-const tokenTransferError = (value) => ({
-    type: exports.TOKEN_TRANSFER_ERROR,
-    payload: value,
-});
-const tokenTransferReset = () => ({
-    type: exports.TOKEN_TRANSFER_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const transfer = ({ to, amount, from }) => (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = { to, amount, from };
-    dispatch(tokenTransferRequest(args));
+    dispatch(actions_1.tokenTransferRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -64,19 +45,19 @@ const transfer = ({ to, amount, from }) => (dispatch, getState) => __awaiter(thi
                 to: eventValues.to,
                 amount: eventValues.value,
             };
-            dispatch(tokenTransferOk(out));
+            dispatch(actions_1.tokenTransferOk(out));
         }));
         yield contract.transfer(to, amount);
         emitter.unsubscribe();
         return out;
     }
     catch (err) {
-        dispatch(tokenTransferError(err));
+        dispatch(actions_1.tokenTransferError(err));
         return undefined;
     }
 });
 exports.transfer = transfer;
 const resetTokenTransfer = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(tokenTransferReset()));
+    return (dispatch(actions_1.tokenTransferReset()));
 }));
 exports.resetTokenTransfer = resetTokenTransfer;

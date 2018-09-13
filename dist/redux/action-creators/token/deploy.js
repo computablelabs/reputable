@@ -15,35 +15,11 @@ const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
-exports.TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST';
-exports.TOKEN_DEPLOY_OK = 'TOKEN_DEPLOY_OK';
-exports.TOKEN_DEPLOY_ERROR = 'TOKEN_DEPLOY_ERROR';
-exports.TOKEN_ADDRESS_OK = 'TOKEN_ADDRESS_OK';
-exports.TOKEN_ADDRESS_RESET = 'TOKEN_ADDRESS_RESET';
-const tokenDeployRequest = (value) => ({
-    type: exports.TOKEN_DEPLOY_REQUEST,
-    payload: value,
-});
-const tokenDeployOk = (value) => ({
-    type: exports.TOKEN_DEPLOY_OK,
-    payload: value,
-});
-const tokenDeployError = (value) => ({
-    type: exports.TOKEN_DEPLOY_ERROR,
-    payload: value,
-});
-const tokenAddressOk = (value) => ({
-    type: exports.TOKEN_ADDRESS_OK,
-    payload: value,
-});
-const tokenAddressReset = () => ({
-    type: exports.TOKEN_ADDRESS_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployToken = (supply) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = { address: undefined, supply };
-    dispatch(tokenDeployRequest(args));
+    dispatch(actions_1.tokenDeployRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -60,20 +36,20 @@ const deployToken = (supply) => ((dispatch, getState) => __awaiter(this, void 0,
             address: owner.address,
             supply,
         });
-        dispatch(tokenDeployOk({ address: tokenAddress, supply }));
+        dispatch(actions_1.tokenDeployOk({ address: tokenAddress, supply }));
         return tokenAddress;
     }
     catch (err) {
-        dispatch(tokenDeployError(err));
+        dispatch(actions_1.tokenDeployError(err));
         return '';
     }
 }));
 exports.deployToken = deployToken;
 const setTokenAddress = (tokenAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(tokenAddressOk({ address: tokenAddress })));
+    return (dispatch(actions_1.tokenAddressOk({ address: tokenAddress })));
 }));
 exports.setTokenAddress = setTokenAddress;
 const resetTokenAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(tokenAddressReset()));
+    return (dispatch(actions_1.tokenAddressReset()));
 }));
 exports.resetTokenAddress = resetTokenAddress;

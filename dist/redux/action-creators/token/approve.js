@@ -15,30 +15,11 @@ const erc_20_1 = __importDefault(require("computable/dist/contracts/erc-20"));
 const constants_1 = require("../../../constants");
 const initializers_1 = require("../../../initializers");
 const selectors_1 = require("../../selectors");
-exports.TOKEN_APPROVE_REQUEST = 'TOKEN_APPROVE_REQUEST';
-exports.TOKEN_APPROVE_OK = 'TOKEN_APPROVE_OK';
-exports.TOKEN_APPROVE_ERROR = 'TOKEN_APPROVE_ERROR';
-exports.TOKEN_APPROVE_RESET = 'TOKEN_APPROVE_RESET';
-const tokenApproveRequest = (value) => ({
-    type: exports.TOKEN_APPROVE_REQUEST,
-    payload: value,
-});
-const tokenApproveOk = (value) => ({
-    type: exports.TOKEN_APPROVE_OK,
-    payload: value,
-});
-const tokenApproveError = (value) => ({
-    type: exports.TOKEN_APPROVE_ERROR,
-    payload: value,
-});
-const tokenApproveReset = () => ({
-    type: exports.TOKEN_APPROVE_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const approve = ({ address, amount, from }) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = { address, amount, from };
-    dispatch(tokenApproveRequest(args));
+    dispatch(actions_1.tokenApproveRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -64,19 +45,19 @@ const approve = ({ address, amount, from }) => ((dispatch, getState) => __awaite
                 from: eventValues.owner,
                 amount: eventValues.value,
             };
-            dispatch(tokenApproveOk(out));
+            dispatch(actions_1.tokenApproveOk(out));
         }));
         yield contract.approve(address, amount, { from: from || owner.address });
         emitter.unsubscribe();
         return out;
     }
     catch (err) {
-        dispatch(tokenApproveError(err));
+        dispatch(actions_1.tokenApproveError(err));
         return undefined;
     }
 }));
 exports.approve = approve;
 const resetTokenApprove = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(tokenApproveReset()));
+    return (dispatch(actions_1.tokenApproveReset()));
 }));
 exports.resetTokenApprove = resetTokenApprove;

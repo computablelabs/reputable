@@ -16,6 +16,7 @@ const ENCRYPTION_KEY = '12345678901234567890123456789012';
 const IV_LENGTH = 16;
 const ENCRYPTION_TYPE = 'aes-256-cbc';
 const encrypt = (value) => __awaiter(this, void 0, void 0, function* () {
+    value = JSON.stringify(value);
     const iv = crypto_1.default.randomBytes(IV_LENGTH);
     const encryptionKey = new Buffer(ENCRYPTION_KEY);
     const cipher = crypto_1.default.createCipheriv(ENCRYPTION_TYPE, encryptionKey, iv);
@@ -32,6 +33,7 @@ const decrypt = (value) => __awaiter(this, void 0, void 0, function* () {
     let decipher = crypto_1.default.createDecipheriv(ENCRYPTION_TYPE, encryptionKey, iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
+    const parsedData = JSON.parse(decrypted.toString());
+    return parsedData;
 });
 exports.decrypt = decrypt;

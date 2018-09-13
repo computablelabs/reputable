@@ -12,30 +12,11 @@ const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
 const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
-exports.ATTRIBUTE_STORE_REQUEST = 'ATTRIBUTE_STORE_REQUEST';
-exports.ATTRIBUTE_STORE_OK = 'ATTRIBUTE_STORE_OK';
-exports.ATTRIBUTE_STORE_ERROR = 'ATTRIBUTE_STORE_ERROR';
-exports.ATTRIBUTE_STORE_RESET = 'ATTRIBUTE_STORE_RESET';
-const attributeStoreRequest = (value) => ({
-    type: exports.ATTRIBUTE_STORE_REQUEST,
-    payload: value,
-});
-const attributeStoreOk = (value) => ({
-    type: exports.ATTRIBUTE_STORE_OK,
-    payload: value,
-});
-const attributeStoreError = (value) => ({
-    type: exports.ATTRIBUTE_STORE_ERROR,
-    payload: value,
-});
-const attributeStoreReset = () => ({
-    type: exports.ATTRIBUTE_STORE_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployAttributeStore = () => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = {};
-    dispatch(attributeStoreRequest(args));
+    dispatch(actions_1.attributeStoreRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -48,16 +29,16 @@ const deployAttributeStore = () => ((dispatch, getState) => __awaiter(this, void
         const web3 = yield initializers_1.getWeb3(websocketAddress);
         const contract = yield helpers_1.deployAttributeStore(web3, owner.address);
         const contractAddress = contract.options.address;
-        dispatch(attributeStoreOk({ address: contractAddress }));
+        dispatch(actions_1.attributeStoreOk({ address: contractAddress }));
         return contractAddress;
     }
     catch (err) {
-        dispatch(attributeStoreError(err));
+        dispatch(actions_1.attributeStoreError(err));
         return '';
     }
 }));
 exports.deployAttributeStore = deployAttributeStore;
 const resetAttributeStore = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(attributeStoreReset()));
+    return (dispatch(actions_1.attributeStoreReset()));
 }));
 exports.resetAttributeStore = resetAttributeStore;

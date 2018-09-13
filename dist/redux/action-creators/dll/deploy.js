@@ -12,30 +12,11 @@ const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
 const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
-exports.DLL_REQUEST = 'DLL_REQUEST';
-exports.DLL_OK = 'DLL_OK';
-exports.DLL_ERROR = 'DLL_ERROR';
-exports.DLL_RESET = 'DLL_RESET';
-const dllRequest = (value) => ({
-    type: exports.DLL_REQUEST,
-    payload: value,
-});
-const dllOk = (value) => ({
-    type: exports.DLL_OK,
-    payload: value,
-});
-const dllError = (value) => ({
-    type: exports.DLL_ERROR,
-    payload: value,
-});
-const dllReset = () => ({
-    type: exports.DLL_RESET,
-    payload: {},
-});
+const actions_1 = require("./actions");
 const deployDll = () => (dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = {};
-    dispatch(dllRequest(args));
+    dispatch(actions_1.dllRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -48,16 +29,16 @@ const deployDll = () => (dispatch, getState) => __awaiter(this, void 0, void 0, 
         const web3 = yield initializers_1.getWeb3(websocketAddress);
         const contract = yield helpers_1.deployDll(web3, owner.address);
         const contractAddress = contract.options.address;
-        dispatch(dllOk({ address: contractAddress }));
+        dispatch(actions_1.dllOk({ address: contractAddress }));
         return contractAddress;
     }
     catch (err) {
-        dispatch(dllError(err));
+        dispatch(actions_1.dllError(err));
         return '';
     }
 });
 exports.deployDll = deployDll;
 const resetDll = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(dllReset()));
+    return (dispatch(actions_1.dllReset()));
 }));
 exports.resetDll = resetDll;
