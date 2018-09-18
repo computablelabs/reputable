@@ -1,4 +1,5 @@
 import { FSA, Map, Deployed } from '../../../interfaces';
+export declare const VOTING_RESET = "VOTING_RESET";
 export declare const VOTING_DEPLOY_REQUEST = "VOTING_DEPLOY_REQUEST";
 export declare const VOTING_DEPLOY_OK = "VOTING_DEPLOY_OK";
 export declare const VOTING_DEPLOY_ERROR = "VOTING_DEPLOY_ERROR";
@@ -7,6 +8,7 @@ export declare const VOTING_ADDRESS_RESET = "VOTING_DEPLOY_ADDRESS_RESET";
 export declare const VOTING_VOTE_REQUEST = "VOTING_VOTE_REQUEST";
 export declare const VOTING_VOTE_OK = "VOTING_VOTE_OK";
 export declare const VOTING_VOTE_ERROR = "VOTING_VOTE_ERROR";
+export declare const votingReset: () => FSA;
 export declare const votingDeployRequest: (value: Map) => FSA;
 export declare const votingDeployOk: (value: Deployed) => FSA;
 export declare const votingDeployError: (value: Error) => FSA;

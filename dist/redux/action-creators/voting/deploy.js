@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const plcr_voting_1 = __importDefault(require("computable/dist/contracts/plcr-voting"));
 const constants_1 = require("../../../constants");
-const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
+const selectors_1 = require("../../selectors");
 const actions_1 = require("./actions");
 const deployVoting = () => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
@@ -57,11 +57,3 @@ const deployVoting = () => ((dispatch, getState) => __awaiter(this, void 0, void
     }
 }));
 exports.deployVoting = deployVoting;
-const setVotingAddress = (votingAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.votingAddressOk({ address: votingAddress })));
-}));
-exports.setVotingAddress = setVotingAddress;
-const resetVotingAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.votingAddressReset()));
-}));
-exports.resetVotingAddress = resetVotingAddress;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.REGISTRY_RESET = 'REGISTRY_RESET';
 exports.REGISTRY_DEPLOY_REQUEST = 'REGISTRY_DEPLOY_REQUEST';
 exports.REGISTRY_DEPLOY_OK = 'REGISTRY_DEPLOY_OK';
 exports.REGISTRY_DEPLOY_ERROR = 'REGISTRY_DEPLOY_ERROR';
@@ -17,6 +18,10 @@ exports.REGISTRY_CHALLENGE_REQUEST = 'REGISTRY_CHALLENGE_REQUEST';
 exports.REGISTRY_CHALLENGE_OK = 'REGISTRY_CHALLENGE_OK';
 exports.REGISTRY_CHALLENGE_ERROR = 'REGISTRY_CHALLENGE_ERROR';
 exports.REGISTRY_CHALLENGE_RESET = 'REGISTRY_CHALLENGE_RESET';
+exports.registryReset = () => ({
+    type: exports.REGISTRY_RESET,
+    payload: {},
+});
 exports.registryDeployRequest = (value) => ({
     type: exports.REGISTRY_DEPLOY_REQUEST,
     payload: value,

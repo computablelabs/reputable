@@ -12,10 +12,11 @@ const initialState = {
     error: undefined,
 };
 const handlers = {
+    [parameterizer_1.PARAMETERIZER_RESET]: () => (Object.assign({}, initialState)),
     [parameterizer_1.PARAMETERIZER_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
     [parameterizer_1.PARAMETERIZER_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
     [parameterizer_1.PARAMETERIZER_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
     [parameterizer_1.PARAMETERIZER_ADDRESS_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
-    [parameterizer_1.PARAMETERIZER_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { data: Object.assign({}, state.data, { address: initialState.data.address }) })),
+    [parameterizer_1.PARAMETERIZER_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { laoding: initialState.loading, request: initialState.request, error: initialState.error, data: Object.assign({}, state.data, { address: initialState.data.address }) })),
 };
 exports.default = createReducer_1.default(handlers, initialState);

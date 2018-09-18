@@ -1,10 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PARAMETERIZER_RESET = 'PARAMETERIZER_RESET';
 exports.PARAMETERIZER_DEPLOY_REQUEST = 'PARAMETERIZER_DEPLOY_REQUEST';
 exports.PARAMETERIZER_DEPLOY_OK = 'PARAMETERIZER_DEPLOY_OK';
 exports.PARAMETERIZER_DEPLOY_ERROR = 'PARAMETERIZER_DEPLOY_ERROR';
 exports.PARAMETERIZER_ADDRESS_OK = 'PARAMETERIZER_ADDRESS_OK';
 exports.PARAMETERIZER_ADDRESS_RESET = 'PARAMETERIZER_ADDRESS_RESET';
+exports.parameterizerReset = () => ({
+    type: exports.PARAMETERIZER_RESET,
+    payload: {},
+});
 exports.parameterizerDeployRequest = (value) => ({
     type: exports.PARAMETERIZER_DEPLOY_REQUEST,
     payload: value,

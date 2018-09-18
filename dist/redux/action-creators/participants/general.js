@@ -7,17 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const store_1 = __importDefault(require("../store"));
-const participants_1 = require("../action-creators/participants");
-const participate = (name, address) => __awaiter(this, void 0, void 0, function* () {
-    return (yield store_1.default.dispatch(participants_1.participate(name, address)));
-});
-exports.participate = participate;
-const resetParticipants = () => __awaiter(this, void 0, void 0, function* () {
-    return (yield store_1.default.dispatch(participants_1.resetParticipants()));
-});
+const actions_1 = require("./actions");
+const addParticipant = (name, address) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(actions_1.participantsOk({ name, address })));
+}));
+exports.addParticipant = addParticipant;
+const resetParticipants = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(actions_1.participantsReset()));
+}));
 exports.resetParticipants = resetParticipants;

@@ -58,11 +58,3 @@ const deployRegistry = (name) => ((dispatch, getState) => __awaiter(this, void 0
     }
 }));
 exports.deployRegistry = deployRegistry;
-const setRegistryAddress = (registryAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.registryAddressOk({ address: registryAddress })));
-}));
-exports.setRegistryAddress = setRegistryAddress;
-const resetRegistryAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.registryAddressReset()));
-}));
-exports.resetRegistryAddress = resetRegistryAddress;

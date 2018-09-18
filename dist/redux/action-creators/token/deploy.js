@@ -45,11 +45,3 @@ const deployToken = (supply) => ((dispatch, getState) => __awaiter(this, void 0,
     }
 }));
 exports.deployToken = deployToken;
-const setTokenAddress = (tokenAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.tokenAddressOk({ address: tokenAddress })));
-}));
-exports.setTokenAddress = setTokenAddress;
-const resetTokenAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.tokenAddressReset()));
-}));
-exports.resetTokenAddress = resetTokenAddress;

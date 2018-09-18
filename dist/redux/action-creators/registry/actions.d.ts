@@ -1,4 +1,5 @@
 import { FSA, Map, Deployed, Listing } from '../../../interfaces';
+export declare const REGISTRY_RESET = "REGISTRY_RESET";
 export declare const REGISTRY_DEPLOY_REQUEST = "REGISTRY_DEPLOY_REQUEST";
 export declare const REGISTRY_DEPLOY_OK = "REGISTRY_DEPLOY_OK";
 export declare const REGISTRY_DEPLOY_ERROR = "REGISTRY_DEPLOY_ERROR";
@@ -16,6 +17,7 @@ export declare const REGISTRY_CHALLENGE_REQUEST = "REGISTRY_CHALLENGE_REQUEST";
 export declare const REGISTRY_CHALLENGE_OK = "REGISTRY_CHALLENGE_OK";
 export declare const REGISTRY_CHALLENGE_ERROR = "REGISTRY_CHALLENGE_ERROR";
 export declare const REGISTRY_CHALLENGE_RESET = "REGISTRY_CHALLENGE_RESET";
+export declare const registryReset: () => FSA;
 export declare const registryDeployRequest: (value: Map) => FSA;
 export declare const registryDeployOk: (value: Deployed) => FSA;
 export declare const registryDeployError: (value: Error) => FSA;

@@ -7,12 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const store_1 = __importDefault(require("../store"));
-const dispatcher = (actionCreator) => __awaiter(this, void 0, void 0, function* () {
-    return (yield store_1.default.dispatch(actionCreator));
-});
-exports.dispatcher = dispatcher;
+const actions_1 = require("./actions");
+const setDllAddress = (address) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(actions_1.dllAddressOk({ address })));
+}));
+exports.setDllAddress = setDllAddress;
+const resetDllAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
+    return (dispatch(actions_1.dllAddressReset()));
+}));
+exports.resetDllAddress = resetDllAddress;

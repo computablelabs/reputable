@@ -1,9 +1,11 @@
 import { FSA, Map, Deployed } from '../../../interfaces';
+export declare const PARAMETERIZER_RESET = "PARAMETERIZER_RESET";
 export declare const PARAMETERIZER_DEPLOY_REQUEST = "PARAMETERIZER_DEPLOY_REQUEST";
 export declare const PARAMETERIZER_DEPLOY_OK = "PARAMETERIZER_DEPLOY_OK";
 export declare const PARAMETERIZER_DEPLOY_ERROR = "PARAMETERIZER_DEPLOY_ERROR";
 export declare const PARAMETERIZER_ADDRESS_OK = "PARAMETERIZER_ADDRESS_OK";
 export declare const PARAMETERIZER_ADDRESS_RESET = "PARAMETERIZER_ADDRESS_RESET";
+export declare const parameterizerReset: () => FSA;
 export declare const parameterizerDeployRequest: (value: Map) => FSA;
 export declare const parameterizerDeployOk: (value: Deployed) => FSA;
 export declare const parameterizerDeployError: (value: Error) => FSA;

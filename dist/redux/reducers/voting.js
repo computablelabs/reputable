@@ -12,6 +12,7 @@ const initialState = {
     error: undefined,
 };
 const handlers = {
+    [voting_1.VOTING_RESET]: () => (Object.assign({}, initialState)),
     [voting_1.VOTING_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
     [voting_1.VOTING_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
     [voting_1.VOTING_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),

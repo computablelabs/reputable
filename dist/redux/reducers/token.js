@@ -17,6 +17,7 @@ const initialState = {
     error: undefined,
 };
 const handlers = {
+    [token_1.TOKEN_RESET]: () => (Object.assign({}, initialState)),
     [token_1.TOKEN_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
     [token_1.TOKEN_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address, supply: payload.supply }) })),
     [token_1.TOKEN_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),

@@ -12,11 +12,11 @@ const initialState = {
     error: undefined,
 };
 const handlers = {
-    [dll_1.DLL_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
-    [dll_1.DLL_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: {
-            address: payload.address,
-        } })),
-    [dll_1.DLL_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
     [dll_1.DLL_RESET]: () => (Object.assign({}, initialState)),
+    [dll_1.DLL_DEPLOY_REQUEST]: (state, { payload }) => (Object.assign({}, state, { loading: true, request: payload })),
+    [dll_1.DLL_DEPLOY_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [dll_1.DLL_DEPLOY_ERROR]: (state, { payload }) => (Object.assign({}, state, { loading: false, error: payload.toString() })),
+    [dll_1.DLL_ADDRESS_OK]: (state, { payload }) => (Object.assign({}, state, { loading: false, data: Object.assign({}, state.data, { address: payload.address }) })),
+    [dll_1.DLL_ADDRESS_RESET]: (state, { payload }) => (Object.assign({}, state, { laoding: initialState.loading, request: initialState.request, error: initialState.error, data: Object.assign({}, state.data, { address: initialState.data.address }) })),
 };
 exports.default = createReducer_1.default(handlers, initialState);

@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = require("computable/dist/helpers");
 const constants_1 = require("../../../constants");
-const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
+const selectors_1 = require("../../selectors");
 const actions_1 = require("./actions");
 const deployAttributeStore = () => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
     const args = {};
-    dispatch(actions_1.attributeStoreRequest(args));
+    dispatch(actions_1.attributeStoreDeployRequest(args));
     try {
         const owner = selectors_1.getOwner(state);
         if (!owner) {
@@ -29,16 +29,12 @@ const deployAttributeStore = () => ((dispatch, getState) => __awaiter(this, void
         const web3 = yield initializers_1.getWeb3(websocketAddress);
         const contract = yield helpers_1.deployAttributeStore(web3, owner.address);
         const contractAddress = contract.options.address;
-        dispatch(actions_1.attributeStoreOk({ address: contractAddress }));
+        dispatch(actions_1.attributeStoreDeployOk({ address: contractAddress }));
         return contractAddress;
     }
     catch (err) {
-        dispatch(actions_1.attributeStoreError(err));
+        dispatch(actions_1.attributeStoreDeployError(err));
         return '';
     }
 }));
 exports.deployAttributeStore = deployAttributeStore;
-const resetAttributeStore = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.attributeStoreReset()));
-}));
-exports.resetAttributeStore = resetAttributeStore;

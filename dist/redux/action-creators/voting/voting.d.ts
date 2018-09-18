@@ -11,4 +11,4 @@ interface CommitVoteParams {
     salt: string;
 }
 declare const commitVote: ({ challengeID, voterAddress, vote, tokens, salt, }: CommitVoteParams) => any;
-export { requestVotingRights, commitVote, };
+export { requestVotingRights, commitVote };

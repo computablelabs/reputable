@@ -1,5 +1,6 @@
 import { Erc20DeployParams } from 'computable/dist/interfaces';
 import { FSA, Deployed, Map, Approval, Transfer } from '../../../interfaces';
+export declare const TOKEN_RESET = "TOKEN_RESET";
 export declare const TOKEN_DEPLOY_REQUEST = "TOKEN_DEPLOY_REQUEST";
 export declare const TOKEN_DEPLOY_OK = "TOKEN_DEPLOY_OK";
 export declare const TOKEN_DEPLOY_ERROR = "TOKEN_DEPLOY_ERROR";
@@ -13,6 +14,7 @@ export declare const TOKEN_TRANSFER_REQUEST = "TOKEN_TRANSFER_REQUEST";
 export declare const TOKEN_TRANSFER_OK = "TOKEN_TRANSFER_OK";
 export declare const TOKEN_TRANSFER_ERROR = "TOKEN_TRANSFER_ERROR";
 export declare const TOKEN_TRANSFER_RESET = "TOKEN_TRANSFER_RESET";
+export declare const tokenReset: () => FSA;
 export declare const tokenDeployRequest: (value: Erc20DeployParams) => FSA;
 export declare const tokenDeployOk: (value: Erc20DeployParams) => FSA;
 export declare const tokenDeployError: (value: Error) => FSA;

@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const parameterizer_1 = __importDefault(require("computable/dist/contracts/parameterizer"));
 const constants_1 = require("../../../constants");
-const selectors_1 = require("../../selectors");
 const initializers_1 = require("../../../initializers");
+const selectors_1 = require("../../selectors");
 const actions_1 = require("./actions");
 const deployParameterizer = (options) => ((dispatch, getState) => __awaiter(this, void 0, void 0, function* () {
     const state = getState();
@@ -50,11 +50,3 @@ const deployParameterizer = (options) => ((dispatch, getState) => __awaiter(this
     }
 }));
 exports.deployParameterizer = deployParameterizer;
-const setParameterizerAddress = (parameterizerAddress) => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.parameterizerAddressOk({ address: parameterizerAddress })));
-}));
-exports.setParameterizerAddress = setParameterizerAddress;
-const resetParameterizerAddress = () => ((dispatch) => __awaiter(this, void 0, void 0, function* () {
-    return (dispatch(actions_1.parameterizerAddressReset()));
-}));
-exports.resetParameterizerAddress = resetParameterizerAddress;

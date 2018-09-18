@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TOKEN_RESET = 'TOKEN_RESET';
 exports.TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST';
 exports.TOKEN_DEPLOY_OK = 'TOKEN_DEPLOY_OK';
 exports.TOKEN_DEPLOY_ERROR = 'TOKEN_DEPLOY_ERROR';
@@ -13,6 +14,10 @@ exports.TOKEN_TRANSFER_REQUEST = 'TOKEN_TRANSFER_REQUEST';
 exports.TOKEN_TRANSFER_OK = 'TOKEN_TRANSFER_OK';
 exports.TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR';
 exports.TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET';
+exports.tokenReset = () => ({
+    type: exports.TOKEN_RESET,
+    payload: {},
+});
 exports.tokenDeployRequest = (value) => ({
     type: exports.TOKEN_DEPLOY_REQUEST,
     payload: value,
