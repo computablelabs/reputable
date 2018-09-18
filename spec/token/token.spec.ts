@@ -2,12 +2,10 @@ import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
 import Erc20 from 'computable/dist/contracts/erc-20'
 import store from '../../src/redux/store'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
 import { maybeParseInt } from 'computable/dist/helpers'
-import { resetToken } from '../../src/redux/dispatchers/token'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployToken, resetToken, approve, transfer } from '../../src/redux/action-creators/token'
 import { State, Participant } from '../../src/interfaces'
 import {
   getOwner,
@@ -33,15 +31,17 @@ describe('token state', () => {
     web3 = await getWeb3(websocketAddress, { force: true })
     accounts = await web3.eth.getAccounts()
 
-    participate('Mr. Admin Pants', accounts[0])
+    await store.dispatch(
+      addParticipant('Mr. Admin Pants', accounts[0])
+    )
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
     // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetToken()
+    await store.dispatch(resetParticipants())
+    await store.dispatch(resetWebsocketAddress())
+    await store.dispatch(resetToken())
   })
 
   it('begins with unhydrated token', () => {
@@ -83,8 +83,8 @@ describe('token state', () => {
       await store.dispatch(deployToken(1000000))
     })
 
-    afterAll(() => {
-      resetToken()
+    afterAll(async () => {
+      await store.dispatch(resetToken())
     })
 
     describe('approvals', () => {

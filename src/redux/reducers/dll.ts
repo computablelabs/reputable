@@ -1,9 +1,14 @@
+// Local Dependencies
 import { FSA, StateItem, Deployed } from '../../interfaces'
 import {
-  DLL_REQUEST,
-  DLL_OK,
-  DLL_ERROR,
   DLL_RESET,
+
+  DLL_DEPLOY_REQUEST,
+  DLL_DEPLOY_OK,
+  DLL_DEPLOY_ERROR,
+
+  DLL_ADDRESS_OK,
+  DLL_ADDRESS_RESET,
 } from '../action-creators/dll'
 import createReducer from './createReducer'
 
@@ -15,25 +20,49 @@ const initialState: StateItem<Deployed> = {
 }
 
 const handlers = {
-  [DLL_REQUEST]: (state: StateItem<Deployed>, { payload }: FSA) => ({
+  // General
+  [DLL_RESET]: () => ({
+    ...initialState,
+  }),
+
+  // Deploy
+  [DLL_DEPLOY_REQUEST]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: true,
     request: payload,
   }),
-  [DLL_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
+  [DLL_DEPLOY_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,
     data: {
+      ...state.data,
       address: payload.address,
     },
   }),
-  [DLL_ERROR]: (state: StateItem<Deployed>, { payload }: FSA) => ({
+  [DLL_DEPLOY_ERROR]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),
   }),
-  [DLL_RESET]: () => ({
-    ...initialState,
+
+  // Address
+  [DLL_ADDRESS_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    data: {
+      ...state.data,
+      address: payload.address,
+    },
+  }),
+  [DLL_ADDRESS_RESET]: (state: StateItem<Deployed>, { payload }: FSA) => ({
+    ...state,
+    laoding: initialState.loading,
+    request: initialState.request,
+    error: initialState.error,
+    data: {
+      ...state.data,
+      address: initialState.data.address,
+    },
   }),
 }
 

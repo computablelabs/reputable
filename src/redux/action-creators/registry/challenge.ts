@@ -1,4 +1,7 @@
+// Dependencies
 import Registry from 'computable/dist/contracts/registry'
+
+// Local Dependencies
 import {
   EventEmitter,
   EventLog,
@@ -23,7 +26,6 @@ import {
   registryChallengeReset,
 
   registryListingOk,
-  // registryListingRemove,
 } from './actions'
 
 /* Action Creators */

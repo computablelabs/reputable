@@ -1,17 +1,12 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { resetToken } from '../../src/redux/dispatchers/token'
-import { resetVoting } from '../../src/redux/dispatchers/voting'
-import { resetDll } from '../../src/redux/dispatchers/dll'
-import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployToken } from '../../src/redux/action-creators/token'
-import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
-import { deployDll } from '../../src/redux/action-creators/dll'
-import { deployVoting } from '../../src/redux/action-creators/voting'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployToken, resetToken } from '../../src/redux/action-creators/token'
+import { deployAttributeStore, resetAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { deployDll, resetDll } from '../../src/redux/action-creators/dll'
+import { deployVoting, resetVoting } from '../../src/redux/action-creators/voting'
 import { getVotingAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
@@ -32,7 +27,9 @@ describe('voting state', () => {
     accounts = await web3.eth.getAccounts()
     owner = accounts[0]
 
-    participate('Admin, Pants III', owner)
+    await store.dispatch(
+      addParticipant('Admin, Pants III', owner)
+    )
 
     // expects a deployed token
     await store.dispatch(deployToken())
@@ -41,15 +38,15 @@ describe('voting state', () => {
     await store.dispatch(deployAttributeStore())
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
     // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetToken()
-    resetDll()
-    resetAttributeStore()
-    resetVoting()
+    await store.dispatch(resetParticipants())
+    await store.dispatch(resetWebsocketAddress())
+    await store.dispatch(resetToken())
+    await store.dispatch(resetDll())
+    await store.dispatch(resetAttributeStore())
+    await store.dispatch(resetVoting())
   })
 
   it('begins with unhydrated voting', () => {

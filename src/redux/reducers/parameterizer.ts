@@ -1,5 +1,8 @@
+// Local Dependencies
 import { FSA, StateItem, Deployed } from '../../interfaces'
 import {
+  PARAMETERIZER_RESET,
+
   PARAMETERIZER_DEPLOY_REQUEST,
   PARAMETERIZER_DEPLOY_OK,
   PARAMETERIZER_DEPLOY_ERROR,
@@ -17,6 +20,12 @@ const initialState: StateItem<Deployed> = {
 }
 
 const handlers = {
+  // General
+  [PARAMETERIZER_RESET]: () => ({
+    ...initialState,
+  }),
+
+  // Deploy
   [PARAMETERIZER_DEPLOY_REQUEST]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -36,6 +45,7 @@ const handlers = {
     error: payload.toString(),
   }),
 
+  // Address
   [PARAMETERIZER_ADDRESS_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,
@@ -46,6 +56,9 @@ const handlers = {
   }),
   [PARAMETERIZER_ADDRESS_RESET]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
+    laoding: initialState.loading,
+    request: initialState.request,
+    error: initialState.error,
     data: {
       ...state.data,
       address: initialState.data.address,

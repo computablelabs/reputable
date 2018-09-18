@@ -1,4 +1,7 @@
+// Dependencies
 import Voting from 'computable/dist/contracts/plcr-voting'
+
+// Local Dependencies
 import {
   EventEmitter,
   EventLog,
@@ -6,12 +9,12 @@ import {
   Participant,
 } from '../../../interfaces'
 import { Errors } from '../../../constants'
+import { getWeb3 } from '../../../initializers'
 import {
   getWebsocketAddress,
   getOwner,
   getVotingAddress,
 } from '../../selectors'
-import { getWeb3 } from '../../../initializers'
 import {
   votingVoteRequest,
   votingVoteOk,
@@ -146,8 +149,5 @@ const commitVote = ({
   }
 )
 
-export {
-  requestVotingRights,
-  commitVote,
-}
+export { requestVotingRights, commitVote }
 

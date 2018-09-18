@@ -1,10 +1,10 @@
+// Dependencies
 import Voting from 'computable/dist/contracts/plcr-voting'
-import {
-  Action,
-  State,
-  Participant,
-} from '../../../interfaces'
+
+// Local Dependencies
+import { State, Participant } from '../../../interfaces'
 import { Errors } from '../../../constants'
+import { getWeb3 } from '../../../initializers'
 import {
   getWebsocketAddress,
   getOwner,
@@ -12,18 +12,13 @@ import {
   getDllAddress,
   getAttributeStoreAddress,
 } from '../../selectors'
-import { getWeb3 } from '../../../initializers'
 import {
   votingDeployRequest,
   votingDeployOk,
   votingDeployError,
-
-  votingAddressOk,
-  votingAddressReset,
 } from './actions'
 
 /* Action Creators */
-// To deploy a new Voting Contract
 const deployVoting = (): any => (
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
@@ -77,19 +72,5 @@ const deployVoting = (): any => (
   }
 )
 
-// To store the address of an already deployed Voting Contract
-const setVotingAddress = (votingAddress: string): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(votingAddressOk({ address: votingAddress }))
-  )
-)
-
-// To reset the stored Voting Contract address
-const resetVotingAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(votingAddressReset())
-  )
-)
-
-export { deployVoting, setVotingAddress, resetVotingAddress }
+export { deployVoting }
 

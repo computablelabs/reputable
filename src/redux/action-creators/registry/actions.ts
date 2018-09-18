@@ -1,3 +1,4 @@
+// Local Dependencies
 import {
   FSA,
   Map,
@@ -6,6 +7,8 @@ import {
 } from '../../../interfaces'
 
 /* Action Types */
+export const REGISTRY_RESET = 'REGISTRY_RESET'
+
 export const REGISTRY_DEPLOY_REQUEST = 'REGISTRY_DEPLOY_REQUEST'
 export const REGISTRY_DEPLOY_OK = 'REGISTRY_DEPLOY_OK'
 export const REGISTRY_DEPLOY_ERROR = 'REGISTRY_DEPLOY_ERROR'
@@ -29,6 +32,12 @@ export const REGISTRY_CHALLENGE_ERROR = 'REGISTRY_CHALLENGE_ERROR'
 export const REGISTRY_CHALLENGE_RESET = 'REGISTRY_CHALLENGE_RESET'
 
 /* Actions */
+// General
+export const registryReset = (): FSA => ({
+  type: REGISTRY_RESET,
+  payload: {},
+})
+
 // Deployment
 export const registryDeployRequest = (value: Map): FSA => ({
   type: REGISTRY_DEPLOY_REQUEST,

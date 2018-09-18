@@ -1,18 +1,16 @@
+// Dependencies
 import { Contract } from 'web3/types.d'
 import { deployAttributeStore as deploy } from 'computable/dist/helpers'
-import {
-  Action,
-  State,
-  Participant,
-} from '../../../interfaces'
+
+// Local Dependencies
+import { State, Participant } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import {
-  attributeStoreRequest,
-  attributeStoreOk,
-  attributeStoreError,
-  attributeStoreReset,
+  attributeStoreDeployRequest,
+  attributeStoreDeployOk,
+  attributeStoreDeployError,
 } from './actions'
 
 /* Action Creators */
@@ -21,7 +19,7 @@ const deployAttributeStore = (): any => (
     const state: State = getState()
 
     const args = {}
-    dispatch(attributeStoreRequest(args))
+    dispatch(attributeStoreDeployRequest(args))
 
     try {
       const owner: Participant|undefined = getOwner(state)
@@ -42,22 +40,16 @@ const deployAttributeStore = (): any => (
       // contract.options.address
       const contractAddress: string = contract.options.address
 
-      dispatch(attributeStoreOk({ address: contractAddress }))
+      dispatch(attributeStoreDeployOk({ address: contractAddress }))
 
       return contractAddress
     } catch (err) {
-      dispatch(attributeStoreError(err))
+      dispatch(attributeStoreDeployError(err))
 
       return ''
     }
   }
 )
 
-const resetAttributeStore = (): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(attributeStoreReset())
-  )
-)
-
-export { deployAttributeStore, resetAttributeStore }
+export { deployAttributeStore }
 

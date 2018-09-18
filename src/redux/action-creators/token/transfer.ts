@@ -1,4 +1,7 @@
+// Dependencies
 import Erc20 from 'computable/dist/contracts/erc-20'
+
+// Local Dependencies
 import {
   EventEmitter,
   EventLog,

@@ -1,27 +1,25 @@
+// Dependencies
 import { Contract } from 'web3/types.d'
 import { deployDll as deploy } from 'computable/dist/helpers'
-import {
-  Action,
-  State,
-  Participant,
-} from '../../../interfaces'
+
+// Local Dependencies
+import { State, Participant } from '../../../interfaces'
 import { Errors } from '../../../constants'
-import { getWebsocketAddress, getOwner } from '../../selectors'
 import { getWeb3 } from '../../../initializers'
+import { getWebsocketAddress, getOwner } from '../../selectors'
 import {
-  dllRequest,
-  dllOk,
-  dllError,
-  dllReset,
+  dllDeployRequest,
+  dllDeployOk,
+  dllDeployError,
 } from './actions'
 
 /* Action Creators */
-const deployDll = (): any =>
+const deployDll = (): any => (
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state: State = getState()
 
     const args = {}
-    dispatch(dllRequest(args))
+    dispatch(dllDeployRequest(args))
 
     try {
       const owner: Participant|undefined = getOwner(state)
@@ -42,21 +40,16 @@ const deployDll = (): any =>
       // contract.options.address
       const contractAddress: string = contract.options.address
 
-      dispatch(dllOk({ address: contractAddress }))
+      dispatch(dllDeployOk({ address: contractAddress }))
 
       return contractAddress
     } catch(err) {
-      dispatch(dllError(err))
+      dispatch(dllDeployError(err))
 
       return ''
     }
   }
-
-const resetDll = (): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(dllReset())
-  )
 )
 
-export { deployDll, resetDll }
+export { deployDll }
 

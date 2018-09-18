@@ -1,11 +1,9 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployAttributeStore, resetAttributeStore } from '../../src/redux/action-creators/attribute-store'
 import { getAttributeStoreAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
@@ -26,15 +24,17 @@ describe('deploying an attribute store contract', () => {
     accounts = await web3.eth.getAccounts()
     owner = accounts[0]
 
-    participate('Sir Admin Pants', owner)
+    await store.dispatch(
+      addParticipant('Sir Admin Pants', owner)
+    )
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
     // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetAttributeStore()
+    await store.dispatch(resetParticipants())
+    await store.dispatch(resetWebsocketAddress())
+    await store.dispatch(resetAttributeStore())
   })
 
   it('does not have an attr store address', () => {

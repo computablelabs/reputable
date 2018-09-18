@@ -1,5 +1,8 @@
+// Dependencies
 import Registry from 'computable/dist/contracts/registry'
-import { Action, State, Participant } from '../../../interfaces'
+
+// Local Dependencies
+import { State, Participant } from '../../../interfaces'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import {
@@ -13,13 +16,9 @@ import {
   registryDeployRequest,
   registryDeployOk,
   registryDeployError,
-
-  registryAddressOk,
-  registryAddressReset,
 } from './actions'
 
 /* Action Creators */
-// To deploy a new Registry Contract
 const deployRegistry = (name:string): any => (
   async (dispatch:any, getState:any): Promise<string> => {
     const state:State = getState()
@@ -75,19 +74,5 @@ const deployRegistry = (name:string): any => (
   }
 )
 
-// To store the address of an already deployed Registry Contract
-const setRegistryAddress = (registryAddress: string): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(registryAddressOk({ address: registryAddress }))
-  )
-)
-
-// To reset the stored Registry Contract address
-const resetRegistryAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(registryAddressReset())
-  )
-)
-
-export { deployRegistry, setRegistryAddress, resetRegistryAddress }
+export { deployRegistry }
 

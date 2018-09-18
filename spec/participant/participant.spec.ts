@@ -1,11 +1,11 @@
 import store from '../../src/redux/store'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
 import { State } from '../../src/interfaces'
 import { getParticipants } from '../../src/redux/selectors'
 
 describe('Participants state', () => {
-  afterEach(() => {
-    resetParticipants()
+  afterEach(async () => {
+    await store.dispatch(resetParticipants())
   })
 
   it('has the correct default state', () => {
@@ -17,7 +17,9 @@ describe('Participants state', () => {
   })
 
   it('will add a participant', async () => {
-    await participate('team awesome', '0x4242424242424242424242424242424242424242')
+    await store.dispatch(
+      addParticipant('team awesome', '0x4242424242424242424242424242424242424242')
+    )
 
     const state: State = store.getState()
     const participants = getParticipants(state)
@@ -35,9 +37,9 @@ describe('Participants state', () => {
     expect(participants && participants.length).toBe(0)
   })
 
-  it('only sets the first participant as owner', () => {
-    participate('team awesome', '0x123')
-    participate('team awesomer', '0x456')
+  it('only sets the first participant as owner', async () => {
+    await store.dispatch(addParticipant('team awesome', '0x123'))
+    await store.dispatch(addParticipant('team awesomer', '0x456'))
 
     const state:State = store.getState()
     const participants = getParticipants(state)

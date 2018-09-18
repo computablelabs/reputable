@@ -1,35 +1,29 @@
 import * as ganache from 'ganache-cli'
 import { increaseTime } from 'computable/dist/helpers'
 import store from '../../src/redux/store'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { resetToken } from '../../src/redux/dispatchers/token'
-import { resetVoting } from '../../src/redux/dispatchers/voting'
-import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
-import { resetRegistry } from '../../src/redux/dispatchers/registry'
-import { resetDll } from '../../src/redux/dispatchers/dll'
-import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'
-import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
-import { deployDll } from '../../src/redux/action-creators/dll'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployToken, resetToken, approve, transfer } from '../../src/redux/action-creators/token'
+import { deployAttributeStore, resetAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { deployDll, resetDll } from '../../src/redux/action-creators/dll'
 import {
   deployRegistry,
+  resetRegistry,
   fetchListing,
   applyListing,
   challengeListing,
   updateListingStatus,
 } from '../../src/redux/action-creators/registry'
-import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
-import { deployVoting } from '../../src/redux/action-creators/voting'
+import { deployParameterizer, resetParameterizer } from '../../src/redux/action-creators/parameterizer'
+import { deployVoting, resetVoting } from '../../src/redux/action-creators/voting'
 import { State, Listing, Challenge } from '../../src/interfaces'
+import { getWeb3, getProvider } from '../../src/initializers'
 import {
   getRegistryAddress,
   getListing,
   getChallenges,
   getChallenge,
 } from '../../src/redux/selectors'
-import { getWeb3, getProvider } from '../../src/initializers'
 import { createListing } from '../helpers'
 
 describe('registry state', () => {
@@ -50,7 +44,9 @@ describe('registry state', () => {
       accounts = await web3.eth.getAccounts()
       owner = accounts[0]
 
-      participate('Admin, son of Pants', owner)
+      await store.dispatch(
+        addParticipant('Admin, son of Pants', owner)
+      )
 
       // p11r will want a token deployed
       await store.dispatch(deployToken())
@@ -61,17 +57,17 @@ describe('registry state', () => {
       await store.dispatch(deployParameterizer())
     })
 
-    afterAll(() => {
+    afterAll(async () => {
       server.close()
       // tear it all down as the store is a singleton
-      resetParticipants()
-      resetWebsocketAddress()
-      resetToken()
-      resetDll()
-      resetAttributeStore()
-      resetVoting()
-      resetParameterizer()
-      resetRegistry()
+      await store.dispatch(resetParticipants())
+      await store.dispatch(resetWebsocketAddress())
+      await store.dispatch(resetToken())
+      await store.dispatch(resetDll())
+      await store.dispatch(resetAttributeStore())
+      await store.dispatch(resetVoting())
+      await store.dispatch(resetParameterizer())
+      await store.dispatch(resetRegistry())
     })
 
     it('begins with unhydrated registry', () => {
@@ -121,7 +117,9 @@ describe('registry state', () => {
       owner = accounts[0]
       user = accounts[1]
 
-      participate('Admin, son of Pants', owner)
+      await store.dispatch(
+        addParticipant('Admin, son of Pants', owner)
+      )
 
       // p11r will want a token deployed
       await store.dispatch(deployToken())
@@ -146,17 +144,17 @@ describe('registry state', () => {
       )
     })
 
-    afterAll(() => {
+    afterAll(async () => {
       server.close()
       // tear it all down as the store is a singleton
-      resetParticipants()
-      resetWebsocketAddress()
-      resetToken()
-      resetDll()
-      resetAttributeStore()
-      resetVoting()
-      resetParameterizer()
-      resetRegistry()
+      await store.dispatch(resetParticipants())
+      await store.dispatch(resetWebsocketAddress())
+      await store.dispatch(resetToken())
+      await store.dispatch(resetDll())
+      await store.dispatch(resetAttributeStore())
+      await store.dispatch(resetVoting())
+      await store.dispatch(resetParameterizer())
+      await store.dispatch(resetRegistry())
     })
 
     describe('#fetchListing', () => {

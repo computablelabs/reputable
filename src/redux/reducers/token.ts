@@ -1,9 +1,12 @@
+// Local Dependencies
 import {
   FSA,
   StateItem,
   Token,
 } from '../../interfaces'
 import {
+  TOKEN_RESET,
+
   TOKEN_DEPLOY_REQUEST,
   TOKEN_DEPLOY_OK,
   TOKEN_DEPLOY_ERROR,
@@ -36,7 +39,12 @@ const initialState: StateItem<Token> = {
 }
 
 const handlers = {
-  // Deploy Reducers
+  // General
+  [TOKEN_RESET]: () => ({
+    ...initialState,
+  }),
+
+  // Deploy
   [TOKEN_DEPLOY_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -57,7 +65,7 @@ const handlers = {
     error: payload.toString(),
   }),
 
-  // Address Reducers
+  // Address
   [TOKEN_ADDRESS_OK]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: false,
@@ -75,7 +83,7 @@ const handlers = {
     },
   }),
 
-  // Approval Reducers
+  // Approve
   [TOKEN_APPROVE_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -105,7 +113,7 @@ const handlers = {
     },
   }),
 
-  // Transfer Reducers
+  // Transfer
   [TOKEN_TRANSFER_REQUEST]: (state: StateItem<Token>, { payload }: FSA) => ({
     ...state,
     loading: true,

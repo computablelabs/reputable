@@ -1,4 +1,7 @@
+// Dependencies
 import { Erc20DeployParams } from 'computable/dist/interfaces'
+
+// Local Dependencies
 import {
   FSA,
   Deployed,
@@ -8,6 +11,8 @@ import {
 } from '../../../interfaces'
 
 /* Action Types */
+export const TOKEN_RESET = 'TOKEN_RESET'
+
 export const TOKEN_DEPLOY_REQUEST = 'TOKEN_DEPLOY_REQUEST'
 export const TOKEN_DEPLOY_OK = 'TOKEN_DEPLOY_OK'
 export const TOKEN_DEPLOY_ERROR = 'TOKEN_DEPLOY_ERROR'
@@ -26,6 +31,13 @@ export const TOKEN_TRANSFER_ERROR = 'TOKEN_TRANSFER_ERROR'
 export const TOKEN_TRANSFER_RESET = 'TOKEN_TRANSFER_RESET'
 
 /* Actions */
+// General
+export const tokenReset = (): FSA => ({
+  type: TOKEN_RESET,
+  payload: {},
+})
+
+// Deploy
 export const tokenDeployRequest = (value: Erc20DeployParams): FSA => ({
   type: TOKEN_DEPLOY_REQUEST,
   payload: value,
@@ -41,6 +53,7 @@ export const tokenDeployError = (value: Error): FSA => ({
   payload: value,
 })
 
+// Address
 export const tokenAddressOk = (value: Deployed): FSA => ({
   type: TOKEN_ADDRESS_OK,
   payload: value,
@@ -51,6 +64,7 @@ export const tokenAddressReset = (): FSA => ({
   payload: {},
 })
 
+// Approve
 export const tokenApproveRequest = (value: Map): FSA => ({
   type: TOKEN_APPROVE_REQUEST,
   payload: value,
@@ -71,6 +85,7 @@ export const tokenApproveReset = (): FSA => ({
   payload: {},
 })
 
+// Transfer
 export const tokenTransferRequest = (value: Map): FSA => ({
   type: TOKEN_TRANSFER_REQUEST,
   payload: value,

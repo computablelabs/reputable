@@ -1,32 +1,3 @@
-import { FSA, Participant } from '../../../interfaces'
-
-/* Action Types */
-export const PARTICIPANTS_OK = 'PARTICIPANTS_OK'
-export const PARTICIPANTS_RESET = 'PARTICIPANTS_RESET'
-
-/* Actions */
-export const participantsOk = (value: Participant): FSA => ({
-  type: PARTICIPANTS_OK,
-  payload: value,
-})
-
-export const participantsReset = (): FSA => ({
-  type: PARTICIPANTS_RESET,
-  payload: {},
-})
-
-/* Action Creators */
-const participate = (name:string, address:string): any => (
-  async (dispatch: Function): Promise<void> => (
-    dispatch(participantsOk({ name, address }))
-  )
-)
-
-const resetParticipants = (): any => (
-  async (dispatch: Function): Promise<void> => (
-    dispatch(participantsReset())
-  )
-)
-
-export { participate, resetParticipants }
+export * from './actions'
+export * from './general'
 

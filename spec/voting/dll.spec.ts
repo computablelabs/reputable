@@ -1,11 +1,9 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { resetDll } from '../../src/redux/dispatchers/dll'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployDll } from '../../src/redux/action-creators/dll'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployDll, resetDll } from '../../src/redux/action-creators/dll'
 import { getDllAddress } from '../../src/redux/selectors'
 import { getWeb3 } from '../../src/initializers'
 
@@ -26,15 +24,17 @@ describe('deploying a dll contract', () => {
     accounts = await web3.eth.getAccounts()
     owner = accounts[0]
 
-    participate('Mrs. Admin Pants', owner)
+    await store.dispatch(
+      addParticipant('Mrs. Admin Pants', owner)
+    )
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
     // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetDll()
+    await store.dispatch(resetParticipants())
+    await store.dispatch(resetWebsocketAddress())
+    await store.dispatch(resetDll())
   })
 
   it('does not have a dll address', () => {

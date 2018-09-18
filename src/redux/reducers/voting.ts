@@ -1,5 +1,8 @@
+// Local Dependencies
 import { FSA, StateItem, Deployed, Map } from '../../interfaces'
 import {
+  VOTING_RESET,
+
   VOTING_DEPLOY_REQUEST,
   VOTING_DEPLOY_OK,
   VOTING_DEPLOY_ERROR,
@@ -21,6 +24,12 @@ const initialState: StateItem<Deployed> = {
 }
 
 const handlers = {
+  // General
+  [VOTING_RESET]: () => ({
+    ...initialState,
+  }),
+
+  // Deploy
   [VOTING_DEPLOY_REQUEST]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -40,6 +49,7 @@ const handlers = {
     error: payload.toString(),
   }),
 
+  // Address
   [VOTING_ADDRESS_OK]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,

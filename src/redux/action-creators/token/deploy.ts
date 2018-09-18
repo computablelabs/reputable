@@ -1,9 +1,8 @@
+// Dependencies
 import Erc20 from 'computable/dist/contracts/erc-20'
-import {
-  Action,
-  State,
-  Participant,
-} from '../../../interfaces'
+
+// Local Dependencies
+import { State, Participant } from '../../../interfaces'
 import { Errors, TokenDefaults } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
 import { getOwner, getWebsocketAddress } from '../../selectors'
@@ -11,13 +10,9 @@ import {
   tokenDeployRequest,
   tokenDeployOk,
   tokenDeployError,
-
-  tokenAddressOk,
-  tokenAddressReset,
 } from './actions'
 
 /* Action Creators */
-/* To deploy a new Token Contract */
 const deployToken = (supply?: number): any => (
   async (dispatch: Function, getState: Function): Promise<string> => {
     const state:State = getState()
@@ -58,22 +53,5 @@ const deployToken = (supply?: number): any => (
   }
 )
 
-/* To store the address of an already deployed Token Contract */
-// TODO
-//    If we set the contract address of an existing token, when do we set the
-//    supply value? Do we need the supply in global state?
-const setTokenAddress = (tokenAddress: string): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(tokenAddressOk({ address: tokenAddress }))
-  )
-)
-
-/* To reset the stored Token Contract address + supply */
-const resetTokenAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
-    dispatch(tokenAddressReset())
-  )
-)
-
-export { deployToken, setTokenAddress, resetTokenAddress }
+export { deployToken }
 

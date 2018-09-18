@@ -1,3 +1,4 @@
+// Local Dependencies
 import {
   FSA,
   StateItem,
@@ -17,6 +18,7 @@ const initialState: StateItem<Participant[]> = {
 }
 
 const handlers = {
+  // General
   [PARTICIPANTS_OK]: (state: StateItem<Participant[]>, { payload }: FSA) => {
     payload.owner = !state.data.length
 

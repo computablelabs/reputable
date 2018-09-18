@@ -1,6 +1,9 @@
+// Local Dependencies
 import { FSA, Map, Deployed } from '../../../interfaces'
 
-// Action Types
+/* Action Types */
+export const VOTING_RESET = 'VOTING_RESET'
+
 export const VOTING_DEPLOY_REQUEST = 'VOTING_DEPLOY_REQUEST'
 export const VOTING_DEPLOY_OK = 'VOTING_DEPLOY_OK'
 export const VOTING_DEPLOY_ERROR = 'VOTING_DEPLOY_ERROR'
@@ -13,7 +16,13 @@ export const VOTING_VOTE_OK = 'VOTING_VOTE_OK'
 export const VOTING_VOTE_ERROR = 'VOTING_VOTE_ERROR'
 
 /* Actions */
-// Deployment
+// General
+export const votingReset = (): FSA => ({
+  type: VOTING_RESET,
+  payload: {},
+})
+
+// Deploy
 export const votingDeployRequest = (value: Map): FSA => ({
   type: VOTING_DEPLOY_REQUEST,
   payload: value,

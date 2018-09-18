@@ -1,3 +1,4 @@
+// Local Dependencies
 import { FSA, StateItem, Deployed } from '../../interfaces'
 import {
   WEBSOCKET_ADDRESS_SET,
@@ -13,6 +14,7 @@ const initialState: StateItem<Deployed> = {
 }
 
 const handlers = {
+  // Address
   [WEBSOCKET_ADDRESS_SET]: (state: StateItem<Deployed>, { payload }: FSA) => ({
     ...state,
     loading: false,

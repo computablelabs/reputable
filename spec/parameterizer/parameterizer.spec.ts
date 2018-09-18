@@ -1,19 +1,13 @@
 import * as ganache from 'ganache-cli'
 import store from '../../src/redux/store'
 import { State } from '../../src/interfaces'
-import { participate, resetParticipants } from '../../src/redux/dispatchers/participant'
-import { resetWebsocketAddress } from '../../src/redux/dispatchers/web3'
-import { resetToken } from '../../src/redux/dispatchers/token'
-import { resetVoting } from '../../src/redux/dispatchers/voting'
-import { resetParameterizer } from '../../src/redux/dispatchers/parameterizer'
-import { resetDll } from '../../src/redux/dispatchers/dll'
-import { resetAttributeStore } from '../../src/redux/dispatchers/attribute-store'
-import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
-import { deployToken } from '../../src/redux/action-creators/token'
-import { deployVoting } from '../../src/redux/action-creators/voting'
-import { deployAttributeStore } from '../../src/redux/action-creators/attribute-store'
-import { deployDll } from '../../src/redux/action-creators/dll'
-import { deployParameterizer } from '../../src/redux/action-creators/parameterizer'
+import { setWebsocketAddress, resetWebsocketAddress } from '../../src/redux/action-creators/web3'
+import { addParticipant, resetParticipants } from '../../src/redux/action-creators/participants'
+import { deployToken, resetToken } from '../../src/redux/action-creators/token'
+import { deployVoting, resetVoting } from '../../src/redux/action-creators/voting'
+import { deployAttributeStore, resetAttributeStore } from '../../src/redux/action-creators/attribute-store'
+import { deployDll, resetDll } from '../../src/redux/action-creators/dll'
+import { deployParameterizer, resetParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { getWeb3 } from '../../src/initializers'
 import { getParameterizerAddress } from '../../src/redux/selectors'
 
@@ -34,7 +28,7 @@ describe('parameterizer state', () => {
     accounts = await web3.eth.getAccounts()
     owner = accounts[0]
 
-    await participate('team admin', owner)
+    await store.dispatch(addParticipant('team admin', owner))
 
     // p11r will want a token deployed
     await store.dispatch(deployToken())
@@ -44,16 +38,16 @@ describe('parameterizer state', () => {
     await store.dispatch(deployVoting())
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
     // tear it all down as the store is a singleton
-    resetParticipants()
-    resetWebsocketAddress()
-    resetToken()
-    resetDll()
-    resetAttributeStore()
-    resetVoting()
-    resetParameterizer()
+    await store.dispatch(resetParticipants())
+    await store.dispatch(resetWebsocketAddress())
+    await store.dispatch(resetToken())
+    await store.dispatch(resetDll())
+    await store.dispatch(resetAttributeStore())
+    await store.dispatch(resetVoting())
+    await store.dispatch(resetParameterizer())
   })
 
   it('begins with unhydrated parameterizer', () => {
