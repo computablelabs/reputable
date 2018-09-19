@@ -1,12 +1,11 @@
 // Local Dependencies
-import { Action } from '../../../interfaces'
 import { registryReset } from './actions'
 
 /* Action Creators */
 const resetRegistry = (): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => {
     dispatch(registryReset())
-  )
+  }
 )
 
 export { resetRegistry }

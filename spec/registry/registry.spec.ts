@@ -11,15 +11,18 @@ import {
   resetRegistry,
   fetchListing,
   applyListing,
+  resetRegistryListings,
   challengeListing,
   updateListingStatus,
 } from '../../src/redux/action-creators/registry'
 import { deployParameterizer, resetParameterizer } from '../../src/redux/action-creators/parameterizer'
 import { deployVoting, resetVoting } from '../../src/redux/action-creators/voting'
-import { State, Listing, Challenge } from '../../src/interfaces'
+import Observer from '../../src/redux/observer'
+import { Map, State, Listing, Challenge } from '../../src/interfaces'
 import { getWeb3, getProvider } from '../../src/initializers'
 import {
   getRegistryAddress,
+  getListings,
   getListing,
   getChallenges,
   getChallenge,
@@ -68,6 +71,14 @@ describe('registry state', () => {
       await store.dispatch(resetVoting())
       await store.dispatch(resetParameterizer())
       await store.dispatch(resetRegistry())
+    })
+
+    beforeEach(async () => {
+      await Observer.subscribe({ dispatch: store.dispatch, getState: store.getState })
+    })
+
+    afterEach(async () => {
+      await Observer.unsubscribe()
     })
 
     it('begins with unhydrated registry', () => {
@@ -128,10 +139,10 @@ describe('registry state', () => {
       await store.dispatch(deployAttributeStore())
       await store.dispatch(deployVoting())
       await store.dispatch(deployParameterizer({ applyStageLen }))
+      await store.dispatch(deployRegistry('the registry'))
 
-      const registryAddress = await store.dispatch(
-        deployRegistry('the registry')
-      )
+      const state: State = store.getState()
+      const registryAddress: string = getRegistryAddress(state)
 
       // transfer funds to the spender
       await store.dispatch(
@@ -157,43 +168,61 @@ describe('registry state', () => {
       await store.dispatch(resetRegistry())
     })
 
+    beforeEach(async () => {
+      await Observer.subscribe({ dispatch: store.dispatch, getState: store.getState })
+    })
+
+    afterEach(async () => {
+      await Observer.unsubscribe()
+    })
+
     describe('#fetchListing', () => {
       let listingHash: string
-      const listing: string = 'listing'
-      const data = { value: 'data value' }
 
       beforeEach(async () => {
-        const txValues = await store.dispatch(
-          applyListing({ listing, userAddress: user, deposit: 100, data })
-        )
-
-        listingHash = txValues.listingHash
+        const listingValues: Map = await createListing(user)
+        listingHash = listingValues.listingHash
       })
 
-      it('fetchesd an existing listing from a registry', async () => {
-        const listing: Listing = await store.dispatch(
+      afterEach(async () => {
+        await store.dispatch(resetRegistryListings())
+      })
+
+      it('fetches an existing listing from a registry', async () => {
+        await store.dispatch(
           fetchListing(listingHash)
         )
 
-        expect(listing.listingHash).toBe(listingHash)
+        const state: State = store.getState()
+        const listing: Listing|undefined = getListing(state, listingHash)
+
+        expect(listing && listing.listingHash).toEqual(listingHash)
       })
     })
 
     describe('#applyListing', () => {
-      it('a listing to a registry', async () => {
-        const listing: string = 'random listing'
+      afterEach(async () => {
+        await store.dispatch(resetRegistryListings())
+      })
+
+      it('applies a listing to a registry', async () => {
+        const listingValue: string = 'random listing'
         const data = { value: 'random data' }
 
-        const txValues = await store.dispatch(
-          applyListing({ listing, userAddress: user, deposit: 100, data })
+        await store.dispatch(
+          applyListing({ listing: listingValue, userAddress: user, deposit: 100, data })
         )
 
-        const returnedListing: string = web3.utils.hexToUtf8(txValues.listingHash)
-        expect(returnedListing).toBe(listing)
-        expect(txValues.owner).toBe(user)
-        expect(txValues.unstakedDeposit).toBe('100')
-        expect(txValues.applicationExpiry).toBeGreaterThan(0)
-        expect(txValues.data).toEqual(data)
+        const state: State = store.getState()
+        const listings: Listing[] = getListings(state)
+        const listing: Listing = listings[0]
+        const returnedListingValue: string = web3.utils.hexToUtf8(listing.listingHash)
+
+        expect(returnedListingValue).toBe(listingValue)
+        expect(listing.owner).toBe(user)
+        expect(listing.unstakedDeposit).toBe('100')
+        expect(listing.applicationExpiry).toBeGreaterThan(0)
+        expect(listing.data).toEqual(data)
       })
     })
 
@@ -201,8 +230,12 @@ describe('registry state', () => {
       let listingHash: string
 
       beforeEach(async () => {
-        const listingValues = await createListing(user)
+        const listingValues: Map = await createListing(user)
         listingHash = listingValues.listingHash
+      })
+
+      afterEach(async () => {
+        await store.dispatch(resetRegistryListings())
       })
 
       it('whitelists a listing', async () => {
@@ -244,8 +277,12 @@ describe('registry state', () => {
       let listingHash: string
 
       beforeEach(async () => {
-        const listingValues = await createListing(user)
+        const listingValues: Map = await createListing(user)
         listingHash = listingValues.listingHash
+      })
+
+      afterEach(async () => {
+        await store.dispatch(resetRegistryListings())
       })
 
       it('creates a challenge against a listing', async () => {

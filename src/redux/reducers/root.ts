@@ -2,6 +2,7 @@
 import { combineReducers } from 'redux'
 import attributeStore from './attribute-store'
 import dll from './dll'
+import observer from './observer'
 import parameterizer from './parameterizer'
 import participants from './participant'
 import registry from './registry'
@@ -13,6 +14,7 @@ import web3 from './web3'
 export default combineReducers({
   attributeStore,
   dll,
+  observer,
   parameterizer,
   participants,
   registry,

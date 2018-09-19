@@ -11,6 +11,7 @@ import {
 interface State {
   readonly attributeStore?: StateItem<Deployed>
   readonly dll?: StateItem<Deployed>
+  readonly observer?: StateItem<undefined>
   readonly parameterizer?: StateItem<Parameterizer>
   readonly participants?: StateItem<Participant[]>
   readonly registry?: StateItem<Registry>

@@ -2,61 +2,25 @@
 import Registry from 'computable/dist/contracts/registry'
 
 // Local Dependencies
-import {
-  EventEmitter,
-  EventLog,
-  Map,
-  State,
-  Participant,
-  Challenge,
-  Listing,
-} from '../../../interfaces'
-import { Errors } from '../../../constants'
-import { getWeb3 } from '../../../initializers'
-import {
-  getWebsocketAddress,
-  getOwner,
-  getRegistryAddress,
-  getListing,
-} from '../../selectors'
+import { State, Challenge } from '../../../interfaces'
+import { getRegistryContract } from '../../contracts'
 import {
   registryChallengeRequest,
   registryChallengeOk,
   registryChallengeError,
   registryChallengeReset,
-
-  registryListingOk,
 } from './actions'
 
 /* Action Creators */
 const fetchChallenge = (challengeID: string): any => (
-  async (dispatch: Function, getState: Function): Promise<Map|undefined> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state: State = getState()
 
     const args = { challengeID }
     dispatch(registryChallengeRequest(args))
 
     try {
-      const owner: Participant|undefined = getOwner(state)
-      if (!owner) {
-        throw new Error(Errors.NO_ADMIN_FOUND)
-      }
-
-      const websocketAddress: string = getWebsocketAddress(state)
-      if (!websocketAddress) {
-        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
-      }
-
-      const web3 = await getWeb3(websocketAddress)
-
-      const contractAddress: string = getRegistryAddress(state)
-      if (!contractAddress) {
-        throw new Error(Errors.NO_REGISTRY_FOUND)
-      }
-
-      const registry = new Registry(owner.address)
-      await registry.at(web3, { address: contractAddress })
-
+      const registry: Registry = await getRegistryContract(state)
       const challenge: Challenge = await registry.challenges(challengeID) as Challenge
 
       const out = {
@@ -70,12 +34,8 @@ const fetchChallenge = (challengeID: string): any => (
       }
 
       dispatch(registryChallengeOk(out))
-
-      return out
     } catch (err) {
       dispatch(registryChallengeError(err))
-
-      return undefined
     }
   }
 )
@@ -85,81 +45,17 @@ interface RegistryChallengeListingParams {
   userAddress: string
 }
 const challengeListing = ({ listingHash, userAddress }: RegistryChallengeListingParams): any => (
-  async (dispatch: Function, getState: Function): Promise<Challenge|undefined> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state: State = getState()
 
     const args = { listingHash, userAddress }
     dispatch(registryChallengeRequest(args))
 
     try {
-      const owner: Participant|undefined = getOwner(state)
-      if (!owner) {
-        throw new Error(Errors.NO_ADMIN_FOUND)
-      }
-
-      const websocketAddress: string = getWebsocketAddress(state)
-      if (!websocketAddress) {
-        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
-      }
-
-      const web3 = await getWeb3(websocketAddress)
-
-      const contractAddress: string = getRegistryAddress(state)
-      if (!contractAddress) {
-        throw new Error(Errors.NO_REGISTRY_FOUND)
-      }
-
-      const registry = new Registry(owner.address)
-      await registry.at(web3, { address: contractAddress })
-
-      let out: any = {}
-
-      const emitterChallenge = registry.getEventEmitter('_Challenge') as EventEmitter
-      emitterChallenge.on('data', (log: EventLog) => {
-        const eventValues = log.returnValues
-
-        // add challenge to global state
-        out = {
-          listingHash: eventValues.listingHash,
-          id: eventValues.id,
-          challenger: eventValues.challenger,
-          commitExpiry: eventValues.commitExpiry,
-          revealExpiry: eventValues.revealExpiry,
-        }
-        dispatch(registryChallengeOk(out))
-
-        // update listing metadata
-        const listing: Listing|undefined = getListing(state, eventValues.listingHash)
-        if (listing) {
-          listing.challenge = eventValues.id
-
-          dispatch(registryListingOk(listing))
-        }
-      })
-
-      /* TODO (geoff) implement + specs
-      const emitterRemove = registry.getEventEmitter('_TouchAndRemoved') as EventEmitter
-      emitterRemove.on('data', (log: EventLog) => {
-        const eventValues = log.returnValues
-
-        out = {
-          listingHash: eventValues.listingHash,
-        }
-
-        dispatch(registryListingRemove(out))
-      })
-      */
-
+      const registry: Registry = await getRegistryContract(state)
       await registry.challenge(listingHash, '', { from: userAddress })
-
-      emitterChallenge.unsubscribe()
-      // emitterRemove.unsubscribe()
-
-      return out
     } catch (err) {
       dispatch(registryChallengeError(err))
-
-      return undefined
     }
   }
 )

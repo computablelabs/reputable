@@ -20,7 +20,7 @@ import {
 
 /* Action Creators */
 const deployRegistry = (name:string): any => (
-  async (dispatch:any, getState:any): Promise<string> => {
+  async (dispatch:any, getState:any): Promise<void> => {
     const state:State = getState()
 
     const args = { name }
@@ -64,12 +64,8 @@ const deployRegistry = (name:string): any => (
       })
 
       dispatch(registryDeployOk({ address: registryAddress }))
-
-      return registryAddress
     } catch(err) {
       dispatch(registryDeployError(err))
-
-      return ''
     }
   }
 )
