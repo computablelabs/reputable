@@ -15,7 +15,7 @@ import {
 
 /* Action Creators */
 const deployAttributeStore = (): any => (
-  async (dispatch: Function, getState: Function): Promise<string> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state: State = getState()
 
     const args = {}
@@ -41,12 +41,8 @@ const deployAttributeStore = (): any => (
       const contractAddress: string = contract.options.address
 
       dispatch(attributeStoreDeployOk({ address: contractAddress }))
-
-      return contractAddress
     } catch (err) {
       dispatch(attributeStoreDeployError(err))
-
-      return ''
     }
   }
 )

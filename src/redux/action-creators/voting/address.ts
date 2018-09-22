@@ -1,5 +1,4 @@
 // Local Dependencies
-import { Action } from '../../../interfaces'
 import {
   votingAddressOk,
   votingAddressReset,
@@ -7,13 +6,13 @@ import {
 
 /* Action Creators */
 const setVotingAddress = (votingAddress: string): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(votingAddressOk({ address: votingAddress }))
   )
 )
 
 const resetVotingAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(votingAddressReset())
   )
 )

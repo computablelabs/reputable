@@ -1,10 +1,9 @@
 // Local Dependencies
-import { Action } from '../../../interfaces'
 import { attributeStoreReset } from './actions'
 
 /* Action Creators */
 const resetAttributeStore = (): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(attributeStoreReset())
   )
 )

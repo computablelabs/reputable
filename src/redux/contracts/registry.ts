@@ -20,10 +20,10 @@ const getRegistryContract = async (state: Map): Promise<Registry> => {
     throw new Error(Errors.NO_REGISTRY_FOUND)
   }
 
-  const registry: Registry = new Registry(owner.address)
-  await registry.at(web3, { address: contractAddress })
+  const contract: Registry = new Registry(owner.address)
+  await contract.at(web3, { address: contractAddress })
 
-  return registry
+  return contract
 }
 
 export { getRegistryContract }

@@ -1,5 +1,4 @@
 // Local Dependencies
-import { Action } from '../../../interfaces'
 import {
   dllAddressOk,
   dllAddressReset,
@@ -7,13 +6,13 @@ import {
 
 /* Action Creators */
 const setDllAddress = (address: string): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(dllAddressOk({ address }))
   )
 )
 
 const resetDllAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(dllAddressReset())
   )
 )

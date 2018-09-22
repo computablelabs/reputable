@@ -14,7 +14,7 @@ import {
 
 /* Action Creators */
 const deployToken = (supply?: number): any => (
-  async (dispatch: Function, getState: Function): Promise<string> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state:State = getState()
 
     const args = { address: undefined, supply }
@@ -43,12 +43,8 @@ const deployToken = (supply?: number): any => (
       })
 
       dispatch(tokenDeployOk({ address: tokenAddress, supply }))
-
-      return tokenAddress
     } catch(err) {
       dispatch(tokenDeployError(err))
-
-      return ''
     }
   }
 )

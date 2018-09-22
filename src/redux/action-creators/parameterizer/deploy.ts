@@ -25,7 +25,7 @@ import {
  * in Computable.js.
  */
 const deployParameterizer = (options?: Partial<ParameterizerDeployParams>): any => (
-  async (dispatch: Function, getState: Function): Promise<string> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state:State = getState()
 
     const args = { options }
@@ -62,12 +62,8 @@ const deployParameterizer = (options?: Partial<ParameterizerDeployParams>): any 
       })
 
       dispatch(parameterizerDeployOk({ address: parameterizerAddress }))
-
-      return parameterizerAddress
     } catch (err) {
       dispatch(parameterizerDeployError(err))
-
-      return ''
     }
   }
 )

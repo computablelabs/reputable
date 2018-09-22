@@ -20,7 +20,7 @@ import {
 
 /* Action Creators */
 const deployVoting = (): any => (
-  async (dispatch: Function, getState: Function): Promise<string> => {
+  async (dispatch: Function, getState: Function): Promise<void> => {
     const state: State = getState()
 
     const args = {}
@@ -62,12 +62,8 @@ const deployVoting = (): any => (
       })
 
       dispatch(votingDeployOk({ address: votingAddress }))
-
-      return votingAddress
     } catch (err) {
       dispatch(votingDeployError(err))
-
-      return ''
     }
   }
 )

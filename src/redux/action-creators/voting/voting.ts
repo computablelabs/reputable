@@ -2,22 +2,13 @@
 import Voting from 'computable/dist/contracts/plcr-voting'
 
 // Local Dependencies
-import {
-  EventEmitter,
-  EventLog,
-  State,
-  Participant,
-} from '../../../interfaces'
+import { State } from '../../../interfaces'
+import { getVotingContract } from '../../contracts'
 import { Errors } from '../../../constants'
 import { getWeb3 } from '../../../initializers'
-import {
-  getWebsocketAddress,
-  getOwner,
-  getVotingAddress,
-} from '../../selectors'
+import { getWebsocketAddress } from '../../selectors'
 import {
   votingVoteRequest,
-  votingVoteOk,
   votingVoteError,
 } from './actions'
 
@@ -34,45 +25,11 @@ const requestVotingRights = ({ tokens, userAddress}: RequestVotingRightsParams):
     dispatch(votingVoteRequest(args))
 
     try {
-      const owner: Participant|undefined = getOwner(state)
-      if (!owner) {
-        throw new Error(Errors.NO_ADMIN_FOUND)
-      }
-
-      const websocketAddress: string = getWebsocketAddress(state)
-      if (!websocketAddress) {
-        throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
-      }
-
-      const web3 = await getWeb3(websocketAddress)
-
-      const contractAddress: string = getVotingAddress(state)
-      if (!contractAddress) {
-        throw new Error(Errors.NO_VOTING_FOUND)
-      }
-
-      const contract = new Voting(owner.address)
-      await contract.at(web3, { address: contractAddress })
-
-      let out: any = {}
-
-      const emitter = contract.getEventEmitter('') as EventEmitter
-      emitter.on('data', (log: EventLog) => {
-        const eventValues = log.returnValues
-
-        out = {
-          tokens: eventValues.numTokens,
-          voter: eventValues.voter,
-        }
-
-        dispatch(votingVoteOk(out))
-      })
+      const contract: Voting = await getVotingContract(state)
 
       await contract.requestVotingRights(tokens, {
         from: userAddress,
       })
-
-      emitter.unsubscribe()
     } catch (err) {
       dispatch(votingVoteError(err))
     }
@@ -100,40 +57,13 @@ const commitVote = ({
     dispatch(votingVoteRequest(args))
 
     try {
-      const owner: Participant|undefined = getOwner(state)
-      if (!owner) {
-        throw new Error(Errors.NO_ADMIN_FOUND)
-      }
-
       const websocketAddress: string = getWebsocketAddress(state)
       if (!websocketAddress) {
         throw new Error(Errors.NO_WEBSOCKETADDRESS_FOUND)
       }
 
       const web3 = await getWeb3(websocketAddress)
-
-      const contractAddress: string = getVotingAddress(state)
-      if (!contractAddress) {
-        throw new Error(Errors.NO_VOTING_FOUND)
-      }
-
-      const contract = new Voting(owner.address)
-      await contract.at(web3, { address: contractAddress })
-
-      let out: any = {}
-
-      const emitter = contract.getEventEmitter('_VoteCommitted') as EventEmitter
-      emitter.on('data', (log: EventLog) => {
-        const eventValues = log.returnValues
-
-        out = {
-          challengeId: eventValues.pollID,
-          tokens: eventValues.numTokens,
-          voter: eventValues.voter,
-        }
-
-        dispatch(votingVoteOk(out))
-      })
+      const contract: Voting = await getVotingContract(state)
 
       await contract.commitVote(
         web3,

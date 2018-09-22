@@ -1,5 +1,4 @@
 // Local Dependencies
-import { Action } from '../../../interfaces'
 import {
   attributeStoreAddressOk,
   attributeStoreAddressReset,
@@ -7,13 +6,13 @@ import {
 
 /* Action Creators */
 const setAttributeStoreAddress = (address: string): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(attributeStoreAddressOk({ address }))
   )
 )
 
 const resetAttributeStoreAddress = (): any => (
-  async (dispatch: Function): Promise<Action> => (
+  async (dispatch: Function): Promise<void> => (
     dispatch(attributeStoreAddressReset())
   )
 )
