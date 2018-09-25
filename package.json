@@ -1,5 +1,5 @@
 {
-  "name": "reputable",
+  "name": "@computable/reputable",
   "version": "0.3.0",
   "description": "Redux state container for the Computable Protocol",
   "main": "index.js",
