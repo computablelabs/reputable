@@ -1,15 +1,10 @@
 {
   "name": "reputable",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Redux state container for the Computable Protocol",
   "main": "index.js",
-  "scripts": {
-    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine-ts",
-    "build": "npm run build:clean && tsc -p ./tsbuild.json",
-    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/initializers && rm -rf ./dist/interfaces && rm -rf ./dist/redux && rm -rf ./dist/utils",
-    "build:dry": "tsc -noEmit -p ./tsbuild.json",
-    "test:init": "jasmine-ts init"
-  },
+  "author": "Computable.io",
+  "license": "MIT",
   "keywords": [
     "Computable",
     "Ethereum",
@@ -17,8 +12,20 @@
     "Typescript",
     "Redux"
   ],
-  "author": "Computable.io",
-  "license": "MIT",
+  "scripts": {
+    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine-ts",
+    "build": "npm run build:clean && tsc -p ./tsbuild.json",
+    "build:clean": "rm -rf ./dist/constants && rm -rf ./dist/helpers && rm -rf ./dist/initializers && rm -rf ./dist/interfaces && rm -rf ./dist/redux && rm -rf ./dist/utils",
+    "build:dry": "tsc -noEmit -p ./tsbuild.json",
+    "test:init": "jasmine-ts init"
+  },
+  "dependencies": {
+    "computable": "github:computablelabs/computable.js",
+    "ipfs-api": "^24.0.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "web3": "^1.0.0-beta.34"
+  },
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.0",
@@ -29,12 +36,5 @@
     "jasmine-ts": "^0.2.1",
     "ts-sinon": "^1.0.12",
     "typescript": "^3.0.1"
-  },
-  "dependencies": {
-    "computable": "github:computablelabs/computable.js",
-    "ipfs-api": "^24.0.1",
-    "redux": "^4.0.0",
-    "redux-thunk": "^2.3.0",
-    "web3": "^1.0.0-beta.34"
   }
 }

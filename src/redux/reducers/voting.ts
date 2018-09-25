@@ -14,7 +14,7 @@ import {
   VOTING_VOTE_OK,
   VOTING_VOTE_ERROR,
 } from '../action-creators/voting'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Deployed> = {
   loading: false,

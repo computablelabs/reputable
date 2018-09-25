@@ -10,7 +10,7 @@ import {
   PARAMETERIZER_ADDRESS_OK,
   PARAMETERIZER_ADDRESS_RESET,
 } from '../action-creators/parameterizer'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Deployed> = {
   loading: false,

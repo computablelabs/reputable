@@ -8,7 +8,7 @@ import {
   PARTICIPANTS_OK,
   PARTICIPANTS_RESET,
 } from '../action-creators/participants'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Participant[]> = {
   loading: false,

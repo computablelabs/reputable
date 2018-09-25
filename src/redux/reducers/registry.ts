@@ -25,7 +25,7 @@ import {
   REGISTRY_CHALLENGE_ERROR,
   REGISTRY_CHALLENGE_RESET,
 } from '../action-creators/registry'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Registry> = {
   loading: false,

@@ -10,7 +10,7 @@ import {
   ATTRIBUTE_STORE_ADDRESS_OK,
   ATTRIBUTE_STORE_ADDRESS_RESET,
 } from '../action-creators/attribute-store'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Deployed> = {
   loading: false,

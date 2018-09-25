@@ -24,7 +24,7 @@ import {
   TOKEN_TRANSFER_ERROR,
   TOKEN_TRANSFER_RESET,
 } from '../action-creators/token'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Token> = {
   loading: false,

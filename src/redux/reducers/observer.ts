@@ -1,7 +1,7 @@
 // Local Dependencies
 import { FSA, StateItem } from '../../interfaces'
 import { OBSERVER_ERROR } from '../action-creators/observer'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<undefined> = {
   loading: false,

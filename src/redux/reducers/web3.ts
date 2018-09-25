@@ -4,7 +4,7 @@ import {
   WEBSOCKET_ADDRESS_SET,
   RESET_WEBSOCKET_ADDRESS,
 } from '../action-creators/web3'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Deployed> = {
   loading: false,

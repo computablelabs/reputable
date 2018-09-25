@@ -10,7 +10,7 @@ import {
   DLL_ADDRESS_OK,
   DLL_ADDRESS_RESET,
 } from '../action-creators/dll'
-import createReducer from './createReducer'
+import createReducer from './create-reducer'
 
 const initialState: StateItem<Deployed> = {
   loading: false,
