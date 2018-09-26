@@ -1,12 +1,12 @@
 // Local Dependencies
-import { EventLog } from '../../../interfaces'
+import { Map, EventLog } from '../../../interfaces'
 import {
   votingVoteOk,
 } from '../../action-creators/voting'
 
 const votingRightsGrantedEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog): Promise<void> => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       tokens: eventValues.numTokens,
@@ -19,7 +19,7 @@ const votingRightsGrantedEventResponder = (dispatch: Function, getState: Functio
 
 const voteCommittedEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog): Promise<void> => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       challengeId: eventValues.pollID,

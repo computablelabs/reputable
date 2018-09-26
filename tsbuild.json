@@ -5,8 +5,9 @@
     "removeComments": true, /* Do not emit comments to output. */
   },
   "exclude": [ /* Files not to be included in the output dir */
-    "node_modules",
-    "spec"
+    "./node_modules",
+    "./spec",
+    "**/*.spec.ts"
   ]
 }
 

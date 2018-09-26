@@ -1,5 +1,5 @@
 // Local Dependencies
-import { EventLog } from '../../../interfaces'
+import { Map, EventLog } from '../../../interfaces'
 import {
   tokenApproveOk,
   tokenTransferOk,
@@ -7,7 +7,7 @@ import {
 
 const approvalEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       address: eventValues.spender,
@@ -21,7 +21,7 @@ const approvalEventResponder = (dispatch: Function, getState: Function) => (
 
 const transferEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       from:   eventValues.from,

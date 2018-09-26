@@ -1,5 +1,5 @@
 // Local Dependencies
-import { EventLog, State, Listing } from '../../../interfaces'
+import { Map, EventLog, State, Listing } from '../../../interfaces'
 import { decodeData } from '../../../helpers/data'
 import {
   registryApplyOk,
@@ -11,7 +11,7 @@ import { getListing } from '../../selectors'
 
 const applicationEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       listingHash:       eventValues.listingHash,
@@ -28,7 +28,7 @@ const applicationEventResponder = (dispatch: Function, getState: Function) => (
 
 const applicationWhitelistedEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       listingHash: eventValues.listingHash,
@@ -42,7 +42,7 @@ const applicationWhitelistedEventResponder = (dispatch: Function, getState: Func
 const challengeEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
     const state: State = getState()
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     // add challenge to global state
     const out: any = {
@@ -68,7 +68,7 @@ const challengeEventResponder = (dispatch: Function, getState: Function) => (
 
 const challengeSucceededEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       listingHash: eventValues.listingHash,
@@ -84,7 +84,7 @@ const challengeSucceededEventResponder = (dispatch: Function, getState: Function
 
 const challengeFailedEventResponder = (dispatch: Function, getState: Function) => (
   async (log: EventLog) => {
-    const eventValues = log.returnValues
+    const eventValues: Map = log.returnValues
 
     const out: any = {
       listingHash: eventValues.listingHash,
