@@ -1,5 +1,9 @@
+// Dependencies
+import UUID from 'uuid/v4'
+
 // Local Dependencies
-import { EventEmitter, Map } from '../../interfaces'
+import { EventEmitter, EventLog, Map } from '../../interfaces'
+import { ContractEvents } from '../../constants'
 import {
   getRegistryContract,
   getTokenContract,
@@ -18,105 +22,211 @@ import {
   voteCommittedEventResponder,
 } from './responders'
 
-const APPLICATION_EVENT             = '_Application'
-const CHALLENGE_EVENT               = '_Challenge'
-const APPLICATION_WHITELISTED_EVENT = '_ApplicationWhitelisted'
-const CHALLENGE_SUCCEEDED_EVENT     = '_ChallengeSucceeded'
-const CHALLENGE_FAILED_EVENT        = '_ChallengeFailed'
-const APPROVAL_EVENT                = 'Approval'
-const TRANSFER_EVENT                = 'Transfer'
-const VOTING_RIGHTS_GRANTED_EVENT   = '_VotingRightsGranted'
-const VOTE_COMMITTED_EVENT          = '_VoteCommitted'
+class ContractObserver {
+  private contracts: Map  = {}
+  private emitters: Map   = {}
+  private requests: Map   = {}
+  private responders: Map = {}
+  private callbacks: Map  = {}
 
-let contracts: Map = {}
-let emitters: Map = {}
-
-interface ContractObserverParams {
-  dispatch: Function
-  getState: Function
-}
-const subscribe = async ({ dispatch, getState }: ContractObserverParams) => {
-  const state = getState()
-
-  try {
-    contracts.registry = await getRegistryContract(state)
-    contracts.token    = await getTokenContract(state)
-    contracts.voting   = await getVotingContract(state)
-  } catch (err) {
-    dispatch(observerError(err))
-    return
+  constructor() {
+    this.respondToContractEvent = this.respondToContractEvent.bind(this)
   }
 
-  subscribeToContractEvent({
-    contract: contracts.registry,
-    eventName: APPLICATION_EVENT,
-    responder: applicationEventResponder(dispatch, getState),
-  })
+  private async cacheContracts(dispatch: Function, getState: Function): Promise<void> {
+    const state = getState()
 
-  subscribeToContractEvent({
-    contract: contracts.registry,
-    eventName: APPLICATION_WHITELISTED_EVENT,
-    responder: applicationWhitelistedEventResponder(dispatch, getState),
-  })
+    try {
+      // TODO(geoff) refactor for concurrency
+      this.contracts.registry = await getRegistryContract(state)
+      this.contracts.token    = await getTokenContract(state)
+      this.contracts.voting   = await getVotingContract(state)
+    } catch (err) {
+      dispatch(observerError(err))
+    }
+  }
 
-  subscribeToContractEvent({
-    contract:  contracts.registry,
-    eventName: CHALLENGE_EVENT,
-    responder: challengeEventResponder(dispatch, getState),
-  })
+  private registerContractEvents(): void {
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.APPLICATION_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.registry,
-    eventName: CHALLENGE_SUCCEEDED_EVENT,
-    responder: challengeSucceededEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.APPLICATION_WHITELISTED_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.registry,
-    eventName: CHALLENGE_FAILED_EVENT,
-    responder: challengeFailedEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.CHALLENGE_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.token,
-    eventName: APPROVAL_EVENT,
-    responder: approvalEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.CHALLENGE_SUCCEEDED_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.token,
-    eventName: TRANSFER_EVENT,
-    responder: transferEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.CHALLENGE_FAILED_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.voting,
-    eventName: VOTING_RIGHTS_GRANTED_EVENT,
-    responder: votingRightsGrantedEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.token,
+      ContractEvents.APPROVAL_EVENT,
+    )
 
-  subscribeToContractEvent({
-    contract:  contracts.voting,
-    eventName: VOTE_COMMITTED_EVENT,
-    responder: voteCommittedEventResponder(dispatch, getState),
-  })
+    this.registerContractEvent(
+      this.contracts.token,
+      ContractEvents.TRANSFER_EVENT,
+    )
+
+    this.registerContractEvent(
+      this.contracts.voting,
+      ContractEvents.VOTING_RIGHTS_GRANTED_EVENT,
+    )
+
+    this.registerContractEvent(
+      this.contracts.voting,
+      ContractEvents.VOTE_COMMITTED_EVENT,
+    )
+  }
+
+  private registerContractEvent(contract: any, eventName: string): void {
+    const emitter = contract.getEventEmitter(eventName) as EventEmitter
+    this.emitters[eventName] = emitter
+    emitter.on('data', this.respondToContractEvent)
+  }
+
+  private respondToContractEvent(log: EventLog): void {
+    const eventName: string = log.event
+    const txHash: string = log.transactionHash
+
+    // track the completed request
+    this.requests[txHash] = log
+
+    // trigger event responders
+    Object.values(this.responders)
+      .filter((responder: Map) => responder.eventName === eventName)
+      .forEach((responder) => responder.fn(log))
+
+    // trigger corresponding callbacks
+    Object.values(this.callbacks)
+      .filter((cb: Map) => cb.txHash === txHash)
+      .forEach((cb: Map) => {
+        cb.fn(log)
+        delete this.callbacks[cb.id]
+      })
+  }
+
+  async subscribe(dispatch: Function, getState: Function) {
+    await this.cacheContracts(dispatch, getState)
+    this.registerContractEvents()
+
+    this.registerResponder(
+      ContractEvents.APPLICATION_EVENT,
+      applicationEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.APPLICATION_WHITELISTED_EVENT,
+      applicationWhitelistedEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.CHALLENGE_EVENT,
+      challengeEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.CHALLENGE_SUCCEEDED_EVENT,
+      challengeSucceededEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.CHALLENGE_FAILED_EVENT,
+      challengeFailedEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.APPROVAL_EVENT,
+      approvalEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.TRANSFER_EVENT,
+      transferEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.VOTING_RIGHTS_GRANTED_EVENT,
+      votingRightsGrantedEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.VOTE_COMMITTED_EVENT,
+      voteCommittedEventResponder(dispatch, getState),
+    )
+  }
+
+  unsubscribe() {
+    // unsubscribe from contract events
+    const keys = Object.keys(this.emitters)
+    keys.forEach((key) => {
+      this.emitters[key].unsubscribe()
+    })
+
+    // reset local data
+    this.contracts  = {}
+    this.emitters   = {}
+    this.requests   = {}
+    this.responders = {}
+    this.callbacks  = {}
+  }
+
+  registerResponder(eventName: string, fn: Function): string {
+    const id = UUID()
+    const responder = {
+      id,
+      eventName,
+      fn,
+    }
+
+    this.responders[responder.id] = responder
+
+    return responder.id
+  }
+
+  unregisterResponder(id: string): void {
+    delete this.responders[id]
+  }
+
+  registerCallback(eventName: string, txHash: string, fn: Function): string {
+    const id = UUID()
+    const callback = {
+      id,
+      eventName,
+      txHash,
+      fn,
+    }
+
+    // Has the request already completed?
+    // If so, go ahead and trigger the callbqck
+    // Otherwise, queue it up
+    if (this.requests[txHash]) {
+      fn(this.requests[txHash])
+    } else {
+      this.callbacks[callback.id] = callback
+    }
+
+    return callback.id
+  }
+
+  unregisterCallback(id: string): void {
+    delete this.callbacks[id]
+  }
 }
 
-const subscribeToContractEvent = ({ contract, eventName, responder }: Map): void => {
-  const emitter = contract.getEventEmitter(eventName) as EventEmitter
-  emitters[eventName] = emitter
-  emitter.on('data', responder)
-}
-
-const unsubscribe = () => {
-  const keys = Object.keys(emitters)
-  keys.forEach((key) => {
-    emitters[key].unsubscribe()
-  })
-
-  contracts = {}
-  emitters = {}
-}
-
-export default { subscribe, unsubscribe }
+export default new ContractObserver()
 

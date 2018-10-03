@@ -1,5 +1,6 @@
 // Dependencies
 import Registry from 'computable/dist/contracts/registry'
+import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State, ApplicantData } from '../../../interfaces'
@@ -20,7 +21,7 @@ const applyListing = ({
   deposit,
   data,
 }: RegistryApplyParams): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state: State = getState()
 
     const args = { listing, userAddress, deposit, data }
@@ -33,12 +34,14 @@ const applyListing = ({
       const encodedListing: string = web3.utils.toHex(listing)
       const stringifiedData: string = await encodeData(data || { value: '' })
 
-      await registry.apply(
+      const tx: TransactionReceipt = await registry.apply(
         encodedListing,
         deposit,
         stringifiedData,
         { from: userAddress },
       )
+
+      return tx
     } catch (err) {
       dispatch(registryApplyError(err))
     }

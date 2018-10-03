@@ -1,5 +1,6 @@
 // Dependencies
 import Voting from 'computable/dist/contracts/plcr-voting'
+import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State } from '../../../interfaces'
@@ -18,7 +19,7 @@ interface RequestVotingRightsParams {
   userAddress: string
 }
 const requestVotingRights = ({ tokens, userAddress}: RequestVotingRightsParams): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state:State = getState()
 
     const args = {}
@@ -27,9 +28,11 @@ const requestVotingRights = ({ tokens, userAddress}: RequestVotingRightsParams):
     try {
       const contract: Voting = await getVotingContract(state)
 
-      await contract.requestVotingRights(tokens, {
+      const tx: TransactionReceipt = await contract.requestVotingRights(tokens, {
         from: userAddress,
       })
+
+      return tx
     } catch (err) {
       dispatch(votingVoteError(err))
     }
@@ -50,7 +53,7 @@ const commitVote = ({
   tokens,
   salt,
 }: CommitVoteParams): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state: State = getState()
 
     const args = { challengeID, voterAddress, vote, tokens }
@@ -65,7 +68,7 @@ const commitVote = ({
       const web3 = await getWeb3(websocketAddress)
       const contract: Voting = await getVotingContract(state)
 
-      await contract.commitVote(
+      const tx: TransactionReceipt = await contract.commitVote(
         web3,
         challengeID,
         voterAddress,
@@ -73,6 +76,8 @@ const commitVote = ({
         tokens,
         salt,
       )
+
+      return tx
     } catch (err) {
       dispatch(votingVoteError(err))
     }

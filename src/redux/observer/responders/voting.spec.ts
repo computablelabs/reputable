@@ -7,7 +7,7 @@ import {
   voteCommittedEventResponder,
 } from './voting'
 
-fdescribe('contract observer', () => {
+describe('contract observer', () => {
   describe('voting responders', () => {
     describe('VotingRightGranted event responder', async () => {
       beforeAll(async function(this: Map) {

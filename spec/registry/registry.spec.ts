@@ -68,17 +68,6 @@ describe('registry state', () => {
       await resetContracts(store, server)
     })
 
-    beforeEach(async () => {
-      await ContractObserver.subscribe({
-        dispatch: store.dispatch,
-        getState: store.getState,
-      })
-    })
-
-    afterEach(async () => {
-      await ContractObserver.unsubscribe()
-    })
-
     it('begins with unhydrated registry', () => {
       const state: State = store.getState()
       const registryAddress: string = getRegistryAddress(state)
@@ -137,10 +126,7 @@ describe('registry state', () => {
     })
 
     beforeEach(async () => {
-      await ContractObserver.subscribe({
-        dispatch: store.dispatch,
-        getState: store.getState,
-      })
+      await ContractObserver.subscribe(store.dispatch, store.getState)
     })
 
     afterEach(async () => {

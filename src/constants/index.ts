@@ -9,6 +9,18 @@ enum Contracts {
   REGISTRY      = 'registry',
 }
 
+enum ContractEvents {
+  APPLICATION_EVENT             = '_Application',
+  CHALLENGE_EVENT               = '_Challenge',
+  APPLICATION_WHITELISTED_EVENT = '_ApplicationWhitelisted',
+  CHALLENGE_SUCCEEDED_EVENT     = '_ChallengeSucceeded',
+  CHALLENGE_FAILED_EVENT        = '_ChallengeFailed',
+  APPROVAL_EVENT                = 'Approval',
+  TRANSFER_EVENT                = 'Transfer',
+  VOTING_RIGHTS_GRANTED_EVENT   = '_VotingRightsGranted',
+  VOTE_COMMITTED_EVENT          = '_VoteCommitted',
+}
+
 enum TokenDefaults {
   SUPPLY = 1000000,
 }
@@ -42,5 +54,12 @@ enum Errors {
   NO_PARAMETERIZER_FOUND    = 'No address for a deployed Parameterizer contract can be found. Be sure to deploy the Parameterizer contract',
 }
 
-export { DataSources, Contracts, TokenDefaults, ParameterizerDefaults, Errors }
+export {
+  DataSources,
+  Contracts,
+  ContractEvents,
+  TokenDefaults,
+  ParameterizerDefaults,
+  Errors,
+}
 

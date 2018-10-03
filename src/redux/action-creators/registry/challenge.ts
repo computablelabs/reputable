@@ -1,5 +1,6 @@
 // Dependencies
 import Registry from 'computable/dist/contracts/registry'
+import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State, Challenge } from '../../../interfaces'
@@ -45,7 +46,7 @@ interface RegistryChallengeListingParams {
   userAddress: string
 }
 const challengeListing = ({ listingHash, userAddress }: RegistryChallengeListingParams): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state: State = getState()
 
     const args = { listingHash, userAddress }
@@ -53,7 +54,9 @@ const challengeListing = ({ listingHash, userAddress }: RegistryChallengeListing
 
     try {
       const registry: Registry = await getRegistryContract(state)
-      await registry.challenge(listingHash, '', { from: userAddress })
+      const tx: TransactionReceipt = await registry.challenge(listingHash, '', { from: userAddress })
+
+      return tx
     } catch (err) {
       dispatch(registryChallengeError(err))
     }

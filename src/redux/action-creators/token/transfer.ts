@@ -1,5 +1,6 @@
 // Dependencies
 import Erc20 from 'computable/dist/contracts/erc-20'
+import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State } from '../../../interfaces'
@@ -18,7 +19,7 @@ interface RegistryTransferParams {
   from?: string
 }
 const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state: State = getState()
 
     const args = { to, amount, from }
@@ -28,7 +29,9 @@ const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
       const contract: Erc20 = await getTokenContract(state)
 
       // we can allow the contract to fallback on the default account it was made from
-      await contract.transfer(to, amount)
+      const tx: TransactionReceipt = await contract.transfer(to, amount)
+
+      return tx
     } catch(err) {
       dispatch(tokenTransferError(err))
     }

@@ -1,5 +1,6 @@
 // Dependencies
 import Erc20 from 'computable/dist/contracts/erc-20'
+import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State, Participant } from '../../../interfaces'
@@ -19,7 +20,7 @@ interface TokenApproveParams {
   from?: string
 }
 const approve = ({ address, amount, from }: TokenApproveParams): any => (
-  async (dispatch: Function, getState: Function): Promise<void> => {
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
     const state: State = getState()
 
     const args = { address, amount, from }
@@ -32,7 +33,9 @@ const approve = ({ address, amount, from }: TokenApproveParams): any => (
       }
 
       const contract: Erc20 = await getTokenContract(state)
-      await contract.approve(address, amount, { from: from || owner.address })
+      const tx = await contract.approve(address, amount, { from: from || owner.address })
+
+      return tx
     } catch(err) {
       dispatch(tokenApproveError(err))
     }
