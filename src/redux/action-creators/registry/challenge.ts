@@ -4,7 +4,7 @@ import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State, Challenge } from '../../../interfaces'
-import { getRegistryContract } from '../../contracts'
+import { getWeb3, getRegistryContract } from '../../contracts'
 import {
   registryChallengeRequest,
   registryChallengeOk,
@@ -53,8 +53,15 @@ const challengeListing = ({ listingHash, userAddress }: RegistryChallengeListing
     dispatch(registryChallengeRequest(args))
 
     try {
+      const web3 = await getWeb3(state)
       const registry: Registry = await getRegistryContract(state)
-      const tx: TransactionReceipt = await registry.challenge(listingHash, '', { from: userAddress })
+
+      const tx: TransactionReceipt = await registry.challenge(
+        web3,
+        listingHash,
+        '',
+        { from: userAddress }
+      )
 
       return tx
     } catch (err) {

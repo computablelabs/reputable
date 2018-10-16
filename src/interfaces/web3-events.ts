@@ -1,7 +1,7 @@
 import {
   EventEmitter as Web3EventEmitter,
   EventLog,
-} from 'web3/types.d'
+} from 'web3/types'
 
 interface EventEmitter extends Web3EventEmitter {
   unsubscribe: Function

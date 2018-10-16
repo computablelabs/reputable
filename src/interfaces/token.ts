@@ -1,4 +1,4 @@
-import { Nos } from 'computable/dist/types'
+import { Nos } from 'computable/dist/@types'
 import { Erc20DeployParams } from 'computable/dist/interfaces'
 import { Deployed } from './general'
 

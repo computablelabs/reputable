@@ -4,7 +4,7 @@ import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State, Participant } from '../../../interfaces'
-import { getTokenContract } from '../../contracts'
+import { getWeb3, getTokenContract } from '../../contracts'
 import { Errors } from '../../../constants'
 import { getOwner } from '../../selectors'
 import {
@@ -32,8 +32,15 @@ const approve = ({ address, amount, from }: TokenApproveParams): any => (
         throw new Error(Errors.NO_ADMIN_FOUND)
       }
 
+      const web3 = await getWeb3(state)
       const contract: Erc20 = await getTokenContract(state)
-      const tx = await contract.approve(address, amount, { from: from || owner.address })
+
+      const tx = await contract.approve(
+        web3,
+        address,
+        amount,
+        { from: from || owner.address },
+      )
 
       return tx
     } catch(err) {

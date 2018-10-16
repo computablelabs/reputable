@@ -4,7 +4,7 @@ import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State } from '../../../interfaces'
-import { getTokenContract } from '../../contracts'
+import { getWeb3, getTokenContract } from '../../contracts'
 import {
   tokenTransferRequest,
   tokenTransferError,
@@ -26,10 +26,15 @@ const transfer = ({ to, amount, from }: RegistryTransferParams): any =>
     dispatch(tokenTransferRequest(args))
 
     try {
+      const web3 = await getWeb3(state)
       const contract: Erc20 = await getTokenContract(state)
 
       // we can allow the contract to fallback on the default account it was made from
-      const tx: TransactionReceipt = await contract.transfer(to, amount)
+      const tx: TransactionReceipt = await contract.transfer(
+        web3,
+        to,
+        amount,
+      )
 
       return tx
     } catch(err) {

@@ -1,4 +1,4 @@
-import { Nos } from 'computable/dist/types'
+import { Nos } from 'computable/dist/@types'
 import { Deployed } from './general'
 /**
  * for any parameterizer related state we want to keep

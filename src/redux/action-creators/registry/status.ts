@@ -4,7 +4,7 @@ import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
 import { State } from '../../../interfaces'
-import { getRegistryContract } from '../../contracts'
+import { getWeb3, getRegistryContract } from '../../contracts'
 import { registryListingRequest, registryListingError } from './actions'
 
 /* Action Creators */
@@ -16,8 +16,13 @@ const updateListingStatus = (listingHash: string): any => (
     dispatch(registryListingRequest(args))
 
     try {
+      const web3 = await getWeb3(state)
       const registry: Registry = await getRegistryContract(state)
-      const tx: TransactionReceipt = await registry.updateStatus(listingHash)
+
+      const tx: TransactionReceipt = await registry.updateStatus(
+        web3,
+        listingHash,
+      )
 
       return tx
     } catch (err) {

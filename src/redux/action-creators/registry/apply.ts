@@ -35,6 +35,7 @@ const applyListing = ({
       const stringifiedData: string = await encodeData(data || { value: '' })
 
       const tx: TransactionReceipt = await registry.apply(
+        web3,
         encodedListing,
         deposit,
         stringifiedData,

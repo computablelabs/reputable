@@ -1,5 +1,6 @@
 // Dependencies
-import { Contract } from 'web3/types.d'
+import 'computable/dist/@types/web3'
+import { Contract } from 'web3/types'
 import { deployAttributeStore as deploy } from 'computable/dist/helpers'
 
 // Local Dependencies
