@@ -1,6 +1,6 @@
 // Dependencies
 import * as ganache from 'ganache-cli'
-import { increaseTime } from 'computable/dist/helpers'
+import { increaseTime } from '@computable/computablejs/dist/helpers'
 
 // Local Dependencies
 import store from '../../src/redux/store'

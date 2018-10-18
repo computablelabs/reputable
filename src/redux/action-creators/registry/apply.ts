@@ -1,5 +1,5 @@
 // Dependencies
-import Registry from 'computable/dist/contracts/registry'
+import Registry from '@computable/computablejs/dist/contracts/registry'
 import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies

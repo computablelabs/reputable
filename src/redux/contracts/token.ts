@@ -1,5 +1,5 @@
 // Dependencies
-import Erc20 from 'computable/dist/contracts/erc-20'
+import Erc20 from '@computable/computablejs/dist/contracts/erc-20'
 
 // Local Dependencies
 import { Map, Participant } from '../../interfaces'

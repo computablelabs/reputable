@@ -2,7 +2,7 @@
  * hold state related to the registry contract
  */
 
-import { RegistryListing, Challenge as RegistryChallenge } from 'computable/dist/interfaces'
+import { RegistryListing, Challenge as RegistryChallenge } from '@computable/computablejs/dist/interfaces'
 import { GenericMap, Map } from '../interfaces'
 
 interface Registry {

@@ -1,5 +1,5 @@
-import { Nos } from 'computable/dist/@types'
-import { Erc20DeployParams } from 'computable/dist/interfaces'
+import { Nos } from '@computable/computablejs/dist/@types'
+import { Erc20DeployParams } from '@computable/computablejs/dist/interfaces'
 import { Deployed } from './general'
 
 /**

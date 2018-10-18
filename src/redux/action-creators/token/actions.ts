@@ -1,5 +1,5 @@
 // Dependencies
-import { Erc20DeployParams } from 'computable/dist/interfaces'
+import { Erc20DeployParams } from '@computable/computablejs/dist/interfaces'
 
 // Local Dependencies
 import {

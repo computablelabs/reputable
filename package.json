@@ -20,7 +20,7 @@
     "test:init": "jasmine-ts init"
   },
   "dependencies": {
-    "computable": "github:computablelabs/computable.js",
+    "@computable/computablejs": "^0.1.0",
     "ipfs-api": "^24.0.1",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",

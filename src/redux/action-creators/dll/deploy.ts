@@ -1,7 +1,7 @@
 // Dependencies
-import 'computable/dist/@types/web3'
+import '@computable/computablejs/dist/@types/web3'
 import { Contract } from 'web3/types'
-import { deployDll as deploy } from 'computable/dist/helpers'
+import { deployDll as deploy } from '@computable/computablejs/dist/helpers'
 
 // Local Dependencies
 import { State, Participant } from '../../../interfaces'

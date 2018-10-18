@@ -1,6 +1,6 @@
 // Dependencies
-import { ParameterizerDeployParams } from 'computable/dist/interfaces'
-import Parameterizer from 'computable/dist/contracts/parameterizer'
+import { ParameterizerDeployParams } from '@computable/computablejs/dist/interfaces'
+import Parameterizer from '@computable/computablejs/dist/contracts/parameterizer'
 
 // Local Dependencies
 import { State, Participant } from '../../../interfaces'

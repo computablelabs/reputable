@@ -1,11 +1,11 @@
 // Dependencies
 import * as ganache from 'ganache-cli'
 import Web3 from 'web3'
-import Erc20 from 'computable/dist/contracts/erc-20'
+import Erc20 from '@computable/computablejs/dist/contracts/erc-20'
+import { maybeParseInt } from '@computable/computablejs/dist/helpers'
 
 // Local Dependencies
 import store from '../../src/redux/store'
-import { maybeParseInt } from 'computable/dist/helpers'
 import { setWebsocketAddress } from '../../src/redux/action-creators/web3'
 import { addParticipant } from '../../src/redux/action-creators/participants'
 import { deployToken, approve, transfer } from '../../src/redux/action-creators/token'

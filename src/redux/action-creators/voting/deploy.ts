@@ -1,5 +1,5 @@
 // Dependencies
-import Voting from 'computable/dist/contracts/plcr-voting'
+import Voting from '@computable/computablejs/dist/contracts/plcr-voting'
 
 // Local Dependencies
 import { State, Participant } from '../../../interfaces'

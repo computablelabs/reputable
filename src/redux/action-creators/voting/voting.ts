@@ -1,5 +1,5 @@
 // Dependencies
-import Voting from 'computable/dist/contracts/plcr-voting'
+import Voting from '@computable/computablejs/dist/contracts/plcr-voting'
 import { TransactionReceipt } from 'web3/types'
 
 // Local Dependencies
