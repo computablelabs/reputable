@@ -7,6 +7,7 @@ import * as selectors from '../../selectors'
 import {
   applicationEventResponder,
   applicationWhitelistedEventResponder,
+  listingRemovedEventResponder,
   challengeEventResponder,
   challengeSucceededEventResponder,
   challengeFailedEventResponder,
@@ -140,16 +141,23 @@ describe('contract observer', () => {
       beforeAll(async function(this: Map) {
         // @ts-ignore:2239
         spyOn(registryActions, 'registryChallengeOk').and.returnValue({ type: 'mock type' })
-        spyOn(registryActions, 'registryListingRemove').and.returnValue({ type: 'mock type' })
+        spyOn(registryActions, 'registryRemoveOk').and.returnValue({ type: 'mock type' })
 
-        this.returnValues = {
-          listingHash: 'listing hash',
+        const listingHash = 'mock listing hash'
+
+        this.challengeReturnValues = {
+          listingHash,
           id:          'challenge id',
           rewardPool:  100,
           totalTokens: 200,
         }
 
-        this.responder = challengeSucceededEventResponder(store.dispatch, store.getState)
+        this.removeReturnValues = {
+          listingHash,
+        }
+
+        this.challengeResponder = challengeSucceededEventResponder(store.dispatch, store.getState)
+        this.removeResponder = listingRemovedEventResponder(store.dispatch, store.getState)
       })
 
       afterEach(() => {
@@ -157,28 +165,29 @@ describe('contract observer', () => {
         registryActions.registryChallengeOk.calls.reset()
 
         // @ts-ignore:2339
-        registryActions.registryListingRemove.calls.reset()
+        registryActions.registryRemoveOk.calls.reset()
       })
 
       it('dispatches the appropriate actions', async function(this: Map) {
-        await this.responder({ returnValues: this.returnValues } as EventLog)
+        await this.challengeResponder({ returnValues: this.challengeReturnValues } as EventLog)
+        await this.removeResponder({ returnValues: this.removeReturnValues } as EventLog)
 
         // @ts-ignore:2339
         expect(registryActions.registryChallengeOk.calls.count()).toEqual(1)
 
         // @ts-ignore:2239
         const challengeArgs = registryActions.registryChallengeOk.calls.first().args[0]
-        expect(challengeArgs.listingHash).toEqual(this.returnValues.listingHash)
-        expect(challengeArgs.challengeID).toEqual(this.returnValues.id)
-        expect(challengeArgs.rewardPool).toEqual(this.returnValues.rewardPool)
-        expect(challengeArgs.totalTokens).toEqual(this.returnValues.totalTokens)
+        expect(challengeArgs.listingHash).toEqual(this.challengeReturnValues.listingHash)
+        expect(challengeArgs.challengeID).toEqual(this.challengeReturnValues.id)
+        expect(challengeArgs.rewardPool).toEqual(this.challengeReturnValues.rewardPool)
+        expect(challengeArgs.totalTokens).toEqual(this.challengeReturnValues.totalTokens)
 
         // @ts-ignore:2339
-        expect(registryActions.registryListingRemove.calls.count()).toEqual(1)
+        expect(registryActions.registryRemoveOk.calls.count()).toEqual(1)
 
         // @ts-ignore:2239
-        const listingArgs = registryActions.registryListingRemove.calls.first().args[0]
-        expect(listingArgs).toEqual(this.returnValues.listingHash)
+        const listingArgs = registryActions.registryRemoveOk.calls.first().args[0]
+        expect(listingArgs).toEqual(this.removeReturnValues.listingHash)
       })
     })
 

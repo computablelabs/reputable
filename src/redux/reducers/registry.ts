@@ -12,13 +12,16 @@ import {
 
   REGISTRY_LISTING_REQUEST,
   REGISTRY_LISTING_OK,
-  REGISTRY_LISTING_REMOVE,
   REGISTRY_LISTING_ERROR,
   REGISTRY_LISTING_RESET,
 
   REGISTRY_APPLY_REQUEST,
   REGISTRY_APPLY_OK,
   REGISTRY_APPLY_ERROR,
+
+  REGISTRY_REMOVE_REQUEST,
+  REGISTRY_REMOVE_OK,
+  REGISTRY_REMOVE_ERROR,
 
   REGISTRY_CHALLENGE_REQUEST,
   REGISTRY_CHALLENGE_OK,
@@ -106,19 +109,6 @@ const handlers = {
       },
     };
   },
-  [REGISTRY_LISTING_REMOVE]: (state: StateItem<Registry>, { payload }: FSA) => {
-    const listings = state.data.listings || {}
-    delete listings[payload]
-
-    return {
-      ...state,
-      loading: false,
-      data: {
-        ...state.data,
-        listings,
-      }
-    }
-  },
   [REGISTRY_LISTING_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
     ...state,
     loading: false,
@@ -132,7 +122,7 @@ const handlers = {
     },
   }),
 
-  // Applicant
+  // Apply Listing
   [REGISTRY_APPLY_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
     ...state,
     loading: true,
@@ -158,6 +148,33 @@ const handlers = {
     }
   },
   [REGISTRY_APPLY_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: false,
+    error: payload.toString(),
+  }),
+
+  // Remove Listing
+  [REGISTRY_REMOVE_REQUEST]: (state: StateItem<Registry>, { payload }: FSA) => ({
+    ...state,
+    loading: true,
+    request: payload,
+  }),
+  [REGISTRY_REMOVE_OK]: (state: StateItem<Registry>, { payload }: FSA) => {
+    const listings = state.data.listings || {}
+    delete listings[payload]
+
+    return {
+      ...state,
+      loading: false,
+      data: {
+        ...state.data,
+        listings,
+      }
+    }
+
+    return state
+  },
+  [REGISTRY_REMOVE_ERROR]: (state: StateItem<Registry>, { payload }: FSA) => ({
     ...state,
     loading: false,
     error: payload.toString(),

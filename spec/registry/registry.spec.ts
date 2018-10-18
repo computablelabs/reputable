@@ -13,6 +13,7 @@ import {
   deployRegistry,
   fetchListing,
   applyListing,
+  removeListing,
   resetRegistryListings,
   challengeListing,
   updateListingStatus,
@@ -227,6 +228,37 @@ describe('registry state', () => {
         listing = getListing(state, listingHash)
 
         expect(listing && listing.whitelisted).toBe(false)
+      })
+    })
+
+    describe('#removeListing', () => {
+      beforeEach(async function(this: Map) {
+        await store.dispatch(resetRegistryListings())
+
+        // create a whitelisted listing
+        this.listingValues = await createListing(user.address)
+        await increaseTime(provider, APPLY_STAGE_LEN + 1)
+        await store.dispatch(
+          updateListingStatus(this.listingValues.listingHash)
+        )
+      })
+
+      afterEach(async () => {
+        await store.dispatch(resetRegistryListings())
+      })
+
+      it('removes the given listing', async function(this: Map) {
+        let state: State = store.getState()
+        let listing = getListing(state, this.listingValues.listingHash)
+        expect(listing).not.toBeUndefined()
+
+        await store.dispatch(
+          removeListing({ listing: this.listingValues.listingHash, userAddress: user.address })
+        )
+
+        state = store.getState()
+        listing = getListing(state, this.listingValues.listingHash)
+        expect(listing).toBeUndefined()
       })
     })
 

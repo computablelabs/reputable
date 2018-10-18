@@ -18,13 +18,16 @@ export const REGISTRY_ADDRESS_RESET = 'REGISTRY_ADDRESS_RESET'
 
 export const REGISTRY_LISTING_REQUEST = 'REGISTRY_LISTING_REQUEST'
 export const REGISTRY_LISTING_OK = 'REGISTRY_LISTING_OK'
-export const REGISTRY_LISTING_REMOVE = 'REGISTRY_LISTING_REMOVE'
 export const REGISTRY_LISTING_ERROR = 'REGISTRY_LISTING_ERROR'
 export const REGISTRY_LISTING_RESET = 'REGISTRY_LISTING_RESET'
 
 export const REGISTRY_APPLY_REQUEST = 'REGISTRY_APPLY_REQUEST'
 export const REGISTRY_APPLY_OK = 'REGISTRY_APPLY_OK'
 export const REGISTRY_APPLY_ERROR = 'REGISTRY_APPLY_ERROR'
+
+export const REGISTRY_REMOVE_REQUEST = 'REGISTRY_REMOVE_REQUEST'
+export const REGISTRY_REMOVE_OK = 'REGISTRY_REMOVE_OK'
+export const REGISTRY_REMOVE_ERROR = 'REGISTRY_REMOVE_ERROR'
 
 export const REGISTRY_CHALLENGE_REQUEST = 'REGISTRY_CHALLENGE_REQUEST'
 export const REGISTRY_CHALLENGE_OK = 'REGISTRY_CHALLENGE_OK'
@@ -76,11 +79,6 @@ export const registryListingOk = (value: Map): FSA => ({
   payload: value,
 })
 
-export const registryListingRemove = (value: string): FSA => ({
-  type: REGISTRY_LISTING_REMOVE,
-  payload: value,
-})
-
 export const registryListingError = (value: Error): FSA => ({
   type: REGISTRY_LISTING_ERROR,
   payload: value,
@@ -91,7 +89,7 @@ export const registryListingReset = (): FSA => ({
   payload: {},
 })
 
-// Applicants
+// Apply Listing
 export const registryApplyRequest = (value: Map): FSA => ({
   type: REGISTRY_APPLY_REQUEST,
   payload: value,
@@ -104,6 +102,22 @@ export const registryApplyOk = (value: Listing): FSA => ({
 
 export const registryApplyError = (value: Error): FSA => ({
   type: REGISTRY_APPLY_ERROR,
+  payload: value,
+})
+
+// Remove Listing
+export const registryRemoveRequest = (value: Map): FSA => ({
+  type: REGISTRY_REMOVE_REQUEST,
+  payload: value,
+})
+
+export const registryRemoveOk = (value: Listing): FSA => ({
+  type: REGISTRY_REMOVE_OK,
+  payload: value,
+})
+
+export const registryRemoveError = (value: Error): FSA => ({
+  type: REGISTRY_REMOVE_ERROR,
   payload: value,
 })
 

@@ -6,7 +6,13 @@ import { TransactionReceipt } from 'web3/types'
 import { State, ApplicantData } from '../../../interfaces'
 import { encodeData } from '../../../helpers/data'
 import { getWeb3, getRegistryContract } from '../../contracts'
-import { registryApplyRequest, registryApplyError } from './actions'
+import {
+  registryApplyRequest,
+  registryApplyError,
+
+  registryRemoveRequest,
+  registryRemoveError,
+} from './actions'
 
 /* Action Creators */
 interface RegistryApplyParams {
@@ -49,5 +55,29 @@ const applyListing = ({
   }
 )
 
-export { applyListing }
+interface RegistryRemoveParams {
+  listing:     string
+  userAddress: string
+}
+const removeListing = ({ listing, userAddress }: RegistryRemoveParams): any => (
+  async (dispatch: Function, getState: Function): Promise<TransactionReceipt|void> => {
+    const state: State = getState()
+
+    const args = { listing, userAddress }
+    dispatch(registryRemoveRequest(args))
+
+    try {
+      const web3 = await getWeb3(state)
+      const registry: Registry = await getRegistryContract(state)
+
+      const tx: TransactionReceipt = await registry.exit(web3, listing, { from: userAddress })
+
+      return tx
+    } catch (err) {
+      dispatch(registryRemoveError(err))
+    }
+  }
+)
+
+export { applyListing, removeListing }
 

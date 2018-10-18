@@ -10,13 +10,25 @@ enum Contracts {
 }
 
 enum ContractEvents {
+  // Apply Listing
   APPLICATION_EVENT             = '_Application',
-  CHALLENGE_EVENT               = '_Challenge',
   APPLICATION_WHITELISTED_EVENT = '_ApplicationWhitelisted',
+
+  // Remove Listing
+  LISTING_WITHDRAWN_EVENT       = '_ListingWithdrawn',
+  APPLICATION_REMOVED_EVENT     = '_ApplicationRemoved',
+  LISTING_REMOVED_EVENT         = '_ListingRemoved',
+
+  // Challenge Listing
+  CHALLENGE_EVENT               = '_Challenge',
   CHALLENGE_SUCCEEDED_EVENT     = '_ChallengeSucceeded',
   CHALLENGE_FAILED_EVENT        = '_ChallengeFailed',
+
+  // Tokens
   APPROVAL_EVENT                = 'Approval',
   TRANSFER_EVENT                = 'Transfer',
+
+  // Voting
   VOTING_RIGHTS_GRANTED_EVENT   = '_VotingRightsGranted',
   VOTE_COMMITTED_EVENT          = '_VoteCommitted',
 }

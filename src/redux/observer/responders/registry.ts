@@ -4,7 +4,7 @@ import { decodeData } from '../../../helpers/data'
 import {
   registryApplyOk,
   registryListingOk,
-  registryListingRemove,
+  registryRemoveOk,
   registryChallengeOk,
 } from '../../action-creators/registry'
 import { getListing } from '../../selectors'
@@ -36,6 +36,14 @@ const applicationWhitelistedEventResponder = (dispatch: Function, getState: Func
     }
 
     dispatch(registryListingOk(out))
+  }
+)
+
+const listingRemovedEventResponder = (dispatch: Function, getState: Function) => (
+  async (log: EventLog) => {
+    const eventValues: Map = log.returnValues
+
+    dispatch(registryRemoveOk(eventValues.listingHash))
   }
 )
 
@@ -78,7 +86,6 @@ const challengeSucceededEventResponder = (dispatch: Function, getState: Function
     }
 
     dispatch(registryChallengeOk(out))
-    dispatch(registryListingRemove(eventValues.listingHash))
   }
 )
 
@@ -100,6 +107,7 @@ const challengeFailedEventResponder = (dispatch: Function, getState: Function) =
 export {
   applicationEventResponder,
   applicationWhitelistedEventResponder,
+  listingRemovedEventResponder,
   challengeEventResponder,
   challengeSucceededEventResponder,
   challengeFailedEventResponder,

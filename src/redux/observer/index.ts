@@ -13,6 +13,7 @@ import { observerError } from '../action-creators/observer'
 import {
   applicationEventResponder,
   applicationWhitelistedEventResponder,
+  listingRemovedEventResponder,
   challengeEventResponder,
   challengeSucceededEventResponder,
   challengeFailedEventResponder,
@@ -55,6 +56,16 @@ class ContractObserver {
     this.registerContractEvent(
       this.contracts.registry,
       ContractEvents.APPLICATION_WHITELISTED_EVENT,
+    )
+
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.APPLICATION_REMOVED_EVENT,
+    )
+
+    this.registerContractEvent(
+      this.contracts.registry,
+      ContractEvents.LISTING_REMOVED_EVENT,
     )
 
     this.registerContractEvent(
@@ -137,6 +148,16 @@ class ContractObserver {
     this.registerResponder(
       ContractEvents.CHALLENGE_EVENT,
       challengeEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.APPLICATION_REMOVED_EVENT,
+      listingRemovedEventResponder(dispatch, getState),
+    )
+
+    this.registerResponder(
+      ContractEvents.LISTING_REMOVED_EVENT,
+      listingRemovedEventResponder(dispatch, getState),
     )
 
     this.registerResponder(
